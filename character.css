@@ -1,0 +1,14 @@
+/* User-supplied pixel character / brand image */
+.brandmark{overflow:hidden;padding:0!important;background:#111!important;border:1px solid #1f2832;box-shadow:none!important;display:flex;align-items:center;justify-content:center}
+.rtg-brand-img{width:100%;height:100%;object-fit:cover;display:block}
+.rtg-wordmark-img{width:37px;height:37px;object-fit:cover;border-radius:9px;vertical-align:middle;margin-right:12px;background:#090909}
+.pixel-showcase canvas{object-fit:contain;image-rendering:pixelated;width:225px;height:260px;filter:drop-shadow(0 12px 11px rgba(30,44,60,.14))}
+.pixel-preset canvas{object-fit:contain;image-rendering:pixelated;width:80px;height:90px}
+.avatar canvas{object-fit:contain;image-rendering:pixelated;width:65px;height:75px}
+.pixel-showcase{background:#f5f8fb;border-color:#dbe3ed;box-shadow:none}
+.pixel-preset{background:white;border-radius:9px;box-shadow:none;min-height:150px}
+.pixel-preset.active{background:#eaf2fb;color:#1d466e;border-color:#3e7db4}
+.pixel-preset.active::before{background:#315b7b;color:white}
+.avatar-screen .avatar-stage-preview{background:#fff}
+.avatar-screen .avatar-stage-preview .desc{color:#667787}
+@media(max-width:540px){.pixel-showcase canvas{width:165px;height:205px}.pixel-preset canvas{width:58px;height:76px}.pixel-preset{min-height:115px}.rtg-wordmark-img{width:30px;height:30px;margin-right:7px}}
