@@ -10,32 +10,46 @@
   const HEX=(hex)=>{const n=parseInt(hex.replace('#',''),16);return [(n>>16)&255,(n>>8)&255,n&255]};
   const RGB=(rgb)=>`rgb(${rgb.map(v=>Math.max(0,Math.min(255,Math.round(v)))).join(',')})`;
   const shadeRgb=(base,f)=>base.map(v=>Math.min(255,Math.max(0,Math.round(v*f))));
-  const paintBlock=(ctx,colour,x,y,w,h)=>{ctx.fillStyle=RGB(colour);ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))};
   function applyStyle(ctx,config){
-    const n=Math.max(0,Math.min(5,Number(config.preset)||0));
+    const preset=Number(config.preset)||0;
     const hair=HEX(HAIR_COLORS[Math.max(0,Math.min(HAIR_COLORS.length-1,config.hairColor||0))]);
     const skin=HEX(SKIN_COLORS[Math.max(0,Math.min(SKIN_COLORS.length-1,config.skin||0))]);
-    const darker=shadeRgb(hair,.75),highlight=shadeRgb(hair,1.55);
-    const p=(x,y,w,h,c)=>paintBlock(ctx,c,x,y,w,h);
-    switch(n){
-      case 1: // 시스루: lighter bangs with individual small strands
-        p(61,77,79,17,skin);p(64,74,18,15,hair);p(86,74,12,19,darker);p(108,75,10,18,hair);p(127,72,12,20,darker);
-        p(75,62,11,3,highlight);p(113,66,12,3,highlight);break;
-      case 2: // 가르마: visible part and smooth side-swept hair
-        p(93,47,6,36,skin);p(87,55,6,34,shadeRgb(skin,.88));p(100,54,8,38,hair);
-        p(57,60,39,17,hair);p(62,52,44,8,highlight);p(104,60,37,16,hair);p(106,54,20,7,highlight);break;
-      case 3: // 스포츠컷: shorter fringe reveals the forehead
-        p(58,76,85,24,skin);p(45,66,98,15,hair);p(45,77,84,10,darker);
-        p(62,66,65,6,highlight);p(78,84,10,7,hair);break;
-      case 4: // 스파이크: upward angular silhouette
-        p(59,15,13,29,hair);p(60,7,7,17,darker);p(77,12,14,27,hair);p(80,0,7,19,hair);
-        p(98,5,12,32,hair);p(106,0,5,11,darker);p(119,11,15,30,hair);p(128,6,8,20,hair);
-        p(66,21,8,6,highlight);p(104,16,8,7,highlight);break;
-      case 5: // 장발: longer hair around the sides, preserves face
-        p(24,81,16,49,darker);p(28,78,11,45,hair);p(30,103,6,17,highlight);
-        p(147,82,13,45,darker);p(145,84,9,40,hair);p(149,108,4,13,highlight);
-        p(37,110,8,22,hair);p(138,107,8,24,hair);break;
-      default: break; // natural uses exact illustrated hair silhouette
+    const shadow=shadeRgb(hair,.68),light=shadeRgb(hair,1.55);
+    const shape=(color,points)=>{
+      ctx.fillStyle=RGB(color);
+      ctx.beginPath();
+      ctx.moveTo(...points[0]);
+      for(const point of points.slice(1)) ctx.lineTo(...point);
+      ctx.closePath();
+      ctx.fill();
+    };
+    // Follow the existing crown and leave the eyes and the jersey visible.
+    switch(preset){
+      case 1:
+        shape(skin,[[69,86],[80,81],[89,81],[89,76],[96,76],[96,83],[108,83],[108,77],[115,77],[115,84],[129,86],[129,91],[69,91]]);
+        shape(shadow,[[84,78],[90,75],[92,76],[90,82],[88,87],[84,87]]);
+        shape(hair,[[103,78],[108,76],[111,77],[109,84],[106,88],[103,88]]);
+        break;
+      case 2:
+        shape(skin,[[89,86],[96,81],[100,74],[102,66],[105,69],[104,77],[110,82],[122,85],[124,90],[85,90]]);
+        shape(light,[[66,75],[74,68],[84,64],[95,62],[91,66],[82,69],[74,75]]);
+        shape(light,[[110,64],[118,65],[126,69],[132,75],[126,74],[120,70]]);
+        break;
+      case 3:
+        shape(skin,[[62,88],[65,82],[72,82],[72,79],[83,79],[83,76],[97,76],[97,78],[111,78],[111,80],[124,80],[124,83],[136,83],[136,91],[62,91]]);
+        shape(light,[[58,69],[67,64],[79,61],[91,61],[88,64],[78,64],[67,68]]);
+        break;
+      case 4:
+        shape(shadow,[[46,50],[49,37],[64,26],[66,13],[73,21],[81,16],[87,5],[93,17],[105,19],[114,10],[115,23],[129,33],[137,48]]);
+        shape(hair,[[52,47],[60,35],[70,31],[70,23],[76,27],[86,23],[88,15],[94,24],[106,26],[112,21],[113,29],[126,38],[130,46]]);
+        shape(light,[[62,38],[72,33],[77,33],[75,36],[68,39],[63,43]]);
+        break;
+      case 5:
+        shape(shadow,[[31,71],[48,75],[48,91],[44,103],[44,111],[37,125],[30,130],[32,118],[29,108]]);
+        shape(hair,[[34,76],[43,79],[43,95],[39,109],[35,115],[33,108]]);
+        shape(shadow,[[138,73],[151,71],[155,88],[154,100],[150,114],[145,120],[144,109],[147,99],[139,91]]);
+        shape(hair,[[143,77],[149,78],[151,89],[150,98],[146,105],[148,94],[143,87]]);
+        break;
     }
   }
   function renderFromReference(canvas, config){
