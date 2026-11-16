@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ROAD TO GOAT v1.5 — Basketball Career Simulator</title>
+<style>
+:root{--bg:#090e18;--panel:#121c2b;--panel2:#182439;--panel3:#1e2d43;--line:#2b3d53;--muted:#8d9daf;--text:#f0f5fb;--gold:#f7bb67;--teal:#4ce0ca;--blue:#65a6ff;--danger:#ff7a7a;--green:#7edbb0}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 77% -20%,#1a2c42 0,transparent 44%),var(--bg);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--text);min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5} .hidden{display:none!important} .container{max-width:1360px;margin:auto;padding:24px} .muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:2.5px;font-size:11px;color:var(--teal);font-weight:850}.brand{display:flex;align-items:center;gap:13px;font-weight:950;letter-spacing:1.6px;font-size:17px}.brandmark{background:linear-gradient(135deg,#e8b264,#a66b30);color:#101721;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:24px;box-shadow:0 7px 22px #d78d3633}.sub{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:0}.card{background:linear-gradient(145deg,#172337,#111b29);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 9px 25px #03060c24}.card.flat{background:#121c2b}.pill{font-size:11px;font-weight:800;letter-spacing:.3px;border-radius:8px;padding:6px 9px;background:#213447;color:var(--teal);white-space:nowrap;display:inline-flex;gap:5px;align-items:center}.pill.gold{background:#402c19;color:var(--gold)}.pill.blue{background:#1a3352;color:#9fcaff}.pill.red{background:#44262d;color:#ff9b9b}.btn{background:linear-gradient(135deg,#f0be77,#d89643);border:0;border-radius:11px;padding:12px 17px;font-size:13px;color:#1b1b1c;font-weight:900;box-shadow:0 4px 14px #a77a343b;transition:transform .15s,filter .15s}.btn:hover:not(:disabled){filter:brightness(1.09);transform:translateY(-1px)}.btn.secondary{background:#26354a;color:#e0e9f3;box-shadow:none;border:1px solid #3a4d64}.btn.ghost{background:transparent;border:1px solid #40516a;box-shadow:none;color:#e0e9f3}.btn.danger{background:#512b35;color:#ffadad;box-shadow:none;border:1px solid #743d48}.btn.small{padding:8px 11px;font-size:12px}.btn.wide{width:100%} .grid{display:grid;gap:15px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.four{grid-template-columns:repeat(4,minmax(0,1fr))}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:12px;color:#b8c7d7;font-weight:700}.field input,.field select{background:#0d1725;border:1px solid #33455b;color:white;border-radius:10px;padding:12px;width:100%;outline:none}.field input:focus,.field select:focus{border-color:#e1b277;box-shadow:0 0 0 3px #edaf5e1a}h1,h2,h3,h4,p{margin-top:0}h1{font-size:clamp(34px,5vw,65px);letter-spacing:-2.6px;line-height:1.08;margin-bottom:15px}h2{font-size:23px;letter-spacing:-.6px;margin-bottom:15px}h3{font-size:15px;margin-bottom:12px}.desc{font-size:13px;color:var(--muted);line-height:1.8}.sep{height:1px;background:var(--line);margin:16px 0}.top-header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2c3c50;max-width:1420px;margin:auto;padding:0 27px}.label{font-size:11px;color:var(--muted);font-weight:700}.value{font-size:24px;font-weight:900;letter-spacing:-.7px}.smallnote{font-size:11px;color:var(--muted);line-height:1.7} .stage{padding:8px 12px;background:#263246;border-radius:8px;font-size:12px;color:#c8d4e5}
+/* intro */
+.intro{min-height:100vh}.intro-header{max-width:1180px;margin:auto;padding:28px 25px}.intro-layout{max-width:1180px;margin:auto;padding:36px 25px 70px;display:grid;grid-template-columns:1.03fr .97fr;gap:36px;align-items:center}.intro-copy{padding-right:25px}.intro-copy>p{font-size:15px;max-width:490px;color:#a2b0c2;line-height:1.9}.features{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 30px}.features span{border:1px solid #344760;border-radius:9px;padding:9px 11px;color:#bed0e4;background:#18283c;font-size:12px}.highlight{color:var(--gold)}.create{padding:27px;border-radius:22px;background:linear-gradient(145deg,#1d2a3e,#111a28);border:1px solid #37495e;box-shadow:0 25px 60px #0006}.create h2{margin-bottom:5px}.create .grid{margin-top:15px}.create .btn{margin-top:16px}.court-art{height:160px;border:2px solid #d4aa6959;border-radius:13px;position:relative;background:repeating-linear-gradient(90deg,#193047,#193047 38px,#1b344a 38px,#1b344a 40px);overflow:hidden;margin-top:27px}.court-art:after{content:"";position:absolute;width:140px;height:140px;border:2px solid #f0c28a7f;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%)}.court-art:before{content:"";position:absolute;height:100%;width:2px;background:#f0c28a7f;left:50%}.ball{width:67px;height:67px;background:linear-gradient(135deg,#f0a54e,#aa5d25);border:3px solid #53311d;border-radius:50%;position:absolute;z-index:2;left:calc(50% - 30px);top:44px;box-shadow:0 12px 28px #0007;font-size:32px;display:grid;place-items:center}.intro-footer{margin-top:15px;text-align:center;color:#7d8ba0;font-size:11px}
+/* main */
+.layout{display:grid;grid-template-columns:224px minmax(0,1fr);gap:23px;max-width:1420px;padding:25px;margin:auto}.side{position:sticky;top:18px;align-self:start;display:flex;flex-direction:column;gap:7px}.side .nav{border:0;text-align:left;display:flex;align-items:center;gap:12px;width:100%;padding:13px 13px;border-radius:11px;background:transparent;color:#92a4bb;font-size:13px;font-weight:750}.side .nav span{font-size:17px}.side .nav.active{color:#fce2b7;background:#44321f;border:1px solid #715331}.side .nav:hover:not(.active){background:#182639;color:#fff}.side-divider{height:1px;background:#2d3d52;margin:13px 5px}.side-footer{margin:18px 10px;color:#64768f;font-size:11px}.content{min-width:0}.view-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:0 0 20px}.view-title h2{margin:0}.hero{position:relative;overflow:hidden;background:linear-gradient(117deg,#203b52,#1b2b3e 48%,#293021);border:1px solid #3b5265;border-radius:21px;padding:26px 29px;margin-bottom:17px;min-height:222px}.hero::after{content:"";width:300px;height:300px;border:4px solid #c69a5544;border-radius:50%;position:absolute;right:-95px;bottom:-153px}.hero::before{content:"";width:145px;height:145px;border:2px solid #c69a5555;border-radius:50%;position:absolute;right:80px;top:25px}.hero-content{position:relative;z-index:2}.hero h2{font-size:clamp(30px,4vw,44px);letter-spacing:-1.8px;margin:6px 0}.hero p{max-width:590px;line-height:1.7;color:#b4c4d4;font-size:13px;margin-bottom:0}.hero-bottom{display:flex;gap:11px;margin-top:22px;flex-wrap:wrap}.avatar{width:78px;height:90px;display:grid;place-items:center;font-size:42px;border-radius:12px;background:linear-gradient(160deg,#29536c,#132234);border:1px solid #44768a}.stat{padding:17px}.stat .value{margin:7px 0 3px}.section-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.section-top h3{margin:0}.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.mini-box{border:1px solid #2e4156;border-radius:11px;background:#172537;padding:12px}.mini-box strong{display:block;margin-top:6px;font-size:18px}.meter{height:8px;background:#28364a;border-radius:20px;overflow:hidden}.meter>i{height:100%;display:block;background:linear-gradient(90deg,var(--teal),#9bfae2);border-radius:inherit}.attr-row{display:grid;grid-template-columns:95px 1fr 30px;gap:10px;align-items:center;margin:10px 0;font-size:12px}.attr-row b{text-align:right;font-size:12px}.train-select{display:flex;flex-direction:column;gap:10px}.train-choice{padding:14px;border:1px solid #33465b;border-radius:12px;background:#162438;display:flex;gap:13px;align-items:center;cursor:pointer}.train-choice.selected{border-color:var(--gold);background:#3a302b}.train-choice input{accent-color:var(--gold)}.train-choice strong{font-size:13px}.train-choice p{margin:3px 0 0;font-size:11px;color:#95a8be}.table-wrap{overflow:auto;border-radius:12px;border:1px solid #2e4258}table{width:100%;border-collapse:collapse;font-size:12px;min-width:630px}th{background:#1f2d40;color:#9db1c6;text-align:left;font-size:11px;letter-spacing:.3px;padding:12px;white-space:nowrap}td{padding:13px 12px;border-top:1px solid #273a4e;color:#d7e2ee}tr:hover td{background:#1a2839}td strong{color:#fff}.rank-num{color:var(--gold);font-weight:900}.notice{padding:14px 16px;border:1px solid #715235;background:#392b22;border-radius:12px;color:#f1c88e;font-size:12px;line-height:1.8}.offer{padding:15px;background:#17263a;border:1px solid #38516a;border-radius:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.offer strong{display:block;font-size:14px;margin-bottom:7px}.offer .desc{font-size:11px;line-height:1.5}.offer .actions{display:flex;gap:7px}.badge-num{color:#91e9cd;font-weight:900}.history-item{border-left:2px solid #4b647f;padding:0 0 18px 15px;margin-left:7px;position:relative}.history-item:before{content:"";width:10px;height:10px;border-radius:100%;position:absolute;left:-6px;top:4px;background:#e8b76d}.history-item:last-child{padding-bottom:0}.trophy{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid #34465a;background:#182639;border-radius:11px}.trophy .sym{font-size:25px}.records-block{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.records-block .card .value{font-size:22px}.results-banner{background:linear-gradient(105deg,#473523,#222e3c);border:1px solid #76603c;border-radius:14px;padding:19px;margin-bottom:16px}.result-stat{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.result-stat>div{background:#1f2a3b;border-radius:10px;padding:12px;text-align:center}.result-stat strong{display:block;font-size:22px}.result-stat span{font-size:10px;color:#a3b3c4}.result-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.result-tags span{background:#503b26;color:#ffdb9d;font-size:11px;border-radius:7px;padding:7px 9px}.empty{padding:33px 18px;text-align:center;color:#849aaf;border:1px dashed #42556b;border-radius:12px;font-size:12px;line-height:1.8}.empty .big{font-size:32px;margin-bottom:8px}.footer-note{font-size:10px;color:#697f94;margin-top:28px;line-height:1.7}.toast{position:fixed;bottom:25px;right:25px;background:#25394c;border:1px solid #4d718d;color:white;border-radius:11px;padding:13px 18px;box-shadow:0 12px 36px #0009;font-size:12px;z-index:70;max-width:340px;display:none}.toast.show{display:block}.modal-back{position:fixed;inset:0;background:#03070dc9;z-index:60;display:grid;place-items:center;padding:20px}.modal{width:100%;max-width:580px;max-height:90vh;overflow:auto;border:1px solid #52637a;background:#182436;border-radius:18px;padding:25px;box-shadow:0 20px 80px #000b}.modal h2{margin:0 0 13px}.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:20px}.headline{display:flex;justify-content:space-between;align-items:center;gap:10px}.line-chip{display:inline-block;padding:5px 8px;border-radius:7px;background:#2a3b4f;color:#cad9e8;font-size:11px;margin:2px}.color-orange{color:var(--gold)}.color-green{color:var(--green)}.color-red{color:var(--danger)}
+@media(max-width:900px){.layout{grid-template-columns:1fr;padding:12px}.side{position:relative;flex-direction:row;overflow:auto;background:#101a29;border:1px solid #27384b;border-radius:12px;padding:6px}.side .nav{white-space:nowrap;padding:10px 12px;font-size:12px;width:auto;flex-shrink:0}.side .nav span{display:none}.side-divider,.side-footer{display:none}.intro-layout{grid-template-columns:1fr;gap:20px;padding-top:12px}.intro-copy{padding:0}.intro-copy .court-art{display:none}.top-header{padding:0 16px}.top-header .sub{display:none}.four{grid-template-columns:repeat(2,minmax(0,1fr))}.records-block{grid-template-columns:repeat(2,1fr)}}@media(max-width:540px){.container{padding:14px}.two,.three,.four,.records-block{grid-template-columns:1fr 1fr}.intro-layout{padding:10px 14px 40px}.create{padding:19px}.create .two{grid-template-columns:1fr}.hero{padding:21px}.hero h2{font-size:30px}.hero:before,.hero:after{display:none}.result-stat{grid-template-columns:repeat(2,1fr)}.offer{align-items:stretch;flex-direction:column}.offer .actions>*{flex:1}.view-title{flex-wrap:wrap}.modal{padding:17px}.stat .value{font-size:21px}.side{gap:1px}.side .nav{padding:10px 8px}}
+
+/* Create-player avatar stage - hand-drawn procedural pixel figures */
+.avatar-screen{min-height:100vh}.avatar-stage-layout{max-width:1170px;margin:16px auto 80px;padding:0 22px;display:grid;grid-template-columns:minmax(300px,.85fr) minmax(420px,1.15fr);gap:24px;align-items:start}.avatar-stage-preview{position:sticky;top:20px;background:linear-gradient(130deg,#172c41,#122033)}.avatar-configuration{padding:25px}.pixel-showcase{margin:25px auto 12px;max-width:320px;height:300px;display:grid;place-items:center;border:1px solid #52627a;border-radius:17px;background:radial-gradient(ellipse at center,#28465b,#102238 70%);position:relative}.pixel-showcase:after{content:'';position:absolute;bottom:28px;left:18%;width:64%;height:2px;background:#b3916688}.pixel-showcase canvas{width:224px;height:288px;image-rendering:pixelated;filter:drop-shadow(0px 14px 5px #0006)}.avatar-preview-name{text-align:center;font-weight:900;font-size:22px;letter-spacing:1px}.pixel-preset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.pixel-preset{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1px solid #354960;border-radius:12px;background:#142338;color:#e4eaf0;padding:8px;min-width:0;font-size:12px;font-weight:750}.pixel-preset:hover{background:#1b314c}.pixel-preset.active{border:2px solid var(--gold);background:#392d24;color:var(--gold)}.pixel-preset canvas{width:80px;height:108px;image-rendering:pixelated}.swatch-row{display:flex;flex-wrap:wrap;gap:10px}.swatch{width:32px;height:32px;border:3px solid transparent;box-shadow:inset 0 0 0 1px #0006;border-radius:10px;background:var(--swatch)}.swatch.active{outline:2px solid var(--gold);outline-offset:2px}.avatar-actions{display:flex;gap:10px;margin-top:19px}.avatar-actions .btn:last-child{flex:1}.avatar canvas{width:59px;height:80px;image-rendering:pixelated}.avatar{overflow:hidden}
+@media(max-width:840px){.avatar-stage-layout{grid-template-columns:1fr}.avatar-stage-preview{position:static}.pixel-showcase{height:220px}.pixel-showcase canvas{width:144px;height:194px}}
+@media(max-width:420px){.avatar-stage-layout{padding:0 12px}.pixel-preset-grid{gap:6px}.pixel-preset canvas{width:65px;height:88px}.pixel-preset{padding:5px;font-size:10px}.avatar-actions{flex-direction:column}}
+/* v1.2: large, explicit character selection targets and live confirmation */
+.pixel-preset{position:relative;min-height:145px;touch-action:manipulation;outline-offset:2px}
+.pixel-preset.active::before{content:'✓ 선택됨';position:absolute;top:7px;right:7px;background:#f0be77;color:#1b1b1c;font-size:10px;font-weight:900;padding:3px 5px;border-radius:5px;z-index:1}
+.pixel-preset:focus-visible,.swatch:focus-visible,.btn:focus-visible{outline:3px solid #f6cd88;outline-offset:3px}
+.swatch{width:39px;height:39px;touch-action:manipulation;position:relative}
+.swatch.active::after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000,0 0 5px #000;font-size:19px;font-weight:900}
+.selection-status{background:#23364a;border:1px solid #617990;color:#eff8ff;padding:12px 14px;border-radius:10px;line-height:1.8;font-size:12px;margin-top:14px}
+#avatarNumber{max-width:260px}
+@media(max-width:420px){.pixel-preset{min-height:118px}.swatch{width:35px;height:35px}}
+
+/* v1.3: final replay and international */
+.final-scoreboard{background:linear-gradient(145deg,#233754,#111d30);border:1px solid #466582;border-radius:17px;padding:18px;text-align:center}
+.final-score-line{display:flex;justify-content:space-around;gap:8px;align-items:center;margin-top:12px}
+.final-score-line>div{min-width:0;flex:1}.final-score-line strong{display:block;font-size:clamp(23px,5vw,36px);color:#fff}
+.final-score-line .score-name{display:block;font-size:12px;color:#b7d5e8;white-space:normal;overflow-wrap:anywhere}
+.final-score-line .dash{color:var(--gold);font-size:28px;font-weight:800;flex:0}
+.sim-court{height:160px;position:relative;border:2px solid #bb925c;border-radius:12px;background:repeating-linear-gradient(90deg,#255077,#255077 48px,#2a557c 48px,#2a557c 50px);margin:13px 0;overflow:hidden}
+.sim-court::before{content:'';position:absolute;inset:0;border-left:2px solid #d1b3866e;left:50%;width:1px}
+.sim-court::after{content:'';position:absolute;width:90px;height:90px;border:2px solid #d1b386a0;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
+.sim-hoop{position:absolute;top:45%;width:13px;height:25px;border:2px solid #f1ba74;border-radius:50%;z-index:1}.sim-hoop.left{left:9px}.sim-hoop.right{right:9px}
+.sim-pixel{position:absolute;width:13px;height:16px;border:2px solid #b6d6ff;border-radius:5px;background:#277bc9;box-shadow:0 3px 0 #163253;transition:transform .18s linear;z-index:2;left:25%;top:50%}.sim-pixel.red{background:#c64d65;border-color:#ffb0b9;left:75%}
+.sim-ball{position:absolute;width:12px;height:12px;left:50%;top:50%;border-radius:50%;background:#f4a44b;box-shadow:inset -3px -2px #9b572c;z-index:4;transition:left .18s,top .18s}
+.sim-feed{background:#0a1420;border:1px solid #2a3f58;border-radius:9px;padding:11px;height:70px;overflow:hidden;font-size:12px;color:#d2e4ee;line-height:1.7}
+.sim-controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.sim-controls .btn{flex:1}
+.intl-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.intl-big{font-size:22px;font-weight:900}
+@media(max-width:540px){.intl-list{grid-template-columns:repeat(3,minmax(0,1fr))}.final-score-line strong{font-size:26px}}
+
+/* v1.4 — high-contrast light interface; basketball court stays richly colored */
+:root{--bg:#f6f8fc;--panel:#fff;--panel2:#f1f5fa;--panel3:#e6edf5;--line:#dae2ed;--muted:#64748b;--text:#182434;--gold:#ac6a17;--teal:#136f70;--blue:#2563eb;--danger:#b42332;--green:#17804a}
+body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:var(--text)}
+.card,.card.flat,.create,.avatar-stage-preview{background:#fff;border-color:var(--line);box-shadow:0 8px 26px #18243a0a}
+.create{background:linear-gradient(140deg,#fff,#f9fbff)}
+.intro-copy>p,.hero p{color:#52637a}.highlight{color:#bb6a16}.eyebrow{color:#176f7c}
+.features span{color:#33445b;border-color:#d9e2ec;background:#fff}
+.field label{color:#384b65}.field input,.field select{background:#fff;color:#15253a;border-color:#cbd5e1}.field input:focus,.field select:focus{border-color:#2563eb;box-shadow:0 0 0 3px #93c5fd66}
+.btn{color:#fff;background:#2865c9;box-shadow:0 5px 13px #1c62b51f}.btn:hover:not(:disabled){background:#1e57b7}
+.btn.secondary{background:#f1f5fa;color:#243c5b;border-color:#d4dfea}.btn.ghost{background:#fff;color:#243c5b;border-color:#b7c6d8}.btn.danger{color:#a32032;background:#fff1f2;border-color:#fecdd3}
+.pill{background:#e8f4f4;color:#14666c}.pill.gold{background:#fff2d9;color:#995a0a}.pill.blue{background:#e8f0ff;color:#2259a8}.pill.red{background:#ffecef;color:#a92839}
+.top-header{border-color:#dbe4ef}.stage{background:#eaf0f8;color:#35475f}
+.side .nav{color:#64748b}.side .nav.active{color:#154f9b;background:#eaf2ff;border:1px solid #bcd5fa}.side .nav:hover:not(.active){background:#edf3fa;color:#163855}
+.side-divider{background:#d9e2ed}.side-footer{color:#708299}
+.hero{background:linear-gradient(112deg,#edf6ff,#e8f0ff 53%,#fff5e6);border-color:#d4e5f7}
+.hero::after,.hero::before{border-color:#c4a37a55}
+.avatar{background:#e0f0fa;border-color:#c3dbe8}
+.mini-box,.train-choice,.offer,.trophy{background:#f7f9fd;border-color:#dbe4ed}
+.train-choice.selected{background:#fff6e8;border-color:#ce8a38}.train-choice p{color:#65788d}
+.table-wrap{border-color:#dbe3ec}th{background:#ecf2fa;color:#4b5d72}td{border-color:#e6eaf1;color:#243c50}tr:hover td{background:#f3f8fe}td strong{color:#1d2939}
+.meter{background:#e2e9f1}.meter>i{background:linear-gradient(90deg,#2e9b98,#64c8c0)}
+.notice{background:#fff6e5;border-color:#efd5a9;color:#825310}
+.results-banner{background:linear-gradient(105deg,#fff1d8,#e8f2ff);border-color:#e7d6b5}.result-stat>div{background:#edf3fb}.result-stat span{color:#65758a}
+.result-tags span{background:#fff0d8;color:#8e5318}
+.empty{border-color:#cdd9e8;color:#718399}.line-chip{background:#eaf2fc;color:#395573}
+.selection-status{background:#eaf3ff;color:#1d457b;border-color:#b7d7fd}
+.pixel-showcase{background:radial-gradient(ellipse at center,#e9f6ff,#cee3f4 75%);border-color:#b8d4e5}
+.pixel-preset{background:#f2f7fc;color:#26374b;border-color:#d8e2ed}.pixel-preset:hover{background:#e5f0ff}.pixel-preset.active{background:#fff4df;color:#87520c;border-color:#e3a654}
+.final-scoreboard{background:linear-gradient(125deg,#e5efff,#f7fbff);border-color:#b8cde9}.final-score-line strong{color:#1a304c}.final-score-line .score-name{color:#4e6986}
+.sim-feed{background:#f0f5fa;color:#263e53;border-color:#d9e4f1}
+.toast{background:#fff;color:#20405f;border-color:#bed1e7;box-shadow:0 12px 30px #1b355526}
+.modal-back{background:#1a2b47a8}.modal{background:#fff;border-color:#dce6f1;box-shadow:0 20px 80px #23385244}
+.inbox-item{padding:16px;border:1px solid #e0e7ef;border-radius:13px;background:#fff;margin-top:12px}
+.inbox-item.inbox-unread{border-color:#89b9fa;background:#f1f7ff}
+.inbox-item strong{font-size:14px}.inbox-invite{background:#f0f6ff;border:1px solid #c9dff8;border-radius:14px;padding:19px;line-height:1.7}
+.inbox-invite p{font-size:13px;margin:0 0 10px}
+@media(max-width:900px){.side{background:#fff;border-color:#dce5ef}}
+@media(max-width:540px){.modal-actions{flex-wrap:wrap}.modal-actions .btn{flex:1 1 150px}.inbox-item .headline{align-items:flex-start}}
+
+/* v1.5 menu and update center */
+.main-menu-btn{border:1px solid #ced9e8;background:#fff;color:#263b55;border-radius:11px;padding:10px 15px;font-weight:850;font-size:13px;white-space:nowrap;cursor:pointer;box-shadow:0 2px 8px #29476b0e}
+.main-menu-btn:hover{background:#eff6ff;border-color:#97b8e8}
+.menu-dialog{max-width:600px;width:min(94vw,600px);max-height:90vh;overflow:auto}
+.menu-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.menu-heading h2{margin:3px 0 0;font-size:24px}
+.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+.menu-tile{display:flex;align-items:flex-start;flex-direction:column;gap:7px;padding:16px;text-align:left;border:1px solid #d9e4f0;border-radius:13px;background:#f8fbff;color:#1d3651;cursor:pointer;min-width:0}
+.menu-tile:hover{background:#ecf5ff;border-color:#94c0fb}
+.menu-tile .tile-icon{font-size:24px}.menu-tile strong{font-size:14px}.menu-tile small{font-size:11px;color:#5d738d;line-height:1.4}
+.menu-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid #e1e8f2;margin-top:12px;padding-top:13px}
+.update-row{border:1px solid #dfe7ef;border-radius:13px;background:#fff;padding:17px;margin-bottom:12px}
+.update-row.latest{background:#f0f6ff;border-color:#abc9f5}
+.update-row ul{margin:9px 0 0;padding-left:20px;color:#49627d;font-size:12px;line-height:1.85}
+.update-row .release-title{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.update-box{background:#f1f7ff;border:1px solid #c9dff8;border-radius:13px;padding:16px}
+.update-status{font-size:12px;color:#5a6f84;line-height:1.7;min-height:20px;margin-top:10px;white-space:normal}
+.update-status.ok{color:#136b47}.update-status.error{color:#a13a36}.update-status.available{color:#0b5cae;font-weight:800}
+.update-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+.update-banner{border:1px solid #a6cafa;background:#edf5ff;border-radius:12px;padding:15px;margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.switch-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750;color:#2d455d;cursor:pointer}.switch-label input{accent-color:#246bcb;width:17px;height:17px}
+.version-chip{color:#4b6788;font-size:11px;background:#edf4fb;padding:5px 8px;border-radius:7px}
+@media(max-width:540px){.menu-grid{grid-template-columns:1fr 1fr}.menu-tile{padding:12px}.top-header{gap:7px;flex-wrap:wrap;height:auto;min-height:76px;padding:11px 14px}.top-header>.brand{font-size:14px}.main-menu-btn{padding:9px 11px}}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
+<script>
+'use strict';
+const SAVE='road_to_goat_v1_2026';
+const GAME_VERSION='1.5.0';
+const UPDATE_CONFIG_KEY='road_to_goat_update_prefs';
+const RELEASE_NOTES=[
+ {version:'1.5.0',date:'2026-11-17',title:'게임 메뉴와 자동 업데이트 확인',items:['게임 메뉴 및 빠른 이동 화면 추가','업데이트 내역 페이지와 최신 버전 확인','웹 배포용 자동 업데이트 감지·적용 기능','기존 v1.4 저장 데이터 호환']},
+ {version:'1.4.0',date:'2026-11-17',title:'화이트 테마와 한글 구단명',items:['국가대표 소집 메시지와 참가·거절','밝은 화이트 테마','해외 구단 147개 한국어 표기']},
+ {version:'1.3.0',date:'2026-11-17',title:'시즌 누적 기록과 국제대회',items:['시즌 통산 득점·리바운드·어시스트','국제대회 및 국가대표','결승전 시뮬레이션과 다시 보기']},
+ {version:'1.2.0',date:'2026-11-17',title:'선택 기능 개선',items:['캐릭터·학교 선택 상태 표시 개선','선수 생성 안정성 개선']},
+ {version:'1.1.0',date:'2026-11-17',title:'픽셀 캐릭터와 학교 선택',items:['픽셀 캐릭터 외형 설정','고등학교 선택지 확대','시작 화면 수정']},
+ {version:'1.0.0',date:'2026-11-17',title:'첫 커리어 버전',items:['고1에서 시작하는 시즌 자동 진행','MVP·GOAT·이적·은퇴 기능']},
+];
+const countries=['대한민국','미국','캐나다','일본','중국','호주','프랑스','독일','스페인','이탈리아','튀르키예','그리스','세르비아','브라질','아르헨티나','필리핀','리투아니아','폴란드','영국','멕시코','대만','레바논','인도네시아','뉴질랜드','기타'];
+const leagues={
+'NBA':{country:'미국·캐나다',games:82,teams:['Boston Celtics','Los Angeles Lakers','Golden State Warriors','New York Knicks','Chicago Bulls','Miami Heat','Dallas Mavericks','San Antonio Spurs','Denver Nuggets','Oklahoma City Thunder','Cleveland Cavaliers','Milwaukee Bucks','Philadelphia 76ers','Phoenix Suns','Houston Rockets','Los Angeles Clippers','Minnesota Timberwolves','Orlando Magic','Indiana Pacers','Sacramento Kings','Atlanta Hawks','Brooklyn Nets','Detroit Pistons','Toronto Raptors','Memphis Grizzlies','New Orleans Pelicans','Portland Trail Blazers','Utah Jazz','Charlotte Hornets','Washington Wizards']},
+'NBA G League':{country:'미국',games:34,teams:['South Bay Lakers','Maine Celtics','Santa Cruz Warriors','Westchester Knicks','Austin Spurs','Sioux Falls Skyforce','Raptors 905','Delaware Blue Coats']},
+'KBL':{country:'대한민국',games:54,teams:['서울 SK 나이츠','서울 삼성 썬더스','안양 정관장 레드부스터스','수원 KT 소닉붐','창원 LG 세이커스','원주 DB 프로미','울산 현대모비스 피버스','대구 한국가스공사 페가수스','부산 KCC 이지스','고양 소노 스카이거너스']},
+'B.LEAGUE':{country:'일본',games:60,teams:['Alvark Tokyo','Chiba Jets','Utsunomiya Brex','Ryukyu Golden Kings','Sunrockers Shibuya','Shimane Susanoo Magic','Osaka Evessa']},
+'CBA':{country:'중국',games:42,teams:['Guangdong Southern Tigers','Liaoning Flying Leopards','Beijing Ducks','Shanghai Sharks','Zhejiang Golden Bulls','Xinjiang Flying Tigers']},
+'NBL (호주)':{country:'호주·뉴질랜드',games:28,teams:['Sydney Kings','Melbourne United','Perth Wildcats','Adelaide 36ers','New Zealand Breakers','Brisbane Bullets','Tasmania JackJumpers']},
+'ACB (스페인)':{country:'스페인',games:34,teams:['Real Madrid Baloncesto','FC Barcelona Bàsquet','Baskonia','Valencia Basket','Unicaja Málaga','Joventut Badalona']},
+'ÉLITE (프랑스)':{country:'프랑스',games:30,teams:['AS Monaco Basket','Paris Basketball','ASVEL Lyon-Villeurbanne','JL Bourg','Le Mans Sarthe Basket']},
+'BBL (독일)':{country:'독일',games:34,teams:['Bayern Munich Basketball','ALBA Berlin','Ratiopharm Ulm','Baskets Bonn','Würzburg Baskets']},
+'Serie A (이탈리아)':{country:'이탈리아',games:30,teams:['Olimpia Milano','Virtus Bologna','Reyer Venezia','Pallacanestro Brescia','Dinamo Sassari']},
+'BSL (튀르키예)':{country:'튀르키예',games:30,teams:['Fenerbahçe Beko','Anadolu Efes','Galatasaray Basketbol','Beşiktaş Basketbol','Türk Telekom Basketbol']},
+'GBL (그리스)':{country:'그리스',games:26,teams:['Olympiacos Basketball','Panathinaikos BC','AEK Athens BC','PAOK BC','Aris BC']},
+'LKL (리투아니아)':{country:'리투아니아',games:36,teams:['Žalgiris Kaunas','Rytas Vilnius','Lietkabelis','Neptūnas Klaipėda']},
+'KLS (세르비아)':{country:'세르비아',games:30,teams:['KK Vojvodina','KK Zlatibor','KK Sloboda Užice','KK Metalac']},
+'PLK (폴란드)':{country:'폴란드',games:30,teams:['Śląsk Wrocław','Legia Warszawa','Anwil Włocławek','Trefl Sopot']},
+'SLB (영국)':{country:'영국',games:30,teams:['London Lions','Leicester Riders','Newcastle Eagles','Sheffield Sharks']},
+'NBB (브라질)':{country:'브라질',games:34,teams:['Flamengo Basquete','Franca Basquete','Minas Tênis Clube','São Paulo FC Basquete','Bauru Basket']},
+'Liga Nacional (아르헨티나)':{country:'아르헨티나',games:38,teams:['Boca Juniors Basquet','Instituto Córdoba','Quimsa','Obras Sanitarias','Peñarol']},
+'PBA (필리핀)':{country:'필리핀',games:32,teams:['Barangay Ginebra San Miguel','San Miguel Beermen','TNT Tropang Giga','Magnolia Hotshots','Meralco Bolts']},
+'CEBL (캐나다)':{country:'캐나다',games:24,teams:['Edmonton Stingers','Niagara River Lions','Scarborough Shooting Stars','Vancouver Bandits']},
+'LNBP (멕시코)':{country:'멕시코',games:34,teams:['Fuerza Regia','Soles de Mexicali','Astros de Jalisco','Diablos Rojos']},
+'BSN (푸에르토리코)':{country:'푸에르토리코',games:36,teams:['Vaqueros de Bayamón','Capitanes de Arecibo','Cangrejeros de Santurce']},
+'TPBL (대만)':{country:'대만',games:36,teams:['New Taipei Kings','Taipei Taishin Mars','Kaohsiung Aquas','Taoyuan Taiwan Beer Leopards']},
+'IBL (인도네시아)':{country:'인도네시아',games:26,teams:['Pelita Jaya Jakarta','Satria Muda Pertamina','Prawira Harum Bandung']},
+'NZ NBL':{country:'뉴질랜드',games:24,teams:['Auckland Tuatara','Canterbury Rams','Wellington Saints','Otago Nuggets']},
+'College (미국)':{country:'미국',games:32,teams:['East Coast University','Pacific State University','Midwest College','Atlantic Tech University','Northern University']}
+};
+const TEAM_KO=Object.fromEntries(`Boston Celtics|보스턴 셀틱스
+Los Angeles Lakers|LA 레이커스
+Golden State Warriors|골든스테이트 워리어스
+New York Knicks|뉴욕 닉스
+Chicago Bulls|시카고 불스
+Miami Heat|마이애미 히트
+Dallas Mavericks|댈러스 매버릭스
+San Antonio Spurs|샌안토니오 스퍼스
+Denver Nuggets|덴버 너기츠
+Oklahoma City Thunder|오클라호마시티 썬더
+Cleveland Cavaliers|클리블랜드 캐벌리어스
+Milwaukee Bucks|밀워키 벅스
+Philadelphia 76ers|필라델피아 세븐티식서스
+Phoenix Suns|피닉스 선즈
+Houston Rockets|휴스턴 로키츠
+Los Angeles Clippers|LA 클리퍼스
+Minnesota Timberwolves|미네소타 팀버울브스
+Orlando Magic|올랜도 매직
+Indiana Pacers|인디애나 페이서스
+Sacramento Kings|새크라멘토 킹스
+Atlanta Hawks|애틀랜타 호크스
+Brooklyn Nets|브루클린 네츠
+Detroit Pistons|디트로이트 피스턴스
+Toronto Raptors|토론토 랩터스
+Memphis Grizzlies|멤피스 그리즐리스
+New Orleans Pelicans|뉴올리언스 펠리컨스
+Portland Trail Blazers|포틀랜드 트레일블레이저스
+Utah Jazz|유타 재즈
+Charlotte Hornets|샬럿 호네츠
+Washington Wizards|워싱턴 위저즈
+South Bay Lakers|사우스베이 레이커스
+Maine Celtics|메인 셀틱스
+Santa Cruz Warriors|산타크루즈 워리어스
+Westchester Knicks|웨스트체스터 닉스
+Austin Spurs|오스틴 스퍼스
+Sioux Falls Skyforce|수폴스 스카이포스
+Raptors 905|랩터스 905
+Delaware Blue Coats|델라웨어 블루코츠
+Alvark Tokyo|알바르크 도쿄
+Chiba Jets|지바 제츠
+Utsunomiya Brex|우쓰노미야 브렉스
+Ryukyu Golden Kings|류큐 골든킹스
+Sunrockers Shibuya|선로커스 시부야
+Shimane Susanoo Magic|시마네 스사노오 매직
+Osaka Evessa|오사카 에베사
+Guangdong Southern Tigers|광둥 서던타이거스
+Liaoning Flying Leopards|랴오닝 플라잉레퍼즈
+Beijing Ducks|베이징 덕스
+Shanghai Sharks|상하이 샤크스
+Zhejiang Golden Bulls|저장 골든불스
+Xinjiang Flying Tigers|신장 플라잉타이거스
+Sydney Kings|시드니 킹스
+Melbourne United|멜버른 유나이티드
+Perth Wildcats|퍼스 와일드캐츠
+Adelaide 36ers|애들레이드 서티식서스
+New Zealand Breakers|뉴질랜드 브레이커스
+Brisbane Bullets|브리즈번 불리츠
+Tasmania JackJumpers|태즈메이니아 잭점퍼스
+Real Madrid Baloncesto|레알 마드리드 농구단
+FC Barcelona Bàsquet|FC 바르셀로나 농구단
+Baskonia|바스코니아
+Valencia Basket|발렌시아 바스켓
+Unicaja Málaga|우니카하 말라가
+Joventut Badalona|호벤투트 바달로나
+AS Monaco Basket|AS 모나코 바스켓
+Paris Basketball|파리 바스켓볼
+ASVEL Lyon-Villeurbanne|ASVEL 리옹 빌뢰르반
+JL Bourg|JL 부르
+Le Mans Sarthe Basket|르망 사르트 바스켓
+Bayern Munich Basketball|바이에른 뮌헨 농구단
+ALBA Berlin|알바 베를린
+Ratiopharm Ulm|라티오팜 울름
+Baskets Bonn|바스케츠 본
+Würzburg Baskets|뷔르츠부르크 바스케츠
+Olimpia Milano|올림피아 밀라노
+Virtus Bologna|비르투스 볼로냐
+Reyer Venezia|레이어 베네치아
+Pallacanestro Brescia|브레시아 농구단
+Dinamo Sassari|디나모 사사리
+Fenerbahçe Beko|페네르바흐체 베코
+Anadolu Efes|아나돌루 에페스
+Galatasaray Basketbol|갈라타사라이 농구단
+Beşiktaş Basketbol|베식타시 농구단
+Türk Telekom Basketbol|튀르크 텔레콤 농구단
+Olympiacos Basketball|올림피아코스 농구단
+Panathinaikos BC|파나티나이코스
+AEK Athens BC|AEK 아테네
+PAOK BC|PAOK
+Aris BC|아리스
+Žalgiris Kaunas|잘기리스 카우나스
+Rytas Vilnius|리타스 빌뉴스
+Lietkabelis|리에트카벨리스
+Neptūnas Klaipėda|넵투나스 클라이페다
+KK Vojvodina|보이보디나
+KK Zlatibor|즐라티보르
+KK Sloboda Užice|슬로보다 우지체
+KK Metalac|메탈라츠
+Śląsk Wrocław|실롱스크 브로츠와프
+Legia Warszawa|레기아 바르샤바
+Anwil Włocławek|안빌 브워츠와베크
+Trefl Sopot|트레플 소포트
+London Lions|런던 라이언스
+Leicester Riders|레스터 라이더스
+Newcastle Eagles|뉴캐슬 이글스
+Sheffield Sharks|셰필드 샤크스
+Flamengo Basquete|플라멩구 농구단
+Franca Basquete|프랑카 농구단
+Minas Tênis Clube|미나스 테니스 클럽
+São Paulo FC Basquete|상파울루 농구단
+Bauru Basket|바우루 바스켓
+Boca Juniors Basquet|보카 주니어스 농구단
+Instituto Córdoba|인스티투토 코르도바
+Quimsa|킴사
+Obras Sanitarias|오브라스 사니타리아스
+Peñarol|페냐롤
+Barangay Ginebra San Miguel|바랑가이 히네브라 산미겔
+San Miguel Beermen|산미겔 비어맨
+TNT Tropang Giga|TNT 트로팡 기가
+Magnolia Hotshots|매그놀리아 핫샷츠
+Meralco Bolts|메랄코 볼츠
+Edmonton Stingers|에드먼턴 스팅어스
+Niagara River Lions|나이아가라 리버 라이언스
+Scarborough Shooting Stars|스카버러 슈팅 스타스
+Vancouver Bandits|밴쿠버 밴디츠
+Fuerza Regia|푸에르사 레히아
+Soles de Mexicali|솔레스 데 메히칼리
+Astros de Jalisco|아스트로스 데 할리스코
+Diablos Rojos|디아블로스 로호스
+Vaqueros de Bayamón|바야몬 바케로스
+Capitanes de Arecibo|아레시보 카피타네스
+Cangrejeros de Santurce|산투르세 캉그레헤로스
+New Taipei Kings|뉴타이베이 킹스
+Taipei Taishin Mars|타이베이 타이신 마스
+Kaohsiung Aquas|가오슝 아쿠아스
+Taoyuan Taiwan Beer Leopards|타오위안 타이완비어 레퍼즈
+Pelita Jaya Jakarta|펠리타 자야 자카르타
+Satria Muda Pertamina|사트리아 무다 페르타미나
+Prawira Harum Bandung|프라위라 하룸 반둥
+Auckland Tuatara|오클랜드 투아타라
+Canterbury Rams|캔터베리 램스
+Wellington Saints|웰링턴 세인츠
+Otago Nuggets|오타고 너기츠
+East Coast University|이스트코스트 대학교 (가상)
+Pacific State University|퍼시픽스테이트 대학교 (가상)
+Midwest College|미드웨스트 칼리지 (가상)
+Atlantic Tech University|애틀랜틱테크 대학교 (가상)
+Northern University|노던 대학교 (가상)`.trim().split('\n').map(line=>line.split('|')));
+const koTeam=name=>TEAM_KO[name]||name;
+const koText=value=>{let text=String(value??'');for(const [en,ko] of Object.entries(TEAM_KO).sort((a,b)=>b[0].length-a[0].length))text=text.split(en).join(ko);return text};
+const styleData={scorer:{name:'득점형',mods:{shoot:5,drive:5,pass:-3,defense:-3}},shooter:{name:'3점 슈터',mods:{shoot:8,drive:-2,pass:0,defense:-3}},play:{name:'플레이메이커',mods:{pass:8,iq:4,shoot:-2,defense:-2}},defense:{name:'수비형',mods:{defense:9,stamina:3,shoot:-2,drive:-3}},all:{name:'올라운더',mods:{shoot:2,drive:2,pass:2,defense:2,iq:2}},inside:{name:'인사이드형',mods:{rebound:9,defense:3,drive:4,shoot:-6}}};
+const attrs={shoot:'슈팅',drive:'돌파',pass:'패스',defense:'수비',rebound:'리바운드',stamina:'체력',iq:'농구 IQ',clutch:'클러치'};
+const focuses=[['shoot','슈팅 집중','득점과 3점 성공률 성장'],['drive','돌파 집중','골밑 득점과 공격 성장'],['pass','패스·운영','어시스트와 농구 IQ 성장'],['defense','수비 집중','수비와 스틸·블록 성장'],['rebound','리바운드','리바운드 능력 성장'],['stamina','체력·컨디션','체력과 출전 시간 성장'],['iq','농구 IQ','판단력과 꾸준한 경기력 성장'],['clutch','클러치','중요한 순간의 활약 성장']];
+// 2025-2026 public high school tournament entries. Not a license/affiliation.
+const schoolsByCountry={
+'대한민국':['용산고','경복고','휘문고','홍대부고','삼일고','송도고','제물포고','광신방송예술고','인헌고','명지고','배재고','양정고','안양고','낙생고','청주신흥고','무룡고','군산고','부산중앙고','동아고','강원사대부고','충주고','천안쌍용고','대전고','김해가야고','전주고','계성고','마산고','여수화양고','광주고','경북에너지기술고'],
+'미국':['Prolific Prep','Long Island Lutheran','SPIRE Academy','Link Academy','Montverde Academy','Southeastern Prep Academy','Brewster Academy','IMG Academy','AZ Compass Prep','Oak Hill Academy'],
+'일본':['후쿠오카 제1고','후쿠오카대 부속 오호리고','히가시야마고','카이시 국제고','도토리 조호쿠고','쓰치우라 일본대고','호쿠리쿠 가쿠인고','메이토쿠 기주쿠고','후지에다 메이세이고','교토 세이카 가쿠엔고'],
+'중국':['칭화대 부속중학(고등부)','베이징대 부속중학(고등부)','베이징 제4중학(고등부)','수도사범대 부속중학(고등부)','린하이 후이푸중학(고등부)']
+};
+const CUSTOM_SCHOOL='__CUSTOM_SCHOOL__';
+const SKIN_COLORS=['#f5cba7','#deb18a','#bb815f','#925c41','#603f32'];
+const HAIR_COLORS=['#20232d','#65452e','#aa7143','#d6aa5c','#e4e5e7','#8b3032'];
+const JERSEYS=[['네이비','#274b8d'],['레드','#bf374e'],['그린','#1b8c79'],['골드','#d6a33e'],['퍼플','#7046a8'],['블랙','#303948']];
+const PIXEL_STYLES=['스포츠컷','투블럭','가르마','곱슬머리','장발','스파이크'];
+
+const legendRanks=[['역대 전설 A',2480],['역대 전설 B',2340],['역대 전설 C',2150],['역대 전설 D',1930],['역대 전설 E',1770],['역대 전설 F',1570],['역대 전설 G',1410],['역대 전설 H',1240],['역대 전설 I',1090],['역대 전설 J',910]];
+const rnd=(a,b)=>a+Math.random()*(b-a);const irnd=(a,b)=>Math.floor(rnd(a,b+1));const chance=p=>Math.random()<p;const pick=a=>a[irnd(0,a.length-1)];const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));const one=n=>Math.round(n*10)/10;const fmt=n=>Number(n||0).toLocaleString('ko-KR');const esc=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const hash=s=>{let h=17;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)};
+let state=null,tab='home',busy=false,selectedCountry='대한민국',modalAction=null,draftPlayer=null,avatarConfig={preset:0,skin:0,hairColor:0,jersey:0,number:7};
+function save(){try{if(state)localStorage.setItem(SAVE,JSON.stringify(state))}catch(e){toast('저장 실패: 브라우저 저장 공간을 확인해 줘.')}}
+function ensureV13(s){
+ if(!s)return s;
+ s.inbox??=[];s.pendingIntl??=null;s.intlHistory??=[];s.intlTotals??={appearances:0,gold:0,silver:0,bronze:0};s.awards.national??=0;
+ for(const r of s.history||[]){
+  r.pts??=Math.round((r.ppg||0)*(r.games||0));r.reb??=Math.round((r.rpg||0)*(r.games||0));r.ast??=Math.round((r.apg||0)*(r.games||0));
+  r.steals??=Math.round((r.sp||0)*(r.games||0));r.blocks??=Math.round((r.bp||0)*(r.games||0));
+ }
+ if(s.last){let r=s.history.find(x=>x.year===s.last.year);if(r)s.last=r;else {s.last.pts??=Math.round((s.last.ppg||0)*s.last.games);s.last.reb??=Math.round((s.last.rpg||0)*s.last.games);s.last.ast??=Math.round((s.last.apg||0)*s.last.games)}}
+ return s;
+}
+function load(){try{const s=JSON.parse(localStorage.getItem(SAVE));if(s&&s.version===1&&s.player&&s.history&&s.awards)return ensureV13(s)}catch(e){}return null}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),3300)}
+function todayYear(){return 2027}
+function currentSchool(country){return schoolsByCountry[country]||[]}
+function initialStage(){return 'HIGH';}
+function stageLabel(s){return {HIGH:'고등학교',COLLEGE:'대학교',PRO:'프로',RETIRED:'은퇴'}[s.stage]||s.stage}
+function leagueName(s){return s.stage==='HIGH'?'고교 리그':s.stage==='COLLEGE'?'대학 리그':s.league}
+function getOvr(s){const a=Object.values(s.attrs);return Math.round(a.reduce((x,y)=>x+y,0)/a.length)}
+function goatScore(s){let a=s.awards;return Math.round(a.mvp*165+a.fmvp*190+a.rings*100+a.allstar*18+a.allnba*32+a.scoring*30+a.dpoy*44+a.world*22+a.rookie*25+a.national*35+(s.totals.nbaPts||0)/115+(s.totals.nbaAst||0)/90+(s.totals.nbaReb||0)/130)}
+function goatRank(s){return 1+legendRanks.filter(x=>x[1]>goatScore(s)).length}
+function level(s){const g=goatScore(s);if(g>=2480)return 'THE GOAT';if(g>=1900)return 'GOAT 후보';if(g>=1400)return '역대 TOP 10';if(g>=950)return 'NBA 레전드';if(g>=570)return '슈퍼스타';if(g>=250)return '올스타급';if(g>=60)return '프로 선수';return '유망주'}
+function formVal(form,name){const el=form.elements.namedItem(name);return el?String(el.value):''}
+function createPlayerFromForm(){
+ const form=document.getElementById('newForm');if(!form||!form.reportValidity())return;
+ const name=formVal(form,'player').trim();const nationality=formVal(form,'nationality');
+ const schoolCountry=formVal(form,'schoolCountry');const schoolChoice=formVal(form,'school');
+ const school=schoolChoice===CUSTOM_SCHOOL?formVal(form,'customSchool').trim():schoolChoice;
+ const pos=formVal(form,'position');const style=formVal(form,'style');const target=formVal(form,'target');
+ if(!name){toast('선수 이름을 입력해 줘.');return}
+ if(!school){toast('학교를 입력해 줘.');return}
+ if(!styleData[style]){toast('플레이 스타일을 다시 선택해 줘.');return}
+ draftPlayer={name,nationality,schoolCountry,school,pos,style,target,customSchool:schoolChoice===CUSTOM_SCHOOL};
+ renderAvatarSelection();
+}
+function finishCreatePlayer(){
+ if(!draftPlayer)return renderIntro();
+ const {name,nationality,schoolCountry,school,pos,style,target}=draftPlayer;
+ const base={shoot:58,drive:57,pass:56,defense:55,rebound:54,stamina:60,iq:57,clutch:55};
+ Object.entries(styleData[style].mods).forEach(([k,v])=>base[k]=clamp(base[k]+v,38,88));
+ const avatar={...avatarConfig};
+ state={version:1,player:{name,nationality,schoolCountry,position:pos,style,target,jersey:avatar.number,avatar},age:16,year:todayYear(),stage:'HIGH',school,team:school,league:'고교 리그',attrs:base,potential:irnd(90,98),focus:'shoot',fatigue:3,coach:48,contract:0,salary:0,role:'벤치',seasonsPlayed:0,collegeYears:0,history:[],last:null,events:[],market:{offers:[],required:false,kind:null,interest:[],tradeRequested:false},trophies:[],awards:{mvp:0,fmvp:0,rings:0,allstar:0,allnba:0,scoring:0,dpoy:0,rookie:0,world:0,national:0,highmvp:0,collegemvp:0,othermvp:0},totals:{nbaPts:0,nbaAst:0,nbaReb:0,nbaGames:0},inbox:[],pendingIntl:null,intlHistory:[],intlTotals:{appearances:0,gold:0,silver:0,bronze:0},retired:false,retireReason:''};
+ draftPlayer=null;save();tab='home';render();toast('고등학교 1학년 커리어가 시작됐어!')
+}
+
+function featureIcons(){return ['고1부터 시작','시즌 누적 스탯','국가대표 국제전','결승전 시뮬레이션','MVP 다관왕','45세 은퇴']}
+function renderIntro(restoreDraft=false){const names=Object.keys(leagues).filter(x=>x!=='College (미국)');document.getElementById('app').innerHTML=`<div class="intro"><div class="intro-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">BASKETBALL CAREER</span></div><button type="button" class="main-menu-btn" onclick="openGameMenu()">☰ 메뉴</button></div><main class="intro-layout"><section class="intro-copy"><div class="eyebrow">YOUR LEGACY STARTS NOW</div><h1>코트 위의 신인에서<br><span class="highlight">역대 최고의 선수</span>로.</h1><p>고등학교 1학년부터 커리어를 시작해, 한 시즌씩 자동 시뮬레이션하며 세계 각국의 프로 리그를 거쳐 NBA의 전설이 되어 보세요. 선수는 오직 당신 한 명입니다.</p><div class="features">${featureIcons().map(x=>`<span>✦ ${x}</span>`).join('')}</div><div class="card flat"><div class="eyebrow">CAREER ROADMAP</div><p class="desc" style="margin:9px 0 0">고1 → 고2 → 고3 → 대학/프로 → NBA → MVP 다관왕 → GOAT → 명예의 전당</p></div><div class="court-art"><div class="ball">🏀</div></div></section><section class="create"><div class="headline"><div><div class="eyebrow">NEW CAREER</div><h2 style="margin-top:6px">나만의 선수 만들기</h2></div><span class="pill gold">START · 고1</span></div><p class="desc" style="margin:0 0 14px">선수의 국적과 출신 학교를 고른 뒤 픽셀 캐릭터를 선택하세요.</p><form id="newForm" onsubmit="event.preventDefault();createPlayerFromForm()"><div class="field"><label for="newName">선수 이름</label><input id="newName" name="player" maxlength="26" required placeholder="예: KIM HYUN" autocomplete="off"></div><div class="grid two"><div class="field"><label>국적</label><select name="nationality">${countries.map(c=>`<option ${c==='대한민국'?'selected':''}>${c}</option>`).join('')}</select></div><div class="field"><label>고교 시작 국가</label><select name="schoolCountry" id="schoolCountry" onchange="updateSchools()">${countries.filter(x=>x!=='기타').map(c=>`<option ${c==='대한민국'?'selected':''}>${c}</option>`).join('')}</select></div></div><div class="grid two"><div class="field"><label>고등학교</label><select name="school" id="schoolSelect" onchange="updateCustomSchool()">${schoolOptions('대한민국')}</select><span id="schoolCount" class="smallnote">한국 고교 농구 대회 참가 학교 30곳 · 직접 입력 가능</span><input name="customSchool" id="customSchool" class="hidden" placeholder="학교 이름 직접 입력" maxlength="60"></div><div class="field"><label>포지션</label><select name="position"><option>PG</option><option>SG</option><option selected>SF</option><option>PF</option><option>C</option></select></div></div><div class="grid two"><div class="field"><label>플레이 스타일</label><select name="style">${Object.entries(styleData).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')}</select></div><div class="field"><label>관심 프로 리그</label><select name="target">${names.map(k=>`<option value="${esc(k)}" ${k==='NBA'?'selected':''}>${esc(k)}</option>`).join('')}</select></div></div><button class="btn wide" type="submit">다음: 픽셀 캐릭터 선택 →</button><div class="intro-footer">ROAD TO GOAT v${GAME_VERSION} · <button type="button" onclick="showReleaseNotesModal()" style="color:#1764a9;background:none;border:none;text-decoration:underline;cursor:pointer">업데이트 내역</button><div style="margin-top:7px">실제 학교·구단과의 공식 제휴가 없는 독립 제작 게임입니다.</div></div></form></section></main></div>`;
+ if(restoreDraft&&draftPlayer){const f=document.getElementById('newForm'),d=draftPlayer;
+ f.elements.namedItem('player').value=d.name;f.elements.namedItem('nationality').value=d.nationality;
+ f.elements.namedItem('schoolCountry').value=d.schoolCountry;updateSchools();
+ const currentSchools=currentSchool(d.schoolCountry);if(currentSchools.includes(d.school))f.elements.namedItem('school').value=d.school;
+ else{f.elements.namedItem('school').value=CUSTOM_SCHOOL;updateCustomSchool();f.elements.namedItem('customSchool').value=d.school;}
+ f.elements.namedItem('position').value=d.pos;f.elements.namedItem('style').value=d.style;f.elements.namedItem('target').value=d.target;
+ }
+}
+function schoolOptions(country){const list=currentSchool(country);return list.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')+`<option value="${CUSTOM_SCHOOL}">✎ 목록에 없음 — 학교 직접 입력</option>`}
+function updateSchools(){const c=document.getElementById('schoolCountry').value, list=currentSchool(c);document.getElementById('schoolSelect').innerHTML=schoolOptions(c);document.getElementById('schoolCount').textContent=list.length?`${c} 실제 농구 관련 학교 ${list.length}곳 · 직접 입력 가능`:`${c} 학교는 직접 입력해서 시작할 수 있어`;updateCustomSchool()}
+function updateCustomSchool(){const v=document.getElementById('schoolSelect').value,isCustom=v===CUSTOM_SCHOOL;const input=document.getElementById('customSchool');input.classList.toggle('hidden',!isCustom);input.required=isCustom}
+function renderAvatarSelection(){
+ const d=draftPlayer;if(!d)return renderIntro();
+ document.getElementById('app').innerHTML=`<div class="avatar-screen"><div class="intro-header"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">/ PIXEL CHARACTER</span></div></div><div class="avatar-stage-layout"><section class="card avatar-stage-preview"><span class="pill gold">STEP 2 / 2 · 선수 외형 선택</span><h1 style="font-size:32px;letter-spacing:-1px;margin:12px 0 5px">나만의 픽셀 선수</h1><p class="desc">${esc(d.name)} · ${esc(d.school)} · ${esc(d.pos)}</p><div class="pixel-showcase"><canvas id="mainPixelAvatar" width="40" height="54" aria-label="선택한 선수의 픽셀 캐릭터"></canvas></div><div class="avatar-preview-name">${esc(d.name.toUpperCase())}</div><div class="selection-status" id="avatarStatus" role="status" aria-live="polite">선택 항목을 불러오는 중…</div><p class="smallnote" style="text-align:center">캐릭터는 게임용 독창적인 픽셀 아트야. 실제 선수 사진은 사용하지 않아.</p></section><section class="card avatar-configuration"><div class="section-top"><h2 style="margin:0">캐릭터 고르기</h2><span class="pill blue">6가지 헤어스타일</span></div><div class="pixel-preset-grid">${PIXEL_STYLES.map((name,i)=>`<button type="button" class="pixel-preset ${avatarConfig.preset===i?'active':''}" data-choice="${i}" aria-pressed="${avatarConfig.preset===i}" onclick="pickPixelStyle(${i})"><canvas width="40" height="54" data-preset="${i}"></canvas><span>${name}</span></button>`).join('')}</div><div class="sep"></div><div class="field"><label>피부색</label><div class="swatch-row">${SKIN_COLORS.map((c,i)=>`<button type="button" class="swatch ${avatarConfig.skin===i?'active':''}" data-avatar-key="skin" data-index="${i}" aria-pressed="${avatarConfig.skin===i}" style="--swatch:${c}" title="피부색 ${i+1}" aria-label="피부색 ${i+1}" onclick="changeAvatar('skin',${i})"></button>`).join('')}</div></div><div class="field" style="margin-top:14px"><label>머리색</label><div class="swatch-row">${HAIR_COLORS.map((c,i)=>`<button type="button" class="swatch ${avatarConfig.hairColor===i?'active':''}" data-avatar-key="hairColor" data-index="${i}" aria-pressed="${avatarConfig.hairColor===i}" style="--swatch:${c}" title="머리색 ${i+1}" aria-label="머리색 ${i+1}" onclick="changeAvatar('hairColor',${i})"></button>`).join('')}</div></div><div class="field" style="margin-top:14px"><label>유니폼</label><div class="swatch-row">${JERSEYS.map(([label,c],i)=>`<button type="button" class="swatch ${avatarConfig.jersey===i?'active':''}" data-avatar-key="jersey" data-index="${i}" aria-pressed="${avatarConfig.jersey===i}" style="--swatch:${c}" title="${label}" aria-label="${label}" onclick="changeAvatar('jersey',${i})"></button>`).join('')}</div></div><div class="field" style="margin-top:14px"><label for="avatarNumber">등번호 (0~99)</label><input id="avatarNumber" type="number" min="0" max="99" step="1" value="${avatarConfig.number}" oninput="changeAvatarNumber(this.value)"></div><div class="avatar-actions"><button type="button" class="btn secondary" onclick="renderIntro(true)">← 뒤로</button><button type="button" class="btn" onclick="finishCreatePlayer()">▶ 선택 완료 · 고1 시작</button></div><p class="smallnote" style="margin-top:12px">항목을 누르면 왼쪽 캐릭터와 선택 표시가 즉시 바뀌어. HTML 파일은 다운로드한 뒤 크롬에서 열어 줘.</p></section></div></div>`;
+ drawAllAvatars();updateAvatarStatus();
+}
+function updateAvatarStatus(){
+ const el=document.getElementById('avatarStatus');if(!el)return;
+ el.innerHTML=`<strong>선택 완료:</strong> ${esc(PIXEL_STYLES[avatarConfig.preset])} · 피부색 ${avatarConfig.skin+1}번 · 머리색 ${avatarConfig.hairColor+1}번 · ${esc(JERSEYS[avatarConfig.jersey][0])} 유니폼 · 등번호 ${avatarConfig.number}`;
+}
+function pickPixelStyle(n){
+ if(!Number.isInteger(n)||n<0||n>=PIXEL_STYLES.length)return;
+ avatarConfig.preset=n;
+ document.querySelectorAll('.pixel-preset').forEach(el=>{const selected=Number(el.dataset.choice)===n;el.classList.toggle('active',selected);el.setAttribute('aria-pressed',String(selected))});
+ drawAllAvatars();updateAvatarStatus();
+}
+function changeAvatar(key,n){
+ const opts={skin:SKIN_COLORS,hairColor:HAIR_COLORS,jersey:JERSEYS};
+ if(!opts[key]||!Number.isInteger(n)||n<0||n>=opts[key].length)return;
+ avatarConfig[key]=n;
+ document.querySelectorAll('.swatch[data-avatar-key="'+key+'"]').forEach(el=>{const selected=Number(el.dataset.index)===n;el.classList.toggle('active',selected);el.setAttribute('aria-pressed',String(selected))});
+ drawAllAvatars();updateAvatarStatus();
+}
+function changeAvatarNumber(value){const n=Math.min(99,Math.max(0,Number(value)||0));avatarConfig.number=n;drawAllAvatars();updateAvatarStatus()}
+function shade(hex,factor){let x=hex.replace('#','');const r=clamp(Math.round(parseInt(x.slice(0,2),16)*factor),0,255),g=clamp(Math.round(parseInt(x.slice(2,4),16)*factor),0,255),b=clamp(Math.round(parseInt(x.slice(4,6),16)*factor),0,255);return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}
+function pixelDraw(canvas,config){
+ if(!canvas||!canvas.getContext)return;const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,40,54);
+ const px=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,y,w,h)};
+ const skin=SKIN_COLORS[config.skin??0]||SKIN_COLORS[0],hair=HAIR_COLORS[config.hairColor??0]||HAIR_COLORS[0],uni=(JERSEYS[config.jersey??0]||JERSEYS[0])[1];
+ const dark=shade(uni,.70), light=shade(uni,1.20),low=shade(skin,.82),preset=config.preset??0;
+ // pixel court shadow + shoes
+ px(9,51,22,2,'#17253b');px(8,48,10,3,'#d4e0f1');px(22,48,10,3,'#d4e0f1');px(10,49,8,2,'#1b2637');px(22,49,8,2,'#1b2637');
+ // socks and legs
+ px(12,41,6,8,skin);px(22,41,6,8,skin);px(12,45,6,3,'#f2f3ec');px(22,45,6,3,'#f2f3ec');
+ // shorts
+ px(10,34,20,10,dark);px(10,35,8,7,uni);px(22,35,8,7,uni);px(18,35,4,5,shade(uni,.6));px(10,34,20,2,light);
+ // arms
+ px(5,23,5,14,skin);px(30,23,5,14,skin);px(5,23,2,12,low);px(33,24,2,10,low);px(6,36,4,2,low);px(30,36,4,2,low);
+ // jersey
+ px(10,21,20,15,dark);px(12,21,16,13,uni);px(13,22,14,2,light);px(11,23,3,6,shade(uni,1.05));px(26,23,3,6,shade(uni,1.05));px(16,20,8,3,skin);
+ // neck + ears + face
+ px(16,18,8,4,low);px(11,9,18,12,skin);px(10,13,2,5,low);px(28,13,2,5,low);px(13,9,14,2,shade(skin,1.1));px(15,15,2,2,'#212c32');px(23,15,2,2,'#212c32');px(18,19,4,1,shade(skin,.6));
+ // six hair shapes
+ px(11,6,18,5,hair);
+ if(preset===0){px(10,9,20,3,hair);px(13,4,14,3,hair)}
+ if(preset===1){px(10,7,7,6,hair);px(16,4,13,5,hair);px(26,8,3,4,hair);px(17,8,10,2,shade(hair,1.12))}
+ if(preset===2){px(10,7,20,4,hair);px(10,10,7,3,hair);px(17,6,2,4,shade(hair,.58));px(19,5,10,3,hair)}
+ if(preset===3){[9,14,19,24].forEach((x,i)=>px(x,5+(i%2),7,6,hair));px(10,9,20,3,hair);px(12,3,5,4,hair)}
+ if(preset===4){px(10,6,20,6,hair);px(9,10,5,16,hair);px(27,10,5,16,hair);px(15,4,13,5,hair)}
+ if(preset===5){[10,15,20,25].forEach((x,i)=>{px(x,7-(i%2)*4,5,7,hair)});px(11,10,18,3,hair)}
+ // player number on chest
+ ctx.fillStyle='#ffffff';ctx.font='bold 7px monospace';ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(String(config.number??7),20,26);
+}
+function drawAllAvatars(){
+ const current=state?.player?.avatar||avatarConfig;
+ const main=document.getElementById('mainPixelAvatar');if(main)pixelDraw(main,avatarConfig);
+ document.querySelectorAll('canvas[data-preset]').forEach(el=>pixelDraw(el,{...avatarConfig,preset:Number(el.dataset.preset)}));
+ document.querySelectorAll('canvas[data-profile]').forEach(el=>pixelDraw(el,current));
+}
+
+// ----- Finals replay and national team competitions (game simulation rules) -----
+const intCountries=['대한민국','미국','캐나다','일본','중국','호주','프랑스','독일','스페인','이탈리아','튀르키예','그리스','세르비아','브라질','아르헨티나','필리핀','리투아니아','폴란드','영국','멕시코','대만','레바논','인도네시아','뉴질랜드'];
+function opponentFor(league,own){
+ const teams=league==='고교 리그'?(schoolsByCountry[state?.player?.schoolCountry]||schoolsByCountry['대한민국']):league==='대학 리그'?leagues['College (미국)'].teams:(leagues[league]?.teams||[]);
+ const arr=teams.filter(t=>t!==own);
+ if(arr.length)return pick(arr);
+ return own+' 라이벌팀';
+}
+function makeFinalSeries(ourTeam,opponent,ourPower,rivalPower,bestOf=1,title='결승전'){
+ const required=Math.ceil(bestOf/2),games=[];
+ let ourWins=0,oppWins=0, idx=0;
+ const advantage=clamp((ourPower-rivalPower)*.045,-1.8,1.8);
+ while(ourWins<required&&oppWins<required&&idx<bestOf){
+  idx++;let a=0,b=0,steps=[];
+  for(let q=1;q<=4;q++){
+   for(let t=0;t<9;t++){
+    const us=Math.max(0,Math.round(rnd(1.5,4.6)+advantage*.5)),them=Math.max(0,Math.round(rnd(1.5,4.6)-advantage*.5));
+    a+=us;b+=them;
+    steps.push({q,time:`${String(Math.floor((8-t)*10/8)).padStart(2,'0')}:${String(irnd(0,59)).padStart(2,'0')}`,a,b,lead:us>=them?'a':'b',comment:us>them?`${ourTeam} 공격이 성공하면서 흐름을 끌어옵니다!`:them>us?`${opponent}가 반격에 나섭니다!`:'양 팀이 치열하게 점수를 주고받습니다.'});
+   }
+  }
+  let ot=0;while(a===b&&ot<3){ot++;for(let t=0;t<4;t++){const us=irnd(1,3),them=irnd(0,3);a+=us;b+=them;steps.push({q:'OT'+ot,time:`0${3-t}:00`,a,b,lead:us>=them?'a':'b',comment:'연장전! 마지막까지 승부를 알 수 없습니다.'})}}
+  if(a===b){a++;steps.push({q:'OT',time:'00:01',a,b,lead:'a',comment:'종료 직전 결승 득점!'})}
+  if(a>b)ourWins++;else oppWins++;
+  games.push({game:idx,our:a,opp:b,win:a>b,seriesA:ourWins,seriesB:oppWins,steps});
+ }
+ return {title,ourTeam,opponent,bestOf,ourWins,oppWins,champion:ourWins>oppWins,games};
+}
+function intlCompetitionFor(year,age){
+ if(age<19)return (year%2===1)?(age<=17?'U17 국가대표 국제대회 (게임)':'U19 국가대표 국제대회 (게임)'):null;
+ if(year%4===3)return 'FIBA 농구 월드컵 (게임 일정)';
+ if(year%4===0)return '올림픽 농구 (게임 일정)';
+ if(year%4===1)return '대륙별 국가대표 선수권 (게임)';
+ return null;
+}
+function simulateInternational(s,r,confirmed=false){
+ const name=intlCompetitionFor(r.year,r.age);if(!name)return null;
+ const strength=getOvr(s),eligible=clamp(.12+(strength-60)*.022,.1,.92);
+ const report={year:r.year,competition:name,country:s.player.nationality,selected:false,finish:'미선발',group:'–',medal:'없음',final:null,stats:null};
+ if(!confirmed)return report;
+ report.selected=true;report.accepted=true;s.intlTotals.appearances++;
+ const pool=intCountries.filter(c=>c!==report.country),teamPow=clamp(62+(strength-70)*.45,52,91);
+ let w=0,l=0;
+ for(let i=0;i<3;i++){const opp=pick(pool),prob=clamp(.51+(teamPow-(66+hash(opp)%21))*.012,.2,.82);if(chance(prob))w++;else l++}
+ report.group=`${w}승 ${l}패`;
+ const pg=Math.max(2,Math.round((r.ppg||10)*rnd(.72,1.12))),rp=Math.max(1,Math.round((r.rpg||4)*rnd(.7,1.18))),ap=Math.max(1,Math.round((r.apg||3)*rnd(.7,1.18)));
+ report.stats={ppg:pg,rpg:rp,apg:ap};
+ if(w===0){report.finish='조별리그 탈락';return report}
+ const baseProb=clamp(.44+(teamPow-75)*.021,.18,.78);
+ if(!chance(baseProb)){report.finish='8강 탈락';return report}
+ if(!chance(baseProb)){report.finish='4강 탈락';if(chance(.43)){report.medal='동메달';s.intlTotals.bronze++}return report}
+ const rival=pick(pool);
+ report.final=makeFinalSeries(report.country,rival,teamPow,64+hash(rival)%24,1,name+' 결승');
+ if(report.final.champion){report.finish='국제대회 우승';report.medal='금메달';s.intlTotals.gold++;s.awards.national++;r.earned.push(name+' 금메달')}
+ else{report.finish='준우승';report.medal='은메달';s.intlTotals.silver++;r.earned.push(name+' 은메달')}
+ return report;
+}
+let replayTimer=null,replayQueue=[],replaySeries=null,replayGame=0,replayStep=0,replaySpeed=1,replayAfter=null;
+function stopReplay(){if(replayTimer){clearInterval(replayTimer);replayTimer=null}}
+function replayFinal(year,type='club'){
+ const r=state?.history.find(x=>x.year===year);if(!r)return;
+ const series=type==='intl'?r.international?.final:r.final;
+ if(!series){toast('이 시즌에 관전할 결승전이 없어.');return}
+ startReplayQueue([series],null);
+}
+function startReplayQueue(list,callback){
+ stopReplay();replayQueue=list.filter(Boolean);replayAfter=callback;replaySpeed=1;
+ if(!replayQueue.length){if(callback)callback();return}
+ startReplaySeries();
+}
+function startReplaySeries(){replaySeries=replayQueue.shift();replayGame=0;replayStep=0;
+ document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal" role="dialog" aria-modal="true" style="max-width:700px"><div class="eyebrow">LIVE FINALS SIMULATION</div><h2>${esc(replaySeries.title)}</h2><div class="final-scoreboard"><span class="pill gold" id="replayPhase">결승전 시작</span><div class="final-score-line"><div><span class="score-name">${esc(koTeam(replaySeries.ourTeam))}</span><strong id="simOur">0</strong></div><div class="dash">:</div><div><span class="score-name">${esc(koTeam(replaySeries.opponent))}</span><strong id="simOpp">0</strong></div></div><div class="smallnote" id="simSeries">시리즈 0 : 0</div></div><div class="sim-court"><span class="sim-hoop left"></span><span class="sim-hoop right"></span><span id="simPlayerA" class="sim-pixel"></span><span id="simPlayerB" class="sim-pixel red"></span><span id="simBall" class="sim-ball"></span></div><div class="sim-feed" id="simFeed" aria-live="polite">경기가 시작됩니다. 공수 전환을 관전하세요!</div><div class="sim-controls"><button class="btn secondary small" id="simSpeed" onclick="changeReplaySpeed()">속도: 1배</button><button class="btn small" onclick="skipReplaySeries()">⏩ 결승 결과 바로 보기</button></div></div></div>`;
+ scheduleReplay();
+}
+function scheduleReplay(){stopReplay();replayTimer=setInterval(replayTick,Math.max(40,310/replaySpeed))}
+function changeReplaySpeed(){replaySpeed=replaySpeed===1?3:replaySpeed===3?8:1;const b=document.getElementById('simSpeed');if(b)b.textContent=`속도: ${replaySpeed}배`;scheduleReplay()}
+function replayTick(){
+ const game=replaySeries?.games?.[replayGame];if(!game)return finishReplaySeries();
+ const frame=game.steps[replayStep++];
+ if(frame){
+  const stamp=typeof frame.q==='number'?`${frame.q}쿼터`:`${frame.q}`;
+  document.getElementById('replayPhase').textContent=`GAME ${game.game} · ${stamp} · ${frame.time}`;
+  document.getElementById('simOur').textContent=frame.a;document.getElementById('simOpp').textContent=frame.b;
+  document.getElementById('simFeed').textContent=koText(frame.comment);
+  const n=replayStep;
+  document.getElementById('simPlayerA').style.transform=`translate(${Math.sin(n)*23}px,${Math.cos(n)*26}px)`;
+  document.getElementById('simPlayerB').style.transform=`translate(${Math.cos(n)*-25}px,${Math.sin(n)*28}px)`;
+  document.getElementById('simBall').style.left=frame.lead==='a'?'33%':'67%';
+  document.getElementById('simBall').style.top=`${38+(n%5)*6}%`;
+ }else{
+  document.getElementById('simFeed').textContent=`${game.game}차전 종료! ${game.our} : ${game.opp} · ${koTeam(game.win?replaySeries.ourTeam:replaySeries.opponent)} 승리`;
+  document.getElementById('simSeries').textContent=`시리즈 ${game.seriesA} : ${game.seriesB}`;
+  replayGame++;replayStep=0;
+  if(replayGame>=replaySeries.games.length)finishReplaySeries();
+ }
+}
+function skipReplaySeries(){stopReplay();finishReplaySeries()}
+function finishReplaySeries(){
+ stopReplay();const ser=replaySeries;
+ if(!ser)return;
+ const last=ser.games[ser.games.length-1];
+ document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal"><span class="pill gold">🏆 결승 종료</span><h2 style="margin-top:12px">${esc(ser.title)}</h2><div class="results-banner"><div class="headline"><strong>${esc(koTeam(ser.ourTeam))}</strong><strong>${esc(koTeam(ser.opponent))}</strong></div><div class="final-score-line"><div><strong>${last.our}</strong></div><span class="dash">:</span><div><strong>${last.opp}</strong></div></div><p class="desc" style="text-align:center;margin-bottom:0">시리즈 ${ser.ourWins} : ${ser.oppWins} · ${ser.champion?'🏆 우승!':'준우승'}</p></div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>경기</th><th>우리 팀</th><th>상대 팀</th><th>결과</th></tr></thead><tbody>${ser.games.map(g=>`<tr><td>${g.game}차전</td><td>${g.our}</td><td>${g.opp}</td><td>${g.win?'승':'패'}</td></tr>`).join('')}</tbody></table></div><div class="modal-actions"><button class="btn" onclick="continueReplay()">${replayQueue.length?'다음 결승 보기':'결과 확인'}</button></div></div></div>`;
+}
+function continueReplay(){
+ if(replayQueue.length){startReplaySeries();return}
+ document.getElementById('modalRoot').innerHTML='';
+ const cb=replayAfter;replayAfter=null;replaySeries=null;
+ if(cb)cb();
+}
+function international(s){
+ const intl=s.intlTotals||{appearances:0,gold:0,silver:0,bronze:0};
+ return `${panelTitle('국가대표 · 국제대회',`<span class="pill">${esc(s.player.nationality)} 국가대표</span>`)}<div class="hero" style="min-height:155px"><div class="hero-content"><div class="eyebrow">INTERNATIONAL CAREER</div><h2>${esc(s.player.nationality)}</h2><p>고교 연령별 대표팀부터 성인 월드컵·올림픽·대륙별 대회까지 도전해. 국가대표 선발은 능력치와 경기력에 따라 달라져.</p></div></div><div class="intl-list" style="margin-bottom:15px"><div class="card"><div class="label">국가대표 참가 대회</div><div class="intl-big">${intl.appearances}</div></div><div class="card"><div class="label">금메달</div><div class="intl-big">🥇 ${intl.gold}</div></div><div class="card"><div class="label">은·동메달</div><div class="intl-big">${intl.silver} / ${intl.bronze}</div></div></div><div class="card"><h3>국제대회 연혁</h3>${(s.intlHistory||[]).length?`<div class="table-wrap"><table><thead><tr><th>연도</th><th>대회</th><th>국가대표</th><th>조별 성적</th><th>최종 결과</th><th>결승 관전</th></tr></thead><tbody>${[...s.intlHistory].reverse().map(x=>`<tr><td>${x.year}</td><td>${esc(x.competition)}</td><td>${esc(x.country)}</td><td>${esc(x.group)}</td><td>${esc(x.finish)} ${x.medal!=='없음'?x.medal:''}</td><td>${x.final?`<button class="btn secondary small" onclick="replayFinal(${x.year},'intl')">▶ 관전</button>`:'–'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">국제대회 시즌이 되면 국가대표 선발과 결과가 여기에 기록돼.</div>'}</div><p class="footer-note">국제전 일정·선발·대진은 게임용 간소화 규칙이야. 실제 FIBA 출전권과 예선, 본선 일정과 다를 수 있어.</p>`;
+}
+function messages(s){
+ const count=s.inbox.filter(m=>m.status==='pending').length;
+ return `${panelTitle('받은 메시지',`<span class="pill ${count?'gold':''}">${count}건 답변 대기</span>`)}<div class="card"><h3>📨 국가대표 소집 및 선수 알림</h3><p class="desc">국가대표에서 참가 제안을 보내면 이곳에 메시지가 도착해. 직접 수락하거나 거절할 수 있어.</p>${s.inbox.length?s.inbox.map(m=>`<div class="inbox-item ${m.status==='pending'?'inbox-unread':''}"><div class="headline"><strong>🌐 ${esc(m.title)}</strong><span class="pill ${m.status==='pending'?'gold':''}">${m.status==='pending'?'답변 필요':m.status==='accepted'?'참가 수락':'참가 거절'}</span></div><div class="label" style="margin:8px 0">${m.year}년 · ${esc(m.competition)}</div><p class="desc">${esc(m.text)}</p>${m.status==='pending'?`<button class="btn small" onclick="showInternationalInvite()">메시지 열기 · 참가 여부 결정</button>`:''}</div>`).join(''):'<div class="empty">현재 도착한 메시지가 없어. 시즌을 진행하면 국가대표 소집 제안이 도착할 수 있어.</div>'}</div>`;
+}
+function showInternationalInvite(){
+ const inv=state?.pendingIntl;if(!inv)return;
+ document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="nationalTitle"><span class="pill blue">📨 새 메시지 · 국가대표팀</span><h2 id="nationalTitle" style="margin-top:13px">국가대표 소집 제안이 도착했어!</h2><div class="inbox-invite"><div class="eyebrow">NATIONAL TEAM INVITATION</div><h3 style="margin:10px 0 5px">${esc(inv.country)} 국가대표팀</h3><p class="desc">${esc(inv.competition)}</p><p>대표팀 감독이 이번 대회에 출전해 달라고 요청했어.<br>국제대회에 <strong>참가할지 직접 선택</strong>해 줘.</p></div><div class="modal-actions"><button class="btn ghost" onclick="answerInternationalInvite(false)">이번 대회 거절</button><button class="btn" onclick="answerInternationalInvite(true)">✓ 국가대표 참가 수락</button></div><p class="smallnote" style="margin-top:10px">거절하면 해당 대회는 출전하지 않으며, 다음 소집 기회에는 다시 선택할 수 있어.</p></div></div>`;
+}
+function answerInternationalInvite(accept){
+ if(!state?.pendingIntl)return;
+ const inv=state.pendingIntl,s=state,r=s.history.find(x=>x.year===inv.year);
+ if(!r)return;
+ const response=accept?simulateInternational(s,r,true):{year:inv.year,competition:inv.competition,country:inv.country,selected:true,accepted:false,finish:'참가 거절',group:'–',medal:'없음',final:null,stats:null};
+ r.international=response;
+ const idx=s.intlHistory.findIndex(x=>x.year===inv.year);
+ if(idx>=0)s.intlHistory[idx]=response;else s.intlHistory.push(response);
+ const msg=s.inbox.find(m=>m.id==='national-'+inv.year);
+ if(msg)msg.status=accept?'accepted':'declined';
+ s.events.unshift({year:inv.year,text:accept?`${inv.competition} 국가대표 참가 수락`:`${inv.competition} 국가대표 참가 거절`});
+ s.pendingIntl=null;save();tab='messages';render();document.getElementById('modalRoot').innerHTML='';
+ if(accept&&response.final)startReplayQueue([response.final],()=>seasonResultModal(r));
+ else seasonResultModal(r);
+}
+const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
+function render(){if(!state)return renderIntro();let s=state;document.getElementById('app').innerHTML=`<header class="top-header"><div class="brand"><span class="brandmark">🏀</span><div>ROAD TO GOAT <span class="sub">/ MY CAREER</span></div></div><div style="display:flex;align-items:center;gap:9px"><span class="pill gold">${s.retired?'은퇴 완료':`${s.year} 시즌`}</span><span class="stage">${esc(stageLabel(s))} · ${s.age}세</span><button class="main-menu-btn" onclick="openGameMenu()">☰ 메뉴</button></div></header><div class="layout"><aside class="side">${navItems.map(([id,icon,label])=>`<button class="nav ${tab===id?'active':''}" onclick="switchTab('${id}')"><span>${icon}</span>${label}${id==='market'&&s.market.required?' ●':''}${id==='messages'&&s.pendingIntl?' ●':''}</button>`).join('')}<div class="side-divider"></div><div class="side-footer">독립 제작 게임 데모 v${GAME_VERSION}<br>진행 상황 자동 저장</div></aside><main class="content" id="pageContent"></main></div>`;renderTab()}
+function switchTab(t){tab=t;render()}
+function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();}
+function panelTitle(t,right=''){return `<div class="view-title"><div><div class="eyebrow">ROAD TO GOAT · CAREER</div><h2 style="margin-top:7px">${t}</h2></div>${right}</div>`}
+function statbox(k,v,sub=''){return `<div class="card stat"><div class="label">${k}</div><div class="value">${v}</div><div class="smallnote">${sub}</div></div>`}
+function attrsCard(s){return `<div class="card"><div class="section-top"><h3>선수 능력치</h3><span class="pill">POT ${s.potential}</span></div>${Object.entries(s.attrs).map(([k,v])=>`<div class="attr-row"><span class="muted">${attrs[k]}</span><div class="meter"><i style="width:${v}%"></i></div><b>${v}</b></div>`).join('')}</div>`}
+function pendingBox(s){if(s.pendingIntl)return `<div class="notice">📨 ${esc(s.pendingIntl.competition)} 국가대표 소집 제안이 도착했어! <button class="btn small" onclick="showInternationalInvite()">참가 여부 선택</button></div>`;if(!s.market.required)return '';const message=s.market.kind==='graduate'?'고등학교를 졸업했어! 대학 또는 프로 진로를 선택해야 다음 시즌이 진행돼.':s.market.kind==='collegeEnd'?'대학을 마쳤어! 프로 구단을 선택해.':'계약이 만료됐어. 계약을 체결해야 다음 시즌으로 진행할 수 있어.';return `<div class="notice">⚠️ ${message} <button class="btn small" style="margin-left:10px" onclick="switchTab('market')">제안 확인 →</button></div>`}
+function home(s){const last=s.last;const ring=s.awards.rings;return `${updateBanner()}${panelTitle('커리어 대시보드',`<span class="pill">GOAT ${goatRank(s)}위</span>`)}<section class="hero"><div class="hero-content"><div class="eyebrow">${s.retired?'CAREER COMPLETE':s.stage==='HIGH'?'HIGH SCHOOL HOOPS':s.stage==='COLLEGE'?'COLLEGE ROAD':'PROFESSIONAL CAREER'}</div><h2>${esc(s.player.name)}</h2><div style="display:flex;align-items:center;gap:12px"><div class="avatar"><canvas width="40" height="54" data-profile="player" aria-label="내 선수 픽셀 캐릭터"></canvas></div><div><div style="font-weight:800;font-size:15px">${esc(koTeam(s.team))}</div><div class="desc">${esc(s.player.nationality)} · ${esc(s.player.position)} · ${s.age}세 · ${esc(stageLabel(s))}</div><span class="pill gold">${level(s)}</span></div></div><div class="hero-bottom">${s.retired?`<span class="pill gold">${esc(s.retireReason)}</span>`:`<button id="simulateButton" class="btn" onclick="nextSeason()" ${s.market.required?'disabled title="이적/진로 결정 필요"':''}>⏭ ${s.year} 시즌 자동 진행</button><button class="btn secondary" onclick="switchTab('training')">훈련 설정</button>`}${!s.retired?`<button class="btn ghost" onclick="switchTab('market')">이적·계약</button>`:''}</div></div></section>${pendingBox(s)}<div class="grid four" style="margin:16px 0">${statbox('종합 능력치',getOvr(s)+' OVR','잠재력 '+s.potential)}${statbox('NBA MVP',s.awards.mvp+'회','정규 시즌 MVP')}${statbox('파이널 MVP',s.awards.fmvp+'회','NBA 결승 MVP')}${statbox('NBA 우승',ring+'회','챔피언 반지')}</div><div class="grid two"><div>${last?`<div class="card" style="margin-bottom:15px"><div class="section-top"><h3>지난 시즌 성적 · ${last.year}</h3><span class="pill blue">${esc(last.league)}</span></div><div class="result-stat"><div><strong>${fmt(last.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(last.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(last.ast)}</strong><span>총 어시스트</span></div><div><strong>${fmt(last.steals)}</strong><span>총 스틸</span></div></div><p class="smallnote" style="margin:8px 0 0">${last.games}경기 출전 · 경기당 평균 ${last.ppg}점 / ${last.rpg}리바운드 / ${last.apg}어시스트</p><div class="sep"></div><div class="desc">${esc(last.team)} · 팀 ${last.wins}승 ${last.losses}패 · ${esc(last.playoff)}</div>${last.earned.length?`<div class="result-tags">${last.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:''}<div style="margin-top:13px"><button class="btn secondary small" onclick="switchTab('history')">전체 시즌 기록 확인 →</button></div></div>`:''}<div class="card"><div class="section-top"><h3>다음 시즌 계획</h3><span class="pill">${s.focus==='shoot'?'슈팅':attrs[s.focus]} 집중</span></div><p class="desc">훈련 방향을 선택하면 다음 시즌 동안 해당 능력치 성장이 빨라져. 다른 구단의 계약 제안 및 NBA 트레이드도 발생할 수 있어.</p><div class="mini-grid"><div class="mini-box"><span class="label">선수 역할</span><strong>${s.role}</strong></div><div class="mini-box"><span class="label">계약 잔여</span><strong>${s.stage==='PRO'?s.contract+'년':'해당 없음'}</strong></div></div></div></div><div>${attrsCard(s)}</div></div><div class="footer-note">시즌 결과와 시상은 이 게임의 자체 확률 엔진으로 생성됩니다. 실제 구단의 현재 명단·계약·리그 규정과는 차이가 있을 수 있습니다.</div>`}
+function training(s){return `${panelTitle('훈련 및 성장',`<span class="pill gold">현재 OVR ${getOvr(s)}</span>`)}<div class="grid two"><div class="card"><h3>다음 시즌 집중 훈련</h3><p class="desc">시즌 시작 전에 한 가지 능력치를 선택해. 한 시즌이 자동 진행되면서 훈련과 경기 경험이 함께 반영돼.</p><div class="train-select">${focuses.map(([id,name,desc])=>`<label class="train-choice ${s.focus===id?'selected':''}"><input type="radio" name="focus" value="${id}" ${s.focus===id?'checked':''} onchange="setFocus('${id}')"><span><strong>${name}</strong><p>${desc}</p></span></label>`).join('')}</div></div>${attrsCard(s)}</div><p class="footer-note">성장량은 나이, 잠재력, 출전 환경 및 확률에 따라 달라집니다. 30대 이후에는 신체 능력 감소가 발생할 수 있어요.</p>`}
+function setFocus(f){state.focus=f;save();render();toast('다음 시즌 훈련 방향이 변경됐어.')}
+function roleFromOvr(ovr,league){const offset=league==='NBA'?8:league==='NBA G League'?2:0;return ovr>=82+offset?'에이스':ovr>=69+offset?'주전':ovr>=61+offset?'로테이션':'벤치'}
+function teamPower(team){return 67+(hash(team)%22)}
+function offersFor(s,kind){const arr=[];const ovr=getOvr(s);let pool;
+if(kind==='graduate'||kind==='collegeEnd'){pool=ovr>=76?['NBA G League','NBA','KBL','B.LEAGUE','ACB (스페인)','NBL (호주)','BBL (독일)']:['NBA G League','KBL','B.LEAGUE','CBA','NBL (호주)','ÉLITE (프랑스)','PLK (폴란드)'];}
+else{pool=ovr>83?['NBA','NBA','NBA G League','ACB (스페인)','B.LEAGUE','KBL']:ovr>71?['NBA G League','NBA','KBL','B.LEAGUE','ACB (스페인)','BBL (독일)','NBL (호주)']:['NBA G League','KBL','B.LEAGUE','CBA','NBL (호주)','PBA (필리핀)','NBB (브라질)'];}
+if(s.player.target&&leagues[s.player.target]&&!pool.includes(s.player.target))pool.unshift(s.player.target);
+const pushOffer=(league,team)=>{let already=arr.some(x=>x.league===league&&x.team===team);if(already)return;const nba=league==='NBA';const salBase=nba?1800000:league==='NBA G League'?50000:150000;const salary=Math.round(salBase*(0.5+Math.max(0,ovr-55)/(nba?13:26))*(0.75+rnd(0,.5))/1000)*1000;arr.push({id:'o'+irnd(100000,999999),league,team,years:irnd(1,nba?4:3),salary,role:roleFromOvr(ovr,league),power:teamPower(team)})};
+if(kind==='graduate' || kind==='collegeEnd'){
+arr.push({id:'c1',league:'College (미국)',team:'East Coast University',years:4,salary:0,role:roleFromOvr(ovr,'college'),power:74});arr.push({id:'c2',league:'College (미국)',team:'Pacific State University',years:4,salary:0,role:roleFromOvr(ovr,'college'),power:76});
+}
+let attempts=0;while(arr.length<(kind==='graduate'||kind==='collegeEnd'?6:4)&&attempts++<70){const league=pick(pool);if(league==='NBA'&&ovr<75)continue;const team=pick(leagues[league].teams);pushOffer(league,team)}
+if(kind==='fa'&&s.stage==='PRO'&&!arr.some(x=>x.team===s.team&&x.league===s.league))pushOffer(s.league,s.team);
+return arr.sort((a,b)=>b.power-a.power)}
+function market(s){let note=s.market.kind==='graduate'?'고교 졸업! 대학 또는 프로 진출을 선택해.':s.market.kind==='collegeEnd'?'대학 커리어를 마쳤어. 프로 계약을 선택해.':s.market.required?'FA 계약이 만료됐어. 다음 팀을 선택해야 해.':'시즌이 끝나면 선수 가치에 따라 계약 제안이나 트레이드가 발생해.';
+return `${panelTitle('계약 · 이적 · 트레이드',`<span class="pill ${s.market.required?'gold':''}">${s.market.required?'결정 필요':'커리어 이동'}</span>`)}<div class="card" style="margin-bottom:16px"><div class="headline"><div><div class="label">현재 소속</div><h2 style="margin:7px 0">${esc(koTeam(s.team))}</h2><div class="desc">${esc(leagueName(s))} · ${esc(s.role)} · ${s.age}세</div></div><div style="text-align:right"><div class="label">남은 계약</div><div class="value">${s.stage==='PRO'?s.contract+'년':'–'}</div><div class="smallnote">연봉 ${s.stage==='PRO'?'$'+fmt(s.salary):'–'}</div></div></div></div><div class="notice" style="margin-bottom:16px">${note}</div><div class="card"><div class="section-top"><h3>받은 제안 ${s.market.offers.length}건</h3><span class="pill">${s.market.required?'선택 필수':'스카우트 제의'}</span></div>${s.market.offers.length?s.market.offers.map(x=>`<div class="offer"><div><strong>${esc(koTeam(x.team))}</strong><div class="desc">${esc(x.league)} · ${x.role} · ${x.years}년 계약</div><div class="desc">${x.salary?'연봉 $'+fmt(x.salary):'대학 진학'} · 구단 전력 ${x.power}/100</div></div><div class="actions"><button class="btn small" onclick="signOffer('${x.id}')">${x.league==='College (미국)'?'진학':'계약'}</button></div></div>`).join(''):`<div class="empty"><div class="big">📭</div>현재 도착한 제안이 없습니다.<br>시즌이 끝나면 계약 상황에 따라 제안이 생성됩니다.</div>`}</div>${s.stage==='PRO'&&!s.retired?`<div class="card" style="margin-top:16px"><div class="section-top"><h3>내 선수의 이적 요청</h3><span class="pill blue">${s.league==='NBA'?'NBA 트레이드':'해외 이적'}</span></div><p class="desc">트레이드 또는 이적을 요청할 수 있지만 소속 구단이 반드시 받아들이는 것은 아니야. NBA에서는 일반적으로 계약상 거부권이 없으면 구단 간 트레이드를 선수가 직접 거절할 수 없어.</p><button class="btn secondary" onclick="requestTrade()" ${s.market.required||s.market.tradeRequested?'disabled':''}>${s.market.tradeRequested?'요청 접수됨':'트레이드 / 이적 요청'}</button></div>`:''}<div class="footer-note">이 화면은 내 선수의 계약만 다룹니다. 다른 선수 영입이나 구단 운영 기능은 없습니다.</div>`}
+function signOffer(id){let s=state;if(s.retired)return;const offer=s.market.offers.find(x=>x.id===id);if(!offer)return;
+showModal(`${esc(koTeam(offer.team))} 선택`,`<p class="desc">${offer.league==='College (미국)'?'이 대학에 진학할까?':'이 구단과 계약할까?'}</p><div class="mini-grid"><div class="mini-box"><div class="label">소속</div><strong style="font-size:14px">${esc(koTeam(offer.team))}</strong></div><div class="mini-box"><div class="label">예상 역할</div><strong>${esc(offer.role)}</strong></div><div class="mini-box"><div class="label">기간</div><strong>${offer.years}년</strong></div><div class="mini-box"><div class="label">연봉</div><strong>${offer.salary?'$'+fmt(offer.salary):'장학·대학'}</strong></div></div>`,()=>{
+s.team=offer.team;s.league=offer.league;s.contract=offer.years;s.salary=offer.salary;s.role=offer.role;s.stage=offer.league==='College (미국)'?'COLLEGE':'PRO';s.collegeYears=s.stage==='COLLEGE'?0:s.collegeYears;s.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false};s.events.unshift({year:s.year,text:`${offer.team} ${offer.league==='College (미국)'?'진학':'계약'} (${offer.years}년)`});save();closeModal();tab='home';render();toast('새 소속팀이 확정됐어!')})}
+function requestTrade(){let s=state;if(s.stage!=='PRO'||s.retired)return;s.market.tradeRequested=true;let accepted=chance(.48);if(accepted){const competitors=leagues[s.league].teams.filter(t=>t!==s.team);if(competitors.length){const old=s.team;s.team=pick(competitors);s.role=roleFromOvr(getOvr(s),s.league);s.events.unshift({year:s.year,text:`${old} → ${s.team} ${s.league==='NBA'?'트레이드':'이적'} 확정`});toast(`이적 요청 승인: ${koTeam(s.team)}`)}else toast('현재 리그에 이적할 팀이 없어.')}else{s.events.unshift({year:s.year,text:'트레이드/이적 요청이 거절됨'});toast('구단이 이적 요청을 거절했어.')}save();render()}
+function seasonCalculate(s){const age=s.age,year=s.year,was=s.stage,league=leagueName(s),ovrBefore=getOvr(s),playedLeague=s.league,oldTeam=s.team;const isNba=was==='PRO'&&playedLeague==='NBA';let games=was==='HIGH'?27:was==='COLLEGE'?32:(leagues[playedLeague]?.games||32);if(was==='PRO'&&playedLeague==='NBA')games=82;
+const peak=25+(s.potential%5); const growthFactor=age<=18?3.4:age<=22?3.4:age<=27?2.15:age<=31?.75:age<=35?-.12:age<=39?-.65:-1.05;
+const attributeChanges={};for(const k of Object.keys(s.attrs)){let change=growthFactor*(.8+rnd(0,.55))+(k===s.focus?1.3:0)+(k===s.focus&&age<25?.45:0);if(age>33&&['drive','stamina','defense','rebound'].includes(k))change-=.35+(age-33)*.11;if(age>39&&k==='stamina')change-=.6;change+=rnd(-.55,.35);let old=s.attrs[k];const max=s.potential+(k===s.focus?2:0);s.attrs[k]=Math.round(clamp(old+change,30,max));attributeChanges[k]=s.attrs[k]-old}
+let ovr=getOvr(s);s.role=was==='HIGH'?ovr>=74?'에이스':ovr>=65?'주전':ovr>=57?'로테이션':'벤치':roleFromOvr(ovr,playedLeague);
+const mins=clamp((was==='HIGH'?20:was==='COLLEGE'?18:15)+(ovr-(isNba?76:69))*.73+rnd(-2,3),8,isNba?38:35);
+const gp=Math.round(games*clamp(rnd(.84,1.01),.65,1));const scale=was==='HIGH'?.85:was==='COLLEGE'?.78:isNba?1:playedLeague==='NBA G League'?.88:.81;
+const usagerate=clamp(.72+(ovr-67)*.018,.55,1.35);const normMinutes=mins/32;
+const ppg=one(clamp((3.7+s.attrs.shoot*.16+s.attrs.drive*.095+s.attrs.clutch*.02)*scale*normMinutes*usagerate+rnd(-3.2,2.8),2,41));
+const rpg=one(clamp((1+s.attrs.rebound*.09)*(s.player.position==='C'?1.36:s.player.position==='PF'?1.25:s.player.position==='PG'?.72:1)*normMinutes+rnd(-.9,.8),.5,17));
+const apg=one(clamp((.3+s.attrs.pass*.084)*(s.player.position==='PG'?1.6:s.player.position==='SG'?1.2:s.player.position==='C'?.7:1)*normMinutes+rnd(-.9,.8),.3,14));
+const sp=one(clamp((s.attrs.defense/95)*rnd(.8,2.1)*normMinutes,.2,3));const bp=one(clamp((s.attrs.defense/100)*rnd(.45,1.6)*normMinutes*(s.player.position==='C'?1.65:s.player.position==='PF'?1.25:.6),.1,4));
+const fg=one(clamp(37+s.attrs.shoot*.13+s.attrs.drive*.08+rnd(-3,3),35,65));const tp=one(clamp(23+s.attrs.shoot*.18+rnd(-3.5,3.5),20,48));const ft=one(clamp(54+s.attrs.shoot*.29+rnd(-3,3),45,95));
+const teamStr=teamPower(s.team);let winRate=clamp(.42+(teamStr-75)*.009+(ovr-76)*.008+rnd(-.14,.13),.12,.90);let wins=Math.round(games*winRate),losses=games-wins;let playoffs=winRate>.4||chance(.16);let finalReached=playoffs&&chance(clamp(.16+(winRate-.4)*.85+(ovr-75)*.011,.04,.82));
+const finalOpponent=finalReached?opponentFor(was==='HIGH'?'고교 리그':was==='COLLEGE'?'대학 리그':playedLeague,oldTeam):null;
+let final=finalReached?makeFinalSeries(oldTeam,finalOpponent,teamStr+(ovr-70)*.35,teamPower(finalOpponent),isNba?7:was==='PRO'?5:1,`${league} 챔피언 결정전`):null;
+let champs=!!final?.champion;let playoff=final?(champs?'우승':'결승 준우승'):playoffs?(chance(.42)?'플레이오프 1라운드':'플레이오프 준결승 탈락'):'플레이오프 진출 실패';
+const perf=ovr+(ppg-18)*.62+(winRate-.5)*15+rnd(-11,10);let earned=[];
+let mvp=false,finalMvp=false,allstar=false,allnba=false,scoring=false,dpoy=false,rookie=false,world=false;
+if(was==='HIGH'){if(perf>69&&chance(clamp((perf-65)/45,.1,.72))){earned.push('고교 시즌 MVP');s.awards.highmvp++;}}
+if(was==='COLLEGE'){if(perf>78&&chance(clamp((perf-71)/49,.07,.65))){earned.push('대학 시즌 MVP');s.awards.collegemvp++;}}
+if(was==='PRO'){
+const nbaAdj=isNba?1:playedLeague==='NBA G League'?.8:.84;
+let mvpProb=clamp((perf-(isNba?89:82))*.034,.005,isNba?.66:.72)*nbaAdj;
+mvp=chance(mvpProb);if(mvp){earned.push(isNba?'NBA 정규 시즌 MVP':'리그 정규 시즌 MVP');if(isNba)s.awards.mvp++;else s.awards.othermvp++}
+if(champs){earned.push(isNba?'NBA 챔피언':'리그 우승');if(isNba)s.awards.rings++;let fmvpProb=clamp(.30+(ovr-78)*.036+(ppg-17)*.014,.12,.85);finalMvp=chance(fmvpProb);if(finalMvp){earned.push(isNba?'NBA 파이널 MVP':'리그 결승 MVP (게임)');if(isNba)s.awards.fmvp++}}
+if(isNba){allstar=ovr>78&&chance(clamp((ovr-74)*.035+(ppg-17)*.016,.04,.93));if(allstar){earned.push('NBA 올스타');s.awards.allstar++}allnba=ovr>83&&chance(clamp((perf-78)*.025,.015,.74));if(allnba){earned.push('올NBA');s.awards.allnba++}scoring=ppg>=25&&chance(clamp((ppg-24)*.07,.02,.54));if(scoring){earned.push('득점왕');s.awards.scoring++}dpoy=s.attrs.defense>91&&chance((s.attrs.defense-90)*.043);if(dpoy){earned.push('올해의 수비수');s.awards.dpoy++}rookie=s.history.filter(x=>x.league==='NBA').length===0&&ovr>78&&chance(clamp((ovr-76)*.045,.03,.75));if(rookie){earned.push('NBA 올해의 신인');s.awards.rookie++}
+s.totals.nbaPts+=Math.round(ppg*gp);s.totals.nbaAst+=Math.round(apg*gp);s.totals.nbaReb+=Math.round(rpg*gp);s.totals.nbaGames+=gp;
+}
+world=ovr>87&&chance(clamp((perf-85)*.009,.01,.20));if(world){earned.push('세계 올해의 농구선수 (게임)');s.awards.world++}
+}
+let tradeText='';if(isNba&&s.contract>0&&(s.market.tradeRequested||chance(.10))&&leagues.NBA.teams.length>1&&chance(s.market.tradeRequested?.60:.55)){
+const old=s.team;s.team=pick(leagues.NBA.teams.filter(t=>t!==old));tradeText=`${old}에서 ${s.team}(으)로 트레이드`;s.role=roleFromOvr(ovr,'NBA');s.events.unshift({year,text:tradeText});}
+if(was==='COLLEGE')s.collegeYears++;
+if(was==='PRO')s.contract=Math.max(0,s.contract-1);
+let result={year,age,league,stage:was,team:oldTeam,games:gp,ppg,rpg,apg,sp,bp,fg,tp,ft,mins:one(mins),wins,losses,playoff,champ:champs,final,ovrBefore,ovr,earned,trade:tradeText,goat:goatScore(s),rating:one(clamp(5.4+(ppg-10)*.08+(apg-3)*.07+(winRate-.5)*1+rnd(-.35,.35),5.0,10))};
+result.pts=Math.round(ppg*gp);result.reb=Math.round(rpg*gp);result.ast=Math.round(apg*gp);result.steals=Math.round(sp*gp);result.blocks=Math.round(bp*gp);
+// Create national-team invitation; never simulate participation before the user's answer.
+const comp=intlCompetitionFor(result.year,result.age);
+if(comp){
+ const eligible=clamp(.12+(getOvr(s)-60)*.022,.1,.92);
+ const invited=chance(eligible);
+ result.international={year:result.year,competition:comp,country:s.player.nationality,selected:invited,accepted:null,finish:invited?'참가 여부 응답 대기':'미선발',group:'–',medal:'없음',final:null,stats:null};
+ if(invited){
+   s.pendingIntl={year:result.year,competition:comp,country:s.player.nationality};
+   s.inbox.unshift({id:'national-'+result.year,year:result.year,type:'national',title:'국가대표 소집 제안',competition:comp,status:'pending',text:`${s.player.nationality} 대표팀에서 ${comp} 참가를 제안했습니다. 참가 여부를 선택하세요.`});
+   s.events.unshift({year,text:`${comp} 국가대표 소집 메시지 도착`});
+ }
+ s.intlHistory.push(result.international);
+}else result.international=null;
+result.goat=goatScore(s);
+s.history.push(result);s.last=result;s.seasonsPlayed++;s.events.unshift({year,text:`${year} 시즌 종료 · 총 ${result.pts}득점 / ${result.reb}리바운드 / ${result.ast}어시스트${earned.length?' · '+earned.join(' · '):''}`});s.events=s.events.slice(0,50);
+if(was==='HIGH'&&age>=18){s.market={offers:offersFor(s,'graduate'),required:true,kind:'graduate',interest:[],tradeRequested:false}}
+else if(was==='COLLEGE'&&s.collegeYears>=4){s.market={offers:offersFor(s,'collegeEnd').filter(x=>x.league!=='College (미국)'),required:true,kind:'collegeEnd',interest:[],tradeRequested:false}}
+else if(was==='PRO'&&s.contract<=0&&age<45){s.market={offers:offersFor(s,'fa'),required:true,kind:'fa',interest:[],tradeRequested:false}}
+else if(was==='COLLEGE'&&age>=19&&chance(.35)){s.market.offers=offersFor(s,'collegeEnd').filter(x=>x.league!=='College (미국)').slice(0,3);s.market.required=false;s.market.kind='earlyPro'}
+else if(was==='PRO'){s.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false};}
+if(age>=45){s.retired=true;s.retireReason='45세 시즌 종료에 따른 은퇴';s.stage='RETIRED';s.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false}}
+if(!s.retired)s.age++;s.year++;
+return result}
+function nextSeason(){let s=state;if(!s||s.retired||busy)return;if(s.pendingIntl){tab='messages';render();showInternationalInvite();return}if(s.market.required){tab='market';render();toast('먼저 진로 또는 계약 제안을 결정해 줘.');return}if(s.age>45){retireNow('45세 시즌 종료');return}
+busy=true;const button=document.getElementById('simulateButton');if(button){button.disabled=true;button.textContent='시즌 전체를 계산하는 중…'}
+setTimeout(()=>{try{const result=seasonCalculate(s);save();tab='home';render();startReplayQueue([result.final],()=>{if(s.pendingIntl)showInternationalInvite();else seasonResultModal(result)});if(s.retired)toast('45세 시즌을 마치고 은퇴했어.')}catch(e){console.error(e);toast('시뮬레이션 오류가 발생했어.')}finally{busy=false}},350)}
+function seasonResultModal(r){
+ const goatText=`GOAT 점수 ${fmt(goatScore(state))} · 역대 ${goatRank(state)}위`;
+ showModal(`${r.year} 시즌 결과`, `<div class="results-banner"><div class="eyebrow">SEASON ${r.year} COMPLETED</div><h2 style="margin:6px 0">${esc(koTeam(r.team))}</h2><div class="desc">${esc(r.league)} · ${r.wins}승 ${r.losses}패 · ${esc(r.playoff)} · ${r.games}경기 출전</div></div><h3>한 시즌 누적 기록</h3><div class="result-stat"><div><strong>${fmt(r.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(r.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(r.ast)}</strong><span>총 어시스트</span></div><div><strong>${r.ovr}</strong><span>최종 OVR</span></div></div><p class="smallnote" style="margin-top:9px">경기당 평균: ${r.ppg}득점 · ${r.rpg}리바운드 · ${r.apg}어시스트 (참고용)</p><div class="sep"></div>${r.final?`<p class="desc">🏀 ${esc(r.final.title)} · ${r.final.champion?'우승':'준우승'} · 시리즈 ${r.final.ourWins}:${r.final.oppWins} <button class="btn secondary small" onclick="replayFinal(${r.year},'club')">결승 다시 보기</button></p>`:''}${r.international?`<div class="notice">🌐 ${esc(r.international.competition)} · ${esc(r.international.finish)} ${r.international.final?`<button class="btn secondary small" onclick="replayFinal(${r.year},'intl')">국제전 결승 다시 보기</button>`:''}</div>`:''}${r.earned.length?`<div class="section-top" style="margin-top:15px"><h3>이번 시즌 수상</h3></div><div class="result-tags">${r.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:`<p class="desc" style="margin-top:15px">이번 시즌에는 개인 수상이 없었어. 다음 시즌에 도전하자.</p>`}${r.trade?`<div class="notice" style="margin-top:15px">⇄ ${esc(koText(r.trade))}</div>`:''}<p class="desc" style="margin:15px 0 0">${goatText}</p>${state.market.required?`<div class="notice" style="margin-top:13px">다음 시즌을 진행하려면 계약/진로를 선택해야 해.</div>`:''}${state.retired?`<div class="notice" style="margin-top:13px">45세 시즌 종료 · 자동 은퇴</div>`:''}`,null,'확인');
+}
+function history(s){return `${panelTitle('시즌 기록',`<span class="pill">${s.history.length}시즌 기록</span>`)}<div class="card"><h3>시즌 누적 기록 (평균이 아닌 총합)</h3>${s.history.length?`<div class="table-wrap"><table><thead><tr><th>연도</th><th>나이</th><th>소속</th><th>리그</th><th>출전 경기</th><th>총 득점</th><th>총 리바운드</th><th>총 어시스트</th><th>OVR</th><th>결승전</th><th>수상</th></tr></thead><tbody>${[...s.history].reverse().map(x=>`<tr><td><strong>${x.year}</strong></td><td>${x.age}</td><td>${esc(koTeam(x.team))}</td><td>${esc(x.league)}</td><td>${x.games}</td><td><strong>${fmt(x.pts)}</strong></td><td><strong>${fmt(x.reb)}</strong></td><td><strong>${fmt(x.ast)}</strong></td><td>${x.ovr}</td><td>${x.final?`<button class="btn secondary small" onclick="replayFinal(${x.year},'club')">▶ 관전</button>`:'–'}</td><td>${x.earned.length?esc(x.earned.join(', ')):'–'}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">아직 시즌 기록이 없어. 첫 시즌을 자동 진행해 줘.</div>`}</div><div class="card" style="margin-top:15px"><h3>커리어 뉴스</h3>${s.events.length?s.events.slice(0,25).map(x=>`<div class="history-item"><div class="label">${x.year}년</div><p class="desc" style="margin:4px 0 0">${esc(koText(x.text))}</p></div>`).join(''):'<div class="empty">시즌을 진행하면 주요 이벤트가 쌓여.</div>'}</div>`}
+function awards(s){const values=[['🏆','NBA 정규 시즌 MVP',s.awards.mvp],['🥇','NBA 파이널 MVP',s.awards.fmvp],['💍','NBA 챔피언',s.awards.rings],['⭐','NBA 올스타',s.awards.allstar],['🎖','올NBA',s.awards.allnba],['🎯','NBA 득점왕',s.awards.scoring],['🛡','NBA 수비왕',s.awards.dpoy],['🌱','NBA 신인왕',s.awards.rookie],['🌍','세계 올해의 농구선수 (게임)',s.awards.world],['🏀','해외 리그 MVP',s.awards.othermvp],['📘','고교 MVP',s.awards.highmvp],['🎓','대학 MVP',s.awards.collegemvp]];return `${panelTitle('트로피 보관함',`<span class="pill gold">총 ${values.reduce((t,x)=>t+x[2],0)}개</span>`)}<div class="grid three">${values.map(([icon,label,n])=>`<div class="trophy"><span class="sym">${icon}</span><div><div class="label">${label}</div><div class="value" style="font-size:19px;margin-top:4px">${n}회</div></div></div>`).join('')}</div><div class="card" style="margin-top:16px"><h3>수상 연혁</h3>${s.history.filter(x=>x.earned.length).length?s.history.filter(x=>x.earned.length).reverse().map(x=>`<div class="history-item"><div style="font-weight:800;font-size:13px">${x.year} · ${esc(koTeam(x.team))}</div><div class="result-tags">${x.earned.map(a=>`<span>🏆 ${esc(a)}</span>`).join('')}</div></div>`).join(''):'<div class="empty">첫 트로피를 획득하면 여기에 기록돼.</div>'}</div>`}
+function goat(s){const score=goatScore(s);const ranklist=[...legendRanks.map(x=>({name:x[0],score:x[1],me:false})),{name:s.player.name,score,me:true}].sort((a,b)=>b.score-a.score);const rank=goatRank(s);return `${panelTitle('GOAT 역대 랭킹',`<span class="pill gold">${level(s)}</span>`)}<div class="hero" style="min-height:160px"><div class="hero-content"><div class="eyebrow">GREATEST OF ALL TIME</div><h2 style="margin:8px 0">역대 ${rank}위 <span class="highlight">/ ${score} PTS</span></h2><p>NBA MVP, 파이널 MVP, 우승, 개인 기록으로 역대 랭킹을 끌어올려. 장기적으로 랭킹 1위를 목표로 하자.</p></div></div><div class="card"><h3>명예의 전당 · 역대 랭킹</h3><div class="table-wrap"><table><thead><tr><th>순위</th><th>선수</th><th>GOAT 점수</th></tr></thead><tbody>${ranklist.map((x,i)=>`<tr style="${x.me?'background:#3b3228':''}"><td class="rank-num">#${i+1}</td><td><strong>${esc(x.name)}${x.me?' (내 선수)':''}</strong></td><td>${fmt(x.score)}</td></tr>`).join('')}</tbody></table></div><p class="smallnote" style="margin-top:12px">전설 A~J는 게임의 가상 기준 선수이며 GOAT 점수는 게임 전용 평가 지표입니다. 실제 역사상 선수 순위를 뜻하지 않습니다.</p></div><div class="grid three" style="margin-top:15px">${statbox('NBA MVP',s.awards.mvp+'회','평가 비중 높음')}${statbox('파이널 MVP',s.awards.fmvp+'회','평가 비중 높음')}${statbox('NBA 챔피언',s.awards.rings+'회','우승 경력')}${statbox('NBA 통산 득점',fmt(s.totals.nbaPts),'NBA만 합산')}${statbox('NBA 통산 어시스트',fmt(s.totals.nbaAst),'NBA만 합산')}${statbox('NBA 통산 리바운드',fmt(s.totals.nbaReb),'NBA만 합산')}</div>`}
+function settings(s){return `${panelTitle('설정')}<div class="card"><h3>게임 상태</h3><div class="grid two"><div class="mini-box"><span class="label">현재 저장</span><strong style="font-size:15px">${esc(s.player.name)} · ${s.year}</strong></div><div class="mini-box"><span class="label">커리어</span><strong style="font-size:15px">${s.retired?'은퇴':'진행 중'}</strong></div></div><div class="sep"></div><div style="display:flex;flex-wrap:wrap;gap:9px"><button class="btn secondary" onclick="exportSave()">저장 데이터 백업</button><button class="btn secondary" onclick="document.getElementById('importFile').click()">백업 불러오기</button><input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importSave(event)"><button class="btn secondary" onclick="save();toast('게임이 저장됐어.')">지금 저장</button></div></div><div class="card" style="margin-top:16px"><h3>은퇴 시스템</h3><p class="desc">시즌 종료 후 원하는 시점에 은퇴할 수 있어. 45세 시즌을 마치면 자동 은퇴하고, 46세 시즌은 진행할 수 없어.</p><button class="btn danger" onclick="confirmRetirement()" ${s.retired?'disabled':''}>선수 은퇴하기</button>${s.retired?`<p class="desc">${esc(s.retireReason)}</p>`:''}</div><div class="card" style="margin-top:16px"><h3>새 커리어</h3><p class="desc">새 선수를 만들면 현재 저장된 게임 데이터가 초기화돼. 기존 데이터를 유지하려면 먼저 백업 파일을 내려받아 줘.</p><button class="btn danger" onclick="confirmNewCareer()">새 커리어 시작</button></div><div class="card" style="margin-top:16px"><h3>게임 업데이트</h3><p class="desc">현재 버전 v${GAME_VERSION} · 웹 배포 시 새 버전을 자동 확인하고 적용할 수 있어.</p><button class="btn secondary" onclick="switchTab('updates')">업데이트 내역 및 연결 설정 →</button></div><div class="footer-note">자동 저장은 이 브라우저의 localStorage를 사용합니다. 브라우저 데이터 삭제 시 저장 파일이 지워질 수 있으니 백업 기능을 이용하세요. 인터넷 연결 없이 실행 가능한 단일 HTML 게임입니다.</div>`}
+function showModal(title,body,onConfirm=null,buttonText='확인'){modalAction=onConfirm;document.getElementById('modalRoot').innerHTML=`<div class="modal-back" role="presentation" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle">${title}</h2>${body}<div class="modal-actions"><button class="btn ${onConfirm?'secondary':'wide'}" onclick="closeModal()">${onConfirm?'취소':'닫기'}</button>${onConfirm?`<button class="btn" onclick="confirmModal()">${buttonText}</button>`:''}</div></div></div>`}
+function confirmModal(){if(modalAction){const fn=modalAction;modalAction=null;fn()}}
+function closeModal(){document.getElementById('modalRoot').innerHTML='';modalAction=null;if(updatePrefs.enabled&&updateInfo.latest&&compareVersions(updateInfo.latest,GAME_VERSION)>0)setTimeout(autoApplyUpdate,0)}
+function confirmRetirement(){if(!state||state.retired)return;showModal('은퇴를 확정할까?',`<p class="desc">${esc(state.player.name)} 선수는 ${state.age}세에 은퇴하게 돼. 은퇴 후에는 같은 커리어에서 시즌을 더 진행할 수 없어.</p><div class="notice">은퇴는 되돌릴 수 없어. 필요한 경우 설정에서 저장 데이터를 백업해 줘.</div>`,()=>retireNow('선수 본인의 조기 은퇴'),'은퇴 확정')}
+function retireNow(reason){state.retired=true;state.stage='RETIRED';state.retireReason=reason;state.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false};state.events.unshift({year:state.year,text:`${state.age}세 은퇴 · 역대 ${goatRank(state)}위`});save();closeModal();tab='goat';render();toast('커리어가 종료됐어. 최종 GOAT 기록을 확인해 줘.')}
+function confirmNewCareer(){showModal('새 커리어 시작',`<p class="desc">현재 ${esc(state.player.name)} 선수의 모든 기록이 삭제되고 새 선수 생성 화면으로 돌아가. 기존 기록이 필요하면 먼저 백업해 줘.</p>`,()=>{localStorage.removeItem(SAVE);state=null;closeModal();render()},'새로 시작')}
+function exportSave(){const data=JSON.stringify(state,null,2);const url=URL.createObjectURL(new Blob([data],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='ROAD_TO_GOAT_'+state.player.name.replace(/[^a-zA-Z0-9가-힣]/g,'_')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('백업 파일을 저장했어.')}
+function importSave(event){let file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const obj=JSON.parse(reader.result);if(obj.version!==1||!obj.player||!obj.history||!obj.awards||!obj.attrs)throw Error('invalid');state=ensureV13(obj);save();tab='home';render();toast('커리어 백업을 불러왔어.')}catch(e){toast('올바른 ROAD TO GOAT 백업 파일이 아니야.')}};reader.readAsText(file)}
+
+// v1.5 change log & optional online updater. Never attempts to rewrite a local HTML file.
+let updatePrefs={enabled:true,endpoint:''};
+let updateInfo={kind:'idle',message:'업데이트를 확인하지 않았어.',latest:null,manifest:null};
+let updateBusy=false;
+try{const p=JSON.parse(localStorage.getItem(UPDATE_CONFIG_KEY)||'{}');if(typeof p.enabled==='boolean')updatePrefs.enabled=p.enabled;if(typeof p.endpoint==='string')updatePrefs.endpoint=p.endpoint;}catch(e){}
+const isHosted=()=>location.protocol==='https:'||location.protocol==='http:';
+function compareVersions(a,b){const nums=x=>String(x||'0').split(/[.-]/).slice(0,3).map(x=>Number.parseInt(x,10)||0);const A=nums(a),B=nums(b);for(let i=0;i<3;i++){if(A[i]!==B[i])return A[i]-B[i];}return 0;}
+function updateStatusHtml(){return `<div class="update-status ${esc(updateInfo.kind)}" id="updateStatusText" role="status">${esc(updateInfo.message)}</div>`}
+function latestUpdateControls(){return updateInfo.latest&&compareVersions(updateInfo.latest,GAME_VERSION)>0?`<button class="btn" onclick="applyAvailableUpdate()">↻ v${esc(updateInfo.latest)} 지금 업데이트</button>`:''}
+function renderUpdateCenter(){return `${panelTitle('업데이트 내역',`<span class="pill blue">현재 v${GAME_VERSION}</span>`)}<div class="update-box"><div class="section-top"><h3>자동 업데이트</h3><span class="pill ${isHosted()?'blue':'gold'}">${isHosted()?'웹 연결 준비':'로컬 파일 모드'}</span></div><p class="desc" style="margin-bottom:10px">${isHosted()?'웹 서버에 배포된 version.json을 주기적으로 확인해. 새 버전이 있으면 진행 중인 커리어를 저장한 뒤 같은 사이트에서 새 게임을 불러와.':'다운로드한 HTML은 브라우저에서 자동으로 덮어쓸 수 없어. 웹사이트에 배포하면 자동 업데이트를 사용할 수 있어.'}</p><label class="switch-label"><input type="checkbox" id="autoUpdateToggle" ${updatePrefs.enabled?'checked':''} onchange="setAutoUpdate(this.checked)">새 버전 자동 확인 및 안전할 때 적용</label><div class="field" style="margin-top:13px"><label for="manifestUrl">업데이트 정보 주소 (배포용)</label><input id="manifestUrl" type="url" placeholder="비워두면 같은 사이트의 version.json 사용" value="${esc(updatePrefs.endpoint)}" autocomplete="off"></div><div class="update-actions"><button class="btn secondary" onclick="saveUpdateEndpoint()">업데이트 주소 저장</button><button class="btn" id="checkUpdateBtn" onclick="checkForUpdates(true)">↻ 지금 확인</button>${latestUpdateControls()}</div>${updateStatusHtml()}${!isHosted()?`<p class="smallnote" style="margin-top:10px">현재는 로컬 HTML 모드라 자동 업데이트를 연결할 수 없어. 배포용 ZIP을 웹 호스팅에 올리면 지원돼.</p>`:''}</div><div style="margin-top:20px" class="section-top"><h3>업데이트 기록</h3><span class="version-chip">최근 ${RELEASE_NOTES.length}개 버전</span></div>${RELEASE_NOTES.map((r,i)=>`<section class="update-row ${i===0?'latest':''}"><div class="release-title"><div><strong>v${esc(r.version)} · ${esc(r.title)}</strong><div class="smallnote" style="margin-top:5px">${esc(r.date)}</div></div>${i===0?'<span class="pill blue">현재 버전</span>':''}</div><ul>${r.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>`).join('')}`}
+function updateBanner(){return updateInfo.latest&&compareVersions(updateInfo.latest,GAME_VERSION)>0?`<div class="update-banner"><div><strong>🚀 새 버전 v${esc(updateInfo.latest)} 출시!</strong><div class="smallnote">게임을 저장하고 최신 버전을 적용할 수 있어.</div></div><button class="btn small" onclick="applyAvailableUpdate()">업데이트</button></div>`:''}
+function openGameMenu(){const has=!!state;document.getElementById('modalRoot').innerHTML=`<div class="modal-back" role="presentation" onclick="if(event.target===this)closeModal()"><div class="modal menu-dialog" role="dialog" aria-modal="true" aria-labelledby="mainMenuTitle"><div class="menu-heading"><div><div class="eyebrow">ROAD TO GOAT v${GAME_VERSION}</div><h2 id="mainMenuTitle">☰ 게임 메뉴</h2></div><button class="btn secondary small" onclick="closeModal()">닫기 ✕</button></div><div class="menu-grid"><button class="menu-tile" onclick="goMenuTab('home')"><span class="tile-icon">🏠</span><strong>${has?'커리어 계속하기':'선수 생성으로 돌아가기'}</strong><small>${has?'내 선수와 현재 시즌 확인':'고1부터 커리어 시작'}</small></button><button class="menu-tile" onclick="goMenuTab('history')" ${has?'':'disabled'}><span class="tile-icon">📊</span><strong>시즌 기록</strong><small>연도별 누적 성적 보기</small></button><button class="menu-tile" onclick="goMenuTab('updates')"><span class="tile-icon">🔄</span><strong>업데이트 내역</strong><small>새 버전 확인 · 변경 사항</small></button><button class="menu-tile" onclick="goMenuTab('settings')" ${has?'':'disabled'}><span class="tile-icon">⚙️</span><strong>설정 및 저장</strong><small>백업 · 은퇴 · 새 커리어</small></button></div><div class="menu-footer"><span class="smallnote">${has?`${esc(state.player.name)} · ${state.year} 시즌 · 저장됨`:'새 커리어 생성 전'} | v${GAME_VERSION}</span><button class="btn small secondary" onclick="menuUpdateCheck()">↻ 업데이트 확인</button></div>${updateStatusHtml()}</div></div>`;}
+function goMenuTab(t){closeModal();if(t==='updates'&&!state){showReleaseNotesModal();return;}if(!state){renderIntro();return;}switchTab(t);}
+function showReleaseNotesModal(){document.getElementById('modalRoot').innerHTML=`<div class="modal-back" role="presentation" onclick="if(event.target===this)closeModal()"><div class="modal menu-dialog" role="dialog" aria-modal="true" aria-labelledby="updateModalTitle"><div class="menu-heading"><div><div class="eyebrow">PATCH NOTES</div><h2 id="updateModalTitle">업데이트 내역</h2></div><button class="btn secondary small" onclick="closeModal()">닫기 ✕</button></div>${RELEASE_NOTES.slice(0,4).map((r,i)=>`<section class="update-row ${i===0?'latest':''}"><strong>v${esc(r.version)} · ${esc(r.title)}</strong><div class="smallnote">${esc(r.date)}</div><ul>${r.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>`).join('')}<p class="smallnote">다운로드형 HTML에서 자동으로 파일을 교체할 수는 없어. 웹 배포 후 업데이트 확인 가능해.</p>${updateStatusHtml()}</div></div>`;}
+function notifyUpdater(){if(tab==='updates'&&state){document.getElementById('pageContent').innerHTML=renderUpdateCenter();}const el=document.getElementById('updateStatusText');if(el){el.textContent=updateInfo.message;el.className='update-status '+updateInfo.kind}}
+function setAutoUpdate(enabled){updatePrefs.enabled=!!enabled;saveUpdatePrefs();updateInfo={...updateInfo,kind:'ok',message:enabled?'자동 업데이트 확인을 켰어.':'자동 업데이트 확인을 껐어.'};notifyUpdater();if(enabled&&isHosted())setTimeout(()=>checkForUpdates(false),0);}
+function saveUpdatePrefs(){try{localStorage.setItem(UPDATE_CONFIG_KEY,JSON.stringify(updatePrefs))}catch(e){toast('업데이트 설정을 저장하지 못했어.')}}
+function saveUpdateEndpoint(){const val=(document.getElementById('manifestUrl')?.value||'').trim();if(val&&!/^https:\/\//i.test(val)){toast('업데이트 주소는 https:// 주소만 입력해 줘.');return;}updatePrefs.endpoint=val;saveUpdatePrefs();toast('업데이트 주소를 저장했어.');checkForUpdates(true);}
+function makeManifestUrl(){if(updatePrefs.endpoint)return updatePrefs.endpoint;return new URL('version.json',location.href).href;}
+async function menuUpdateCheck(){closeModal();if(state){tab='updates';render();}else{showReleaseNotesModal();}await checkForUpdates(true);}
+async function checkForUpdates(manual=false){if(updateBusy)return;if(!isHosted()){updateInfo={kind:'error',message:'로컬 HTML은 자동 업데이트를 받을 수 없어. 웹 호스팅 배포 후 연결할 수 있어.',latest:null,manifest:null};notifyUpdater();if(manual)toast('웹에 배포해야 업데이트를 확인할 수 있어.');return;}
+ updateBusy=true;updateInfo={...updateInfo,kind:'idle',message:'서버에서 최신 버전을 확인하는 중…'};notifyUpdater();
+ try{const res=await fetch(makeManifestUrl()+(makeManifestUrl().includes('?')?'&':'?')+'_='+Date.now(),{cache:'no-store',redirect:'follow'});if(!res.ok)throw Error('서버 응답 '+res.status);const m=await res.json();if(typeof m.version!=='string'||!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(m.version))throw Error('버전 정보 형식 오류');
+  const newer=compareVersions(m.version,GAME_VERSION)>0;updateInfo={kind:newer?'available':'ok',message:newer?`최신 버전 v${m.version}이(가) 있어. ${m.notes?.[0]||'업데이트할 수 있어.'}`:`최신 버전을 사용 중이야. (v${GAME_VERSION})`,latest:m.version,manifest:m};notifyUpdater();if(newer&&updatePrefs.enabled)autoApplyUpdate();
+ }catch(e){updateInfo={kind:'error',message:'업데이트 서버를 확인할 수 없어. 배포한 version.json 주소를 확인해 줘. ('+String(e.message||e)+')',latest:null,manifest:null};notifyUpdater();}finally{updateBusy=false}}
+function updateTarget(){let candidate=updateInfo.manifest?.url||'index.html';let u;try{u=new URL(candidate,makeManifestUrl())}catch(e){return null;}if(u.origin!==location.origin||!/^https?:$/.test(u.protocol))return null;return u;}
+function canApplyUpdate(){return !busy&&!replayTimer&&!document.querySelector('.modal-back')&&!state?.pendingIntl;}
+function autoApplyUpdate(){if(!canApplyUpdate())return;const v=updateInfo.latest;if(!v||sessionStorage.getItem('rtg_update_attempt')===v)return;const target=updateTarget();if(!target){updateInfo.kind='available';updateInfo.message='새 버전이 있어. 다른 사이트로 이동하는 업데이트는 자동 적용하지 않아. 같은 사이트의 배포 주소를 사용해 줘.';notifyUpdater();return;}
+ save();sessionStorage.setItem('rtg_update_attempt',v);target.searchParams.set('v',v);location.replace(target.href);}
+function applyAvailableUpdate(){const target=updateTarget();if(!target){toast('안전한 같은 사이트 업데이트 주소를 확인해 줘.');return;}if(!canApplyUpdate()){toast('진행 중인 경기나 메시지를 마친 뒤 업데이트해 줘.');return;}save();sessionStorage.setItem('rtg_update_attempt',updateInfo.latest||'');target.searchParams.set('v',updateInfo.latest||GAME_VERSION);location.assign(target.href);}
+function initUpdater(){if(isHosted()){if(updatePrefs.enabled)setTimeout(()=>checkForUpdates(false),1000);setInterval(()=>{if(updatePrefs.enabled)checkForUpdates(false)},15*60*1000);window.addEventListener('focus',()=>{if(updatePrefs.enabled)checkForUpdates(false)});}window.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.modal-back'))closeModal();});}
+
+state=load();render();initUpdater();
+</script>
+</body>
+</html>
