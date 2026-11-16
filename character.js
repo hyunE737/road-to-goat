@@ -98,9 +98,7 @@
   mainArt.src=RTG_ART.player;
   colorMask.src=RTG_ART.mask;
   function decorate(){
-    let ico=document.querySelector('link[rel="icon"]');
-    if(!ico){ico=document.createElement('link');ico.rel='icon';document.head.appendChild(ico)}
-    ico.type='image/png';ico.href=RTG_ART.favicon;
+    // Use the versioned favicon declared in the document head; don't override it.
     document.querySelectorAll('.brandmark').forEach(el=>{
       if(el.dataset.rtgLogo)return;
       el.dataset.rtgLogo='1';el.innerHTML=`<img src="${RTG_ART.logo}" alt="ROAD TO GOAT 로고" class="rtg-brand-img">`;
