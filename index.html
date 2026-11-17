@@ -1130,7 +1130,7 @@ const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성�
 const careerPrimaryTabs=['home','training','market','history'];
 function careerNavigation(s){
  const primary=careerPrimaryTabs.map(id=>navItems.find(item=>item[0]===id));
- const secondary=navItems.filter(item=>!careerPrimaryTabs.includes(item[0]));
+ const secondary=navItems.filter(([id])=>!careerPrimaryTabs.includes(id)&&id!=='settings'&&id!=='announcements');
  const navButton=([id,,label])=>{
   const pending=(id==='market'&&s.market.required)||(id==='messages'&&s.pendingIntl);
   return `<button type="button" class="nav ${tab===id?'active':''}" ${tab===id?'aria-current="page"':''} onclick="switchTab('${id}')"><span class="career-motion-icon" aria-hidden="true">${gameIcon(id)}</span>${label}${pending?`<i class="career-nav-dot" aria-label="확인 필요"></i>`:''}</button>`;
