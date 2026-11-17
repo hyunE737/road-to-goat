@@ -362,6 +362,11 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 .welcome-intro #rtgBegin{width:min(100%,300px);min-height:50px}
 .welcome-guide{min-height:44px;padding:5px 20px;border:0;background:none;color:var(--muted);cursor:pointer}
 .intro-layout.intro-setup{display:block;width:min(100%,650px);padding:22px 16px 45px}
+</style><style>
+.welcome-career-path{display:flex;align-items:flex-start;justify-content:center;list-style:none;padding:0;margin:4px 0 9px;color:var(--muted)}
+.welcome-career-path li{position:relative;display:grid;justify-items:center;gap:5px;width:67px;font-size:12px}
+.welcome-career-path li+li::before{content:'›';position:absolute;left:-4px;top:1px;color:var(--muted)}
+.welcome-career-path .game-icon{width:19px;height:19px;color:var(--blue)}
 </style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
@@ -1574,7 +1579,7 @@ function initUpdater(){if(isHosted()){if(updatePrefs.enabled)setTimeout(()=>chec
 
 state=load();render();initUpdater();
 </script>
-<script src="enhancements.js?rev=c71ac997"></script>
+<script src="enhancements.js?rev=307fa325"></script>
 <script src="art-assets.js"></script>
 <script src="character.js?rev=7e70f898"></script>
 </body>
