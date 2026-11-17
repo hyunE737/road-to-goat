@@ -331,7 +331,7 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .league-logo{box-sizing:border-box;width:64px;min-width:64px;height:44px;border-radius:10px;padding:5px;font-size:10px;letter-spacing:.02em;background:var(--panel2);color:var(--text)}
 .league-logo-official img{box-sizing:border-box;padding:4px 10px;border-radius:9px}
 @media(max-width:600px){.career-header>.header-tools{grid-column:2;grid-row:1}.intro-header .header-tools{margin-left:auto}}
-</style></head>
+</style><style>.season-item-icon{background:var(--panel);border-radius:50%}</style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
 <script>
@@ -1039,7 +1039,7 @@ function renderSeasonItems(s){
     <div class="season-item-list">${seasonItems.map(item=>{
       const gain=itemGain(s,item);
       const label=purchased?'구매 완료':!gain?'능력치 한도':wallet.balance<item.price?'잔액 부족':'구매';
-      return `<div class="season-item"><span class="season-item-icon" aria-hidden="true">${gameIcon(item.id)}</span><div><strong>${item.name}</strong><div class="desc">${attrs[item.stat]} +${gain} · $${fmt(item.price)}</div></div><button class="btn small" aria-label="${item.name} ${label}" onclick="buySeasonItem('${item.id}')" ${label==='구매'?'':'disabled'}>${label}</button></div>`;
+      return `<div class="season-item"><span class="season-item-icon" aria-hidden="true">${item.icon}</span><div><strong>${item.name}</strong><div class="desc">${attrs[item.stat]} +${gain} · $${fmt(item.price)}</div></div><button class="btn small" aria-label="${item.name} ${label}" onclick="buySeasonItem('${item.id}')" ${label==='구매'?'':'disabled'}>${label}</button></div>`;
     }).join('')}</div>`;
 }
 const weeklyRankUrl="https://akxfiawkwaqcxoqpdbrz.supabase.co/rest/v1/rpc/";
