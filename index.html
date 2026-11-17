@@ -723,10 +723,61 @@ function renderSeasonItems(s){
       return `<div class="season-item"><span class="season-item-icon" aria-hidden="true">${item.icon}</span><div><strong>${item.name}</strong><div class="desc">${attrs[item.stat]} +${gain} · $${fmt(item.price)}</div></div><button class="btn small" aria-label="${item.name} ${label}" onclick="buySeasonItem('${item.id}')" ${label==='구매'?'':'disabled'}>${label}</button></div>`;
     }).join('')}</div>`;
 }
-const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
+const weeklyRankUrl="https://akxfiawkwaqcxoqpdbrz.supabase.co/rest/v1/rpc/";
+const weeklyRankKey="sb_publishable_8ZSC8RqumVjo08dUpwXkxQ_OELrWioP";
+async function weeklyRankRequest(method,payload={}){
+  const response=await fetch(weeklyRankUrl+method,{
+    method:'POST',
+    headers:{apikey:weeklyRankKey,'Content-Type':'application/json'},
+    body:JSON.stringify(payload),
+    signal:AbortSignal.timeout(10000)
+  });
+  if(!response.ok)throw Error('Weekly ranking request failed');
+  return response.json();
+}
+function weeklyRanking(s){
+  return `${panelTitle('주간 TOP 50',`<span class="pill gold">내 GOAT ${fmt(goatScore(s))}점</span>`)}
+  <div class="card" style="margin-bottom:16px"><h3>이번 주 순위에 등록</h3>
+  <p class="desc">한국 시간 매주 월요일에 새 순위가 시작돼. 이 브라우저에서 등록한 이번 주 최고 점수가 반영돼.</p>
+  <form onsubmit="event.preventDefault();submitWeeklyScore(this)">
+  <div class="field"><label for="rankNickname">공개 닉네임</label><input id="rankNickname" name="nickname" maxlength="24" required autocomplete="off" value="${esc(s.player.name.slice(0,24))}"></div>
+  <button type="submit" class="btn" style="margin-top:12px">내 점수 등록</button>
+  <p class="desc" role="status"></p></form></div>
+  <div class="card"><div class="section-top"><h3>이번 주 TOP 50</h3><button class="btn secondary small" onclick="loadWeeklyRanking()">새로고침</button></div>
+  <div id="weeklyLeaderboard" aria-live="polite"></div></div>`;
+}
+async function loadWeeklyRanking(){
+  const list=document.getElementById('weeklyLeaderboard');
+  if(!list)return;
+  list.textContent='순위를 불러오는 중…';
+  try{
+    const rows=await weeklyRankRequest('goat_weekly_top');
+    list.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>순위</th><th>닉네임</th><th>GOAT 점수</th></tr></thead><tbody>${rows.map((row,index)=>`<tr><td>${index+1}</td><td>${esc(row.nickname)}</td><td>${fmt(row.score)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="desc">이번 주에 등록된 점수가 아직 없어.</p>';
+  }catch(e){
+    list.textContent='순위를 불러오지 못했어. 새로고침을 눌러 줘.';
+  }
+}
+async function submitWeeklyScore(form){
+  const nickname=form.elements.nickname.value.trim();
+  const status=form.querySelector('[role="status"]');
+  if(!nickname){status.textContent='닉네임을 입력해 줘.';return}
+  const button=form.querySelector('button');
+  button.disabled=true;
+  try{
+    const key='rtg-weekly-entry-token';
+    let token=localStorage.getItem(key);
+    if(!token){token=crypto.randomUUID();localStorage.setItem(key,token)}
+    const improved=await weeklyRankRequest('goat_submit_score',{player_token:token,player_nickname:nickname,player_score:goatScore(state)});
+    status.textContent=improved?'이번 주 점수를 등록했어.':'이번 주에 이미 같거나 더 높은 점수를 등록했어.';
+    await loadWeeklyRanking();
+  }catch(e){
+    status.textContent='점수를 등록하지 못했어. 잠시 후 다시 시도해 줘.';
+  }finally{button.disabled=false}
+}
+const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['weekly','▥','주간 TOP 50'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
 function render(){if(!state)return renderIntro();let s=state;document.getElementById('app').innerHTML=`<header class="top-header"><div class="brand"><span class="brandmark">🏀</span><div>ROAD TO GOAT <span class="sub">/ MY CAREER</span></div></div><div style="display:flex;align-items:center;gap:9px"><span class="pill gold">${s.retired?'은퇴 완료':`${s.year} 시즌`}</span><span class="stage">${esc(stageLabel(s))} · ${s.age}세</span><button class="main-menu-btn" onclick="openGameMenu()">☰ 메뉴</button></div></header><div class="layout"><aside class="side">${navItems.map(([id,icon,label])=>`<button class="nav ${tab===id?'active':''}" onclick="switchTab('${id}')"><span>${icon}</span>${label}${id==='market'&&s.market.required?' ●':''}${id==='messages'&&s.pendingIntl?' ●':''}</button>`).join('')}<div class="side-divider"></div><div class="side-footer">독립 제작 게임 데모 v${GAME_VERSION}<br>진행 상황 자동 저장</div></aside><main class="content" id="pageContent"></main></div>`;renderTab()}
 function switchTab(t){tab=t;render()}
-function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();}
+function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),weekly:()=>weeklyRanking(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();if(tab==='weekly')loadWeeklyRanking();}
 function panelTitle(t,right=''){return `<div class="view-title"><div><div class="eyebrow">ROAD TO GOAT · CAREER</div><h2 style="margin-top:7px">${t}</h2></div>${right}</div>`}
 function statbox(k,v,sub=''){return `<div class="card stat"><div class="label">${k}</div><div class="value">${v}</div><div class="smallnote">${sub}</div></div>`}
 function attrsCard(s){return `<div class="card"><div class="section-top"><h3>선수 능력치</h3><span class="pill">POT ${s.potential}</span></div>${Object.entries(s.attrs).map(([k,v])=>`<div class="attr-row"><span class="muted">${attrs[k]}</span><div class="meter"><i style="width:${v}%"></i></div><b>${v}</b></div>`).join('')}</div>`}
