@@ -24,8 +24,15 @@
     const uniform=Math.max(0,Math.min(JERSEYS.length-1,Number(config.jersey)||0));
     const skin=HEX(SKIN_COLORS[skinIndex]),baseSkin=HEX(SKIN_COLORS[0]);
     const cloth=HEX(JERSEYS[uniform][1]),baseCloth=HEX(JERSEYS[0][1]);
+    const hair=HEX(HAIR_COLORS[config.variant!=null?config.hairColor||0:0]||HAIR_COLORS[0]);
+    const baseHair=HEX(HAIR_COLORS[0]);
     for(let i=0;i<a.length;i+=4){
-      if(!a[i+3]||b[i]>125)continue;
+      if(!a[i+3])continue;
+      if(b[i]>125){
+        const weight=(b[i]/255)*Math.min(1,(a[i]+a[i+1]+a[i+2])/125)*.7;
+        for(let ch=0;ch<3;ch++)a[i+ch]+=(hair[ch]-baseHair[ch])*weight;
+        continue;
+      }
       const intensity=(a[i]+a[i+1]+a[i+2])/3;
       if(b[i+1]>125&&skinIndex){
         const weight=(b[i+1]/255)*Math.min(1,intensity/100)*.9;
@@ -96,7 +103,7 @@
     if(screen){
       const h=screen.querySelector('.avatar-configuration .section-top h2');if(h)h.textContent='선수 외형 설정';
       const explanation=screen.querySelector('.avatar-stage-preview p.smallnote');
-      if(explanation)explanation.textContent='기본 픽셀 캐릭터의 피부색, 유니폼, 등번호를 설정할 수 있어.';
+      if(explanation)explanation.textContent='미리 만들어 둔 캐릭터 버전을 고르고 등번호를 정할 수 있어.';
       const hint=screen.querySelector('.avatar-configuration >p.smallnote');
       if(hint)hint.textContent='선택한 외형은 시즌이 바뀌어도 저장되며, 선수 카드에도 그대로 표시돼.';
     }
