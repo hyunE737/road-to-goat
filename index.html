@@ -184,14 +184,16 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .free-throw-panel{margin:12px 0;padding:12px;background:#f4f7fb;color:#172536;border:1px solid #d7e0ec;border-radius:18px}
 .free-throw-panel[hidden]{display:none}
 .ft-court{position:relative;height:100px;margin:6px 0;background:#f8e2be;border-radius:12px;overflow:hidden}
-.ft-shooter{position:absolute;left:12%;bottom:9px;font-size:24px}
+.ft-shooter{position:absolute;left:7%;bottom:6px;width:48px;height:auto;transform-origin:bottom center}
+.ft-court:has(.ft-made,.ft-missed) .ft-shooter{animation:ft-release .56s ease-out}
+@keyframes ft-release{25%{transform:translateY(-5px) rotate(5deg)}100%{transform:translateY(0)}}
 .ft-hoop{position:absolute;left:75%;top:44px;width:22px;height:19px;border:2px solid #fff;border-top:4px solid #c24522;border-radius:0 0 45% 45%}
 .ft-ball{position:absolute;left:22%;top:69px;width:14px;height:14px;background:#ec851c;border:2px solid #934816;border-radius:50%}
 .ft-ball.ft-made{animation:ft-made .56s ease-in-out forwards}
 .ft-ball.ft-missed{animation:ft-missed .56s ease-in-out forwards}
 @keyframes ft-made{0%{left:22%;top:69px}52%{left:54%;top:12px}85%{left:calc(75% + 4px);top:36px}100%{left:calc(75% + 4px);top:65px}}
 @keyframes ft-missed{0%{left:22%;top:69px}52%{left:54%;top:14px}83%{left:calc(75% - 8px);top:42px}100%{left:67%;top:76px}}
-.ft-meter{position:relative;height:15px;border-radius:999px;background:#c5d2e1}
+.ft-meter{position:relative;height:15px;border-radius:999px;background:linear-gradient(to right,#c5d2e1 30%,#efbc40 30% 74%,#c5d2e1 74%)}
 .ft-green{position:absolute;top:0;bottom:0;left:44%;width:16%;background:#168348}
 #ftNeedle{position:absolute;top:-3px;left:0;width:4px;height:21px;background:#13223a;border-radius:2px;transform:translateX(-50%)}
 #ftShoot{min-height:44px}
@@ -678,14 +680,18 @@ function startReplaySeries(){replaySeries=replayQueue.shift();replayGame=0;repla
 }
 let freeThrow=null, freeThrowAnimation=0, freeThrowTimeout=0;
 let replayFreeThrows={made:0,attempted:0};
-const freeThrowGreen={start:.44,end:.60};
-function isFreeThrowMake(value){
- return value>=freeThrowGreen.start&&value<=freeThrowGreen.end;
+function freeThrowChance(value){
+ if(value>=.44&&value<=.60)return 1;
+ if(value>=.30&&value<=.74)return .5;
+ return .01;
 }
 function replayFoul(game,index){
- if(index!==12||game.steps.length<14)return 0;
- const frame=game.steps[index],prev=game.steps[index-1];
- return frame.a-prev.a>=2&&game.game%2===0?1:2;
+ if(game.steps.length<14)return 0;
+ if(game.game%2===0){
+  const andOne=game.steps.findIndex((frame,i)=>i>=10&&i<27&&frame.a-game.steps[i-1].a>=2);
+  if(andOne>=0)return index===andOne?1:0;
+ }
+ return index===12?2:0;
 }
 function clearFreeThrows(){
  cancelAnimationFrame(freeThrowAnimation);
@@ -700,10 +706,12 @@ function openFreeThrows(count){
  freeThrow={count,shot:1,position:0,shooting:false};
  panel.hidden=false;
  panel.innerHTML=`<div class="section-top"><strong>${count===1?'앤드원 · 자유투 1개':'슈팅 파울 · 자유투 2개'}</strong><span id="freeThrowCount"></span></div>
- <div class="ft-court" aria-hidden="true"><span class="ft-shooter">🏀</span><span class="ft-hoop"></span><span id="ftBall" class="ft-ball"></span></div>
+ <div class="ft-court" aria-hidden="true"><canvas class="ft-shooter" width="40" height="54"></canvas><span class="ft-hoop"></span><span id="ftBall" class="ft-ball"></span></div>
  <div class="ft-meter" aria-hidden="true"><span class="ft-green"></span><span id="ftNeedle"></span></div>
  <p class="desc" id="ftStatus" role="status"></p>
  <button type="button" class="btn" id="ftShoot" onclick="shootReplayFreeThrow()">자유투 슛</button>`;
+ pixelDraw(panel.querySelector('.ft-shooter'),state?.player?.avatar||avatarConfig);
+ panel.scrollIntoView({block:'nearest'});
  startFreeThrowAim();
 }
 function startFreeThrowAim(){
@@ -715,7 +723,7 @@ function startFreeThrowAim(){
  ball.className='ft-ball';
  button.disabled=false;
  document.getElementById('freeThrowCount').textContent=`${attempt.shot} / ${attempt.count}`;
- document.getElementById('ftStatus').textContent='표시가 초록색에 들어오면 슛!';
+ document.getElementById('ftStatus').textContent='초록 100% · 노랑 50% · 회색 1%';
  button.focus({preventScroll:true});
  const needle=document.getElementById('ftNeedle');
  function aim(now){
@@ -732,7 +740,7 @@ function shootReplayFreeThrow(){
  if(!attempt||attempt.shooting)return;
  attempt.shooting=true;
  cancelAnimationFrame(freeThrowAnimation);
- const made=isFreeThrowMake(attempt.position);
+ const made=chance(freeThrowChance(attempt.position));
  replayFreeThrows.attempted++;
  if(made)replayFreeThrows.made++;
  document.getElementById('ftShoot').disabled=true;
