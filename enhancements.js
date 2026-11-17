@@ -34,7 +34,7 @@ function rtgWelcome(){
  document.getElementById('app').innerHTML=`<main class="rtg-welcome welcome-simple"><section class="welcome-intro" aria-labelledby="welcomeTitle">
   <span class="brandmark welcome-brandmark" aria-hidden="true">🏀</span>
   <h1 id="welcomeTitle">ROAD TO GOAT</h1>
-  <p class="desc">고교 농구부터 시작하는 선수 커리어</p>
+  <ol class="welcome-career-path" aria-label="커리어 진행 흐름">${[['guide','고교'],['market','대학·프로'],['ball','NBA'],['goat','GOAT']].map(([icon,label])=>`<li>${gameIcon(icon)}<span>${label}</span></li>`).join('')}</ol>
   <button type="button" class="btn" id="rtgBegin" onclick="rtgBeginJourney()">내 커리어 시작하기</button>
   <button type="button" class="welcome-guide" onclick="rtgGuideModal()">게임 가이드</button>
  </section></main>`;
