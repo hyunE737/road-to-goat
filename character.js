@@ -8,8 +8,6 @@
   const colorMask=new Image();
   let baseReady=false,maskReady=false,maskImage=null;
   const HEX=(hex)=>{const n=parseInt(hex.replace('#',''),16);return [(n>>16)&255,(n>>8)&255,n&255]};
-  const RGB=(rgb)=>`rgb(${rgb.map(v=>Math.max(0,Math.min(255,Math.round(v)))).join(',')})`;
-  const shadeRgb=(base,f)=>base.map(v=>Math.min(255,Math.max(0,Math.round(v*f))));
   function renderFromReference(canvas, config){
     if(!baseReady||!maskReady||!maskImage)return false;
     const w=180,h=200;
@@ -22,27 +20,47 @@
     ctx.drawImage(mainArt,0,0,w,h);
     const pix=ctx.getImageData(0,0,w,h);
     const a=pix.data,b=maskImage.data;
-    const skin=HEX(SKIN_COLORS[Math.max(0,Math.min(SKIN_COLORS.length-1,Number(config.skin)||0))]);
-    const cloth=HEX((JERSEYS[Math.max(0,Math.min(JERSEYS.length-1,Number(config.jersey)||0))]||JERSEYS[0])[1]);
+    const skinIndex=Math.max(0,Math.min(SKIN_COLORS.length-1,Number(config.skin)||0));
+    const uniform=Math.max(0,Math.min(JERSEYS.length-1,Number(config.jersey)||0));
+    const skin=HEX(SKIN_COLORS[skinIndex]),baseSkin=HEX(SKIN_COLORS[0]);
+    const cloth=HEX(JERSEYS[uniform][1]),baseCloth=HEX(JERSEYS[0][1]);
     for(let i=0;i<a.length;i+=4){
-      if(a[i+3]===0)continue;
+      if(!a[i+3]||b[i]>125)continue;
       const intensity=(a[i]+a[i+1]+a[i+2])/3;
-      if(b[i]>125)continue;
-      if(b[i+1]>125){
-        let mult=Math.min(1.35,Math.max(.62,intensity/197));
-        for(let ch=0;ch<3;ch++)a[i+ch]=Math.min(255,skin[ch]*mult);
-      }else if(b[i+2]>125){
-        const light=intensity>125;
-        for(let ch=0;ch<3;ch++)a[i+ch]=Math.min(255,light?a[i+ch]*.37+cloth[ch]*.63:cloth[ch]*.48+a[i+ch]*.52);
+      if(b[i+1]>125&&skinIndex){
+        const weight=(b[i+1]/255)*Math.min(1,intensity/100)*.9;
+        for(let ch=0;ch<3;ch++)a[i+ch]+=(skin[ch]-baseSkin[ch])*weight;
+      }else if(b[i+2]>125&&uniform){
+        const weight=(b[i+2]/255)*Math.min(1,intensity/75)*.84;
+        for(let ch=0;ch<3;ch++)a[i+ch]+=(cloth[ch]-baseCloth[ch])*weight;
+      }
+    }
+    // Remove the pale rim only where it touches the outside of the sprite.
+    const edge=new Uint8Array(w*h);
+    const queue=[];
+    for(let p=0;p<edge.length;p++){
+      if(a[p*4+3]===0){edge[p]=1;queue.push(p);}
+    }
+    for(let cursor=0;cursor<queue.length;cursor++){
+      const p=queue[cursor],x=p%w;
+      const neighbors=[x>0?p-1:-1,x<w-1?p+1:-1,p-w,p+w];
+      for(const q of neighbors){
+        if(q<0||q>=edge.length||edge[q])continue;
+        const i=q*4;
+        const lo=Math.min(a[i],a[i+1],a[i+2]),hi=Math.max(a[i],a[i+1],a[i+2]);
+        if(lo<222||hi-lo>16)continue;
+        edge[q]=1;
+        a[i+3]=0;
+        queue.push(q);
       }
     }
     ctx.putImageData(pix,0,0);
     // Jersey number patch: user controls the number instead of being locked to #23 in the source picture.
-    const uniform=Number(config.jersey)||0;
     const clothLight=uniform===3?'#f0d6a7':'#e9edf7';
-    const jersey=(JERSEYS[Math.min(Math.max(uniform,0),JERSEYS.length-1)]||JERSEYS[0])[1];
-    ctx.fillStyle=jersey;ctx.fillRect(70,145,33,34);
-    ctx.fillStyle=clothLight;ctx.fillRect(74,148,25,28);
+    ctx.fillStyle=JERSEYS[uniform][1];
+    ctx.beginPath();ctx.roundRect(70,145,33,34,5);ctx.fill();
+    ctx.fillStyle=clothLight;
+    ctx.beginPath();ctx.roundRect(74,148,25,28,3);ctx.fill();
     ctx.fillStyle='#27354b';ctx.font='bold 17px monospace';ctx.textAlign='center';
     ctx.fillText(String(Math.min(99,Math.max(0,Number(config.number)||0))),87,169);
     ctx.textAlign='start';
