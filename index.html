@@ -829,7 +829,7 @@ function training(s){
   <p class="desc">포지션 핵심 능력치 · ${priorities.map(stat=>attrs[stat]).join(' · ')}</p>
   <p role="status"><strong>남은 포인트 ${remaining} / ${trainingBudget}</strong></p>
   ${focuses.map(([stat,,desc])=>{const value=plan[stat]||0;return `<div class="training-allocation"><div><strong>${attrs[stat]}</strong><div class="desc">${desc}</div></div><div class="training-stepper" tabindex="-1"><button class="btn secondary small" aria-label="${attrs[stat]} 포인트 빼기" data-training-stat="${stat}" data-training-step="-1" onclick="adjustTraining('${stat}',-1)" ${!value||s.retired?'disabled':''}>−</button><strong>${value}</strong><button class="btn secondary small" aria-label="${attrs[stat]} 포인트 추가" data-training-stat="${stat}" data-training-step="1" onclick="adjustTraining('${stat}',1)" ${!remaining||value>=2||s.retired?'disabled':''}>+</button></div></div>`}).join('')}
-  </div>${attrsCard(s)}</div><p class="footer-note">포지션 핵심 능력치는 출전 시간과 팀 성적에 영향을 줘. 30대부터 신체 능력은 훈련해도 떨어질 수 있어.</p>`;
+  </div>${attrsCard(s)}</div><p class="footer-note">포지션 핵심 능력치는 출전 시간과 팀 성적에 영향을 줘. 높은 능력치일수록 추가 성장이 느려지고, 30대부터 신체 능력이 떨어질 수 있어.</p>`;
 }
 function setFocus(f){state.focus=f;save();render();toast('다음 시즌 훈련 방향이 변경됐어.')}
 function roleFromOvr(ovr,league){const offset=league==='NBA'?8:league==='NBA G League'?2:0;return ovr>=82+offset?'에이스':ovr>=69+offset?'주전':ovr>=61+offset?'로테이션':'벤치'}
@@ -881,9 +881,25 @@ function signOffer(id){let s=state;if(s.retired)return;const offer=s.market.offe
 showModal(`${esc(koTeam(offer.team))} 선택`,`<p class="desc">${offer.league==='College (미국)'?'이 대학에 진학할까?':'이 구단과 계약할까?'}</p><div class="mini-grid"><div class="mini-box"><div class="label">소속</div><strong style="font-size:14px">${esc(koTeam(offer.team))}</strong></div><div class="mini-box"><div class="label">예상 역할</div><strong>${esc(offer.role)}</strong></div><div class="mini-box"><div class="label">기간</div><strong>${offer.years}년</strong></div><div class="mini-box"><div class="label">연봉</div><strong>${offer.salary?'$'+fmt(offer.salary):'장학·대학'}</strong></div></div>`,()=>{
 s.team=offer.team;s.league=offer.league;s.contract=offer.years;s.salary=offer.salary;s.role=offer.role;s.stage=offer.league==='College (미국)'?'COLLEGE':'PRO';s.collegeYears=s.stage==='COLLEGE'?0:s.collegeYears;s.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false};s.events.unshift({year:s.year,text:`${offer.team} ${offer.league==='College (미국)'?'진학':'계약'} (${offer.years}년)`});save();closeModal();tab='home';render();toast('새 소속팀이 확정됐어!')})}
 function requestTrade(){let s=state;if(s.stage!=='PRO'||s.retired||s.market.required||s.market.tradeRequested)return;if(!marketInterest(s,s.league)){toast('현재 기량에 관심을 보이는 팀이 없어.');return}s.market.tradeRequested=true;let accepted=chance(.48);if(accepted){const competitors=leagues[s.league].teams.filter(t=>t!==s.team);if(competitors.length){const old=s.team;s.team=pick(competitors);s.role=roleFromOvr(getOvr(s),s.league);s.events.unshift({year:s.year,text:`${old} → ${s.team} ${s.league==='NBA'?'트레이드':'이적'} 확정`});toast(`이적 요청 승인: ${koTeam(s.team)}`)}else toast('현재 리그에 이적할 팀이 없어.')}else{s.events.unshift({year:s.year,text:'트레이드/이적 요청이 거절됨'});toast('구단이 이적 요청을 거절했어.')}save();render()}
+function advanceAttribute(value,stat,age,points,ceiling){
+  const experience=age<=22?1.35:age<=27?.85:age<=31?.25:age<=35?-.28:age<=39?-.85:-1.2;
+  const training=points*(age<=27?.92:age<=34?.68:.4);
+  let change=experience*(.8+rnd(0,.55))+training+rnd(-.4,.3);
+  if(change>0)change*=clamp(1-(value-74)*.028,.38,1);
+  if(age>33&&['drive','stamina','defense','rebound'].includes(stat))change-=.35+(age-33)*.11;
+  if(age>39&&stat==='stamina')change-=.6;
+  const target=clamp(value+change,30,Math.max(value,ceiling));
+  const whole=Math.floor(target);
+  return whole+(chance(target-whole)?1:0);
+}
 function seasonCalculate(s){const age=s.age,year=s.year,was=s.stage,league=leagueName(s),ovrBefore=getOvr(s),playedLeague=s.league,oldTeam=s.team;const income=seasonIncome(was,s.salary);const isNba=was==='PRO'&&playedLeague==='NBA';let games=was==='HIGH'?27:was==='COLLEGE'?32:(leagues[playedLeague]?.games||32);if(was==='PRO'&&playedLeague==='NBA')games=82;
-const plan=trainingPlan(s); const growthFactor=age<=22?2.05:age<=27?1.15:age<=31?.35:age<=35?-.28:age<=39?-.85:-1.2;
-const attributeChanges={};for(const k of Object.keys(s.attrs)){let change=growthFactor*(.8+rnd(0,.55))+(plan[k]||0)*(age<=27?1:age<=34?.72:.42);if(age>33&&['drive','stamina','defense','rebound'].includes(k))change-=.35+(age-33)*.11;if(age>39&&k==='stamina')change-=.6;change+=rnd(-.55,.35);let old=s.attrs[k];const max=s.potential+(k===s.focus?2:0);s.attrs[k]=Math.round(clamp(old+change,30,max));attributeChanges[k]=s.attrs[k]-old}
+const plan=trainingPlan(s);
+const attributeChanges={};
+for(const stat of Object.keys(s.attrs)){
+  const previous=s.attrs[stat];
+  s.attrs[stat]=advanceAttribute(previous,stat,age,plan[stat]||0,s.potential+(stat===s.focus?2:0));
+  attributeChanges[stat]=s.attrs[stat]-previous;
+}
 let ovr=getOvr(s);const roleRating=positionRating(s);s.role=was==='HIGH'?ovr>=74?'에이스':ovr>=65?'주전':ovr>=57?'로테이션':'벤치':roleFromOvr(ovr,playedLeague);
 const style=styleData[s.player.style]||{};
 const mins=clamp((was==='HIGH'?20:was==='COLLEGE'?18:15)+((ovr+roleRating)/2-(isNba?76:69))*.66+(s.attrs.stamina-70)*.09+(style.minutes||0)+rnd(-2,3),8,isNba?38:35);
