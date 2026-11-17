@@ -109,6 +109,12 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .switch-label{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750;color:#2d455d;cursor:pointer}.switch-label input{accent-color:#246bcb;width:17px;height:17px}
 .version-chip{color:#4b6788;font-size:11px;background:#edf4fb;padding:5px 8px;border-radius:7px}
 @media(max-width:540px){.menu-grid{grid-template-columns:1fr 1fr}.menu-tile{padding:12px}.top-header{gap:7px;flex-wrap:wrap;height:auto;min-height:76px;padding:11px 14px}.top-header>.brand{font-size:14px}.main-menu-btn{padding:9px 11px}}
+.season-progress{width:min(420px,calc(100% - 32px));padding:24px;border:1px solid #d7e0ec;border-radius:16px;background:#fff;color:#172536;box-shadow:0 20px 60px #101e3b33}
+.season-progress::backdrop{background:#101b35aa}
+.season-progress h2{margin:0 0 6px}
+.season-progress .season-phase{font-weight:800;margin:20px 0 8px}
+.season-progress progress{display:block;width:100%;height:16px;accent-color:#2f75b9}
+.season-progress-actions{display:flex;justify-content:flex-end;margin-top:18px}
 </style>
 <link rel="stylesheet" href="ui.css">
 <link rel="stylesheet" href="character.css">
@@ -696,9 +702,62 @@ else if(was==='PRO'){s.market={offers:[],required:false,kind:null,interest:[],tr
 
 if(!s.retired)s.age++;s.year++;
 return result}
-function nextSeason(){let s=state;if(!s||s.retired||busy)return;if(s.pendingIntl){tab='messages';render();showInternationalInvite();return}if(s.market.required){tab='market';render();toast('먼저 진로 또는 계약 제안을 결정해 줘.');return}
-busy=true;const button=document.getElementById('simulateButton');if(button){button.disabled=true;button.textContent='시즌 전체를 계산하는 중…'}
-setTimeout(()=>{try{const result=seasonCalculate(s);save();tab='home';render();startReplayQueue([result.final],()=>{if(s.pendingIntl)showInternationalInvite();else seasonResultModal(result)});if(s.retired)toast(s.retireReason)}catch(e){console.error(e);toast('시뮬레이션 오류가 발생했어.')}finally{busy=false}},350)}
+function showSeasonProgress(s){
+  const phases=['시즌 개막','시즌 초반','시즌 중반','시즌 후반','시즌 마무리'];
+  const dialog=document.createElement('dialog');
+  dialog.className='season-progress';
+  dialog.setAttribute('aria-labelledby','season-progress-title');
+  dialog.innerHTML=`<h2 id="season-progress-title">${s.year} 시즌 자동 진행</h2>
+    <p class="desc">${esc(koTeam(s.team))} · ${esc(leagueName(s))}</p>
+    <p role="status" class="season-phase"></p>
+    <progress max="100" value="0" aria-label="시즌 진행률"></progress>
+    <div class="season-progress-actions"><button type="button" class="btn small">바로 결과 보기</button></div>`;
+  document.body.append(dialog);
+  dialog.showModal();
+  return new Promise(resolve=>{
+    const duration=2800;
+    const start=performance.now();
+    const meter=dialog.querySelector('progress');
+    const status=dialog.querySelector('.season-phase');
+    let frame;
+    const finish=()=>{
+      cancelAnimationFrame(frame);
+      dialog.close();
+      dialog.remove();
+      resolve();
+    };
+    function update(now){
+      const fraction=Math.min(1,(now-start)/duration);
+      meter.value=Math.round(fraction*100);
+      const phase=phases[Math.min(phases.length-1,Math.floor(fraction*phases.length))];
+      if(status.textContent!==phase)status.textContent=phase;
+      if(fraction<1)frame=requestAnimationFrame(update);
+      else finish();
+    }
+    dialog.addEventListener('cancel',event=>{event.preventDefault();finish()});
+    dialog.querySelector('button').addEventListener('click',finish);
+    update(start);
+  });
+}
+async function nextSeason(){let s=state;if(!s||s.retired||busy)return;if(s.pendingIntl){tab='messages';render();showInternationalInvite();return}if(s.market.required){tab='market';render();toast('먼저 진로 또는 계약 제안을 결정해 줘.');return}
+busy=true;
+const button=document.getElementById('simulateButton');
+if(button)button.disabled=true;
+try{
+  await showSeasonProgress(s);
+  const result=seasonCalculate(s);
+  save();
+  tab='home';
+  render();
+  startReplayQueue([result.final],()=>{if(s.pendingIntl)showInternationalInvite();else seasonResultModal(result)});
+  if(s.retired)toast(s.retireReason);
+}catch(e){
+  console.error(e);
+  toast('시뮬레이션 오류가 발생했어.');
+}finally{
+  busy=false;
+  if(button?.isConnected)button.disabled=false;
+}}
 function seasonResultModal(r){
  const goatText=`GOAT 점수 ${fmt(goatScore(state))} · 역대 ${goatRank(state)}위`;
  showModal(`${r.year} 시즌 결과`, `<div class="results-banner"><div class="eyebrow">SEASON ${r.year} COMPLETED</div><h2 style="margin:6px 0">${esc(koTeam(r.team))}</h2><div class="desc">${esc(r.league)} · ${r.wins}승 ${r.losses}패 · ${esc(r.playoff)} · ${r.games}경기 출전</div></div><h3>한 시즌 누적 기록</h3><div class="result-stat"><div><strong>${fmt(r.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(r.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(r.ast)}</strong><span>총 어시스트</span></div><div><strong>${r.ovr}</strong><span>최종 OVR</span></div></div><p class="smallnote" style="margin-top:9px">경기당 평균: ${r.ppg}득점 · ${r.rpg}리바운드 · ${r.apg}어시스트 (참고용)</p><div class="sep"></div>${r.final?`<p class="desc">🏀 ${esc(r.final.title)} · ${r.final.champion?'우승':'준우승'} · 시리즈 ${r.final.ourWins}:${r.final.oppWins} <button class="btn secondary small" onclick="replayFinal(${r.year},'club')">결승 다시 보기</button></p>`:''}${r.international?`<div class="notice">🌐 ${esc(r.international.competition)} · ${esc(r.international.finish)} ${r.international.final?`<button class="btn secondary small" onclick="replayFinal(${r.year},'intl')">국제전 결승 다시 보기</button>`:''}</div>`:''}${r.earned.length?`<div class="section-top" style="margin-top:15px"><h3>이번 시즌 수상</h3></div><div class="result-tags">${r.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:`<p class="desc" style="margin-top:15px">이번 시즌에는 개인 수상이 없었어. 다음 시즌에 도전하자.</p>`}${r.trade?`<div class="notice" style="margin-top:15px">⇄ ${esc(koText(r.trade))}</div>`:''}<p class="desc" style="margin:15px 0 0">${goatText}</p>${state.market.required?`<div class="notice" style="margin-top:13px">다음 시즌을 진행하려면 계약/진로를 선택해야 해.</div>`:''}${state.retired?`<div class="notice" style="margin-top:13px">${esc(state.retireReason)}</div>`:''}`,null,'확인');
