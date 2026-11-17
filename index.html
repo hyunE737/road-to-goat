@@ -180,6 +180,21 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .team-emblem img{position:absolute;inset:0;width:100%;height:100%;padding:2px;object-fit:contain;background:#fff;border-radius:inherit}
 .final-score-line .team-label{flex-direction:column;gap:5px}
 @media(max-width:600px){.team-label{gap:.4em}}
+</style><style>
+.free-throw-panel{margin:12px 0;padding:12px;background:#f4f7fb;color:#172536;border:1px solid #d7e0ec;border-radius:18px}
+.free-throw-panel[hidden]{display:none}
+.ft-court{position:relative;height:100px;margin:6px 0;background:#f8e2be;border-radius:12px;overflow:hidden}
+.ft-shooter{position:absolute;left:12%;bottom:9px;font-size:24px}
+.ft-hoop{position:absolute;left:75%;top:44px;width:22px;height:19px;border:2px solid #fff;border-top:4px solid #c24522;border-radius:0 0 45% 45%}
+.ft-ball{position:absolute;left:22%;top:69px;width:14px;height:14px;background:#ec851c;border:2px solid #934816;border-radius:50%}
+.ft-ball.ft-made{animation:ft-made .56s ease-in-out forwards}
+.ft-ball.ft-missed{animation:ft-missed .56s ease-in-out forwards}
+@keyframes ft-made{0%{left:22%;top:69px}52%{left:54%;top:12px}85%{left:calc(75% + 4px);top:36px}100%{left:calc(75% + 4px);top:65px}}
+@keyframes ft-missed{0%{left:22%;top:69px}52%{left:54%;top:14px}83%{left:calc(75% - 8px);top:42px}100%{left:67%;top:76px}}
+.ft-meter{position:relative;height:15px;border-radius:999px;background:#c5d2e1}
+.ft-green{position:absolute;top:0;bottom:0;left:44%;width:16%;background:#168348}
+#ftNeedle{position:absolute;top:-3px;left:0;width:4px;height:21px;background:#13223a;border-radius:2px;transform:translateX(-50%)}
+#ftShoot{min-height:44px}
 </style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
@@ -653,15 +668,89 @@ function replayFinal(year,type='club'){
  startReplayQueue([series],null);
 }
 function startReplayQueue(list,callback){
- stopReplay();replayQueue=list.filter(Boolean);replayAfter=callback;replaySpeed=1;
+ stopReplay();clearFreeThrows();replayFreeThrows={made:0,attempted:0};replayQueue=list.filter(Boolean);replayAfter=callback;replaySpeed=1;
  if(!replayQueue.length){if(callback)callback();return}
  startReplaySeries();
 }
 function startReplaySeries(){replaySeries=replayQueue.shift();replayGame=0;replayStep=0;
- document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal" role="dialog" aria-modal="true" style="max-width:700px"><div class="eyebrow">LIVE FINALS SIMULATION</div><h2>${esc(replaySeries.title)}</h2><div class="final-scoreboard"><span class="pill gold" id="replayPhase">결승전 시작</span><div class="final-score-line"><div><span class="score-name">${teamLabel(replaySeries.ourTeam)}</span><strong id="simOur">0</strong></div><div class="dash">:</div><div><span class="score-name">${teamLabel(replaySeries.opponent)}</span><strong id="simOpp">0</strong></div></div><div class="smallnote" id="simSeries">시리즈 0 : 0</div></div><div class="sim-court"><span class="sim-hoop left"></span><span class="sim-hoop right"></span><span id="simPlayerA" class="sim-pixel"></span><span id="simPlayerB" class="sim-pixel red"></span><span id="simBall" class="sim-ball"></span></div><div class="sim-feed" id="simFeed" aria-live="polite">경기가 시작됩니다. 공수 전환을 관전하세요!</div><div class="sim-controls"><button class="btn secondary small" id="simSpeed" onclick="changeReplaySpeed()">속도: 1배</button><button class="btn small" onclick="skipReplaySeries()">⏩ 결승 결과 바로 보기</button></div></div></div>`;
+ document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal" role="dialog" aria-modal="true" style="max-width:700px"><div class="eyebrow">LIVE FINALS SIMULATION</div><h2>${esc(replaySeries.title)}</h2><div class="final-scoreboard"><span class="pill gold" id="replayPhase">결승전 시작</span><div class="final-score-line"><div><span class="score-name">${teamLabel(replaySeries.ourTeam)}</span><strong id="simOur">0</strong></div><div class="dash">:</div><div><span class="score-name">${teamLabel(replaySeries.opponent)}</span><strong id="simOpp">0</strong></div></div><div class="smallnote" id="simSeries">시리즈 0 : 0</div></div><div class="sim-court"><span class="sim-hoop left"></span><span class="sim-hoop right"></span><span id="simPlayerA" class="sim-pixel"></span><span id="simPlayerB" class="sim-pixel red"></span><span id="simBall" class="sim-ball"></span></div><div class="sim-feed" id="simFeed" aria-live="polite">경기가 시작됩니다. 공수 전환을 관전하세요!</div><section class="free-throw-panel" id="freeThrowPanel" hidden aria-label="직접 자유투"></section><div class="sim-controls"><button class="btn secondary small" id="simSpeed" onclick="changeReplaySpeed()">속도: 1배</button><button class="btn small" onclick="skipReplaySeries()">⏩ 결승 결과 바로 보기</button></div></div></div>`;
  scheduleReplay();
 }
-function scheduleReplay(){stopReplay();replayTimer=setInterval(replayTick,Math.max(40,310/replaySpeed))}
+let freeThrow=null, freeThrowAnimation=0, freeThrowTimeout=0;
+let replayFreeThrows={made:0,attempted:0};
+const freeThrowGreen={start:.44,end:.60};
+function isFreeThrowMake(value){
+ return value>=freeThrowGreen.start&&value<=freeThrowGreen.end;
+}
+function replayFoul(game,index){
+ if(index!==12||game.steps.length<14)return 0;
+ const frame=game.steps[index],prev=game.steps[index-1];
+ return frame.a-prev.a>=2&&game.game%2===0?1:2;
+}
+function clearFreeThrows(){
+ cancelAnimationFrame(freeThrowAnimation);
+ clearTimeout(freeThrowTimeout);
+ freeThrow=null;
+}
+function openFreeThrows(count){
+ stopReplay();
+ const panel=document.getElementById('freeThrowPanel');
+ const controls=document.getElementById('simSpeed');
+ controls.disabled=true;
+ freeThrow={count,shot:1,position:0,shooting:false};
+ panel.hidden=false;
+ panel.innerHTML=`<div class="section-top"><strong>${count===1?'앤드원 · 자유투 1개':'슈팅 파울 · 자유투 2개'}</strong><span id="freeThrowCount"></span></div>
+ <div class="ft-court" aria-hidden="true"><span class="ft-shooter">🏀</span><span class="ft-hoop"></span><span id="ftBall" class="ft-ball"></span></div>
+ <div class="ft-meter" aria-hidden="true"><span class="ft-green"></span><span id="ftNeedle"></span></div>
+ <p class="desc" id="ftStatus" role="status"></p>
+ <button type="button" class="btn" id="ftShoot" onclick="shootReplayFreeThrow()">자유투 슛</button>`;
+ startFreeThrowAim();
+}
+function startFreeThrowAim(){
+ const attempt=freeThrow;
+ attempt.shooting=false;
+ const start=performance.now();
+ const button=document.getElementById('ftShoot');
+ const ball=document.getElementById('ftBall');
+ ball.className='ft-ball';
+ button.disabled=false;
+ document.getElementById('freeThrowCount').textContent=`${attempt.shot} / ${attempt.count}`;
+ document.getElementById('ftStatus').textContent='표시가 초록색에 들어오면 슛!';
+ button.focus({preventScroll:true});
+ const needle=document.getElementById('ftNeedle');
+ function aim(now){
+  if(freeThrow!==attempt||attempt.shooting)return;
+  const cycle=((now-start)%2100)/1050;
+  attempt.position=cycle<=1?cycle:2-cycle;
+  needle.style.left=`${attempt.position*100}%`;
+  freeThrowAnimation=requestAnimationFrame(aim);
+ }
+ aim(start);
+}
+function shootReplayFreeThrow(){
+ const attempt=freeThrow;
+ if(!attempt||attempt.shooting)return;
+ attempt.shooting=true;
+ cancelAnimationFrame(freeThrowAnimation);
+ const made=isFreeThrowMake(attempt.position);
+ replayFreeThrows.attempted++;
+ if(made)replayFreeThrows.made++;
+ document.getElementById('ftShoot').disabled=true;
+ document.getElementById('ftBall').classList.add(made?'ft-made':'ft-missed');
+ freeThrowTimeout=setTimeout(()=>{
+  if(freeThrow!==attempt)return;
+  document.getElementById('ftStatus').textContent=made?'성공! 링에 들어갔어.':'실패 · 공이 링을 벗어났어.';
+  freeThrowTimeout=setTimeout(()=>{
+   if(freeThrow!==attempt)return;
+   if(attempt.shot<attempt.count){attempt.shot++;startFreeThrowAim();return}
+   clearFreeThrows();
+   document.getElementById('freeThrowPanel').hidden=true;
+   document.getElementById('simSpeed').disabled=false;
+   scheduleReplay();
+  },650);
+ },560);
+}
+function scheduleReplay(){stopReplay();if(freeThrow)return;replayTimer=setInterval(replayTick,Math.max(40,310/replaySpeed))}
 function changeReplaySpeed(){replaySpeed=replaySpeed===1?3:replaySpeed===3?8:1;const b=document.getElementById('simSpeed');if(b)b.textContent=`속도: ${replaySpeed}배`;scheduleReplay()}
 function replayTick(){
  const game=replaySeries?.games?.[replayGame];if(!game)return finishReplaySeries();
@@ -676,6 +765,8 @@ function replayTick(){
   document.getElementById('simPlayerB').style.transform=`translate(${Math.cos(n)*-25}px,${Math.sin(n)*28}px)`;
   document.getElementById('simBall').style.left=frame.lead==='a'?'33%':'67%';
   document.getElementById('simBall').style.top=`${38+(n%5)*6}%`;
+  const foul=replayFoul(game,n-1);
+  if(foul)openFreeThrows(foul);
  }else{
   document.getElementById('simFeed').textContent=`${game.game}차전 종료! ${game.our} : ${game.opp} · ${koTeam(game.win?replaySeries.ourTeam:replaySeries.opponent)} 승리`;
   document.getElementById('simSeries').textContent=`시리즈 ${game.seriesA} : ${game.seriesB}`;
@@ -685,10 +776,10 @@ function replayTick(){
 }
 function skipReplaySeries(){stopReplay();finishReplaySeries()}
 function finishReplaySeries(){
- stopReplay();const ser=replaySeries;
+ stopReplay();clearFreeThrows();const ser=replaySeries;
  if(!ser)return;
  const last=ser.games[ser.games.length-1];
- document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal"><span class="pill gold">🏆 결승 종료</span><h2 style="margin-top:12px">${esc(ser.title)}</h2><div class="results-banner"><div class="headline"><strong>${teamLabel(ser.ourTeam)}</strong><strong>${teamLabel(ser.opponent)}</strong></div><div class="final-score-line"><div><strong>${last.our}</strong></div><span class="dash">:</span><div><strong>${last.opp}</strong></div></div><p class="desc" style="text-align:center;margin-bottom:0">시리즈 ${ser.ourWins} : ${ser.oppWins} · ${ser.champion?'🏆 우승!':'준우승'}</p></div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>경기</th><th>우리 팀</th><th>상대 팀</th><th>결과</th></tr></thead><tbody>${ser.games.map(g=>`<tr><td>${g.game}차전</td><td>${g.our}</td><td>${g.opp}</td><td>${g.win?'승':'패'}</td></tr>`).join('')}</tbody></table></div><div class="modal-actions"><button class="btn" onclick="continueReplay()">${replayQueue.length?'다음 결승 보기':'결과 확인'}</button></div></div></div>`;
+ document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal"><span class="pill gold">🏆 결승 종료</span><h2 style="margin-top:12px">${esc(ser.title)}</h2><div class="results-banner"><div class="headline"><strong>${teamLabel(ser.ourTeam)}</strong><strong>${teamLabel(ser.opponent)}</strong></div><div class="final-score-line"><div><strong>${last.our}</strong></div><span class="dash">:</span><div><strong>${last.opp}</strong></div></div><p class="desc" style="text-align:center;margin-bottom:0">시리즈 ${ser.ourWins} : ${ser.oppWins} · ${ser.champion?'🏆 우승!':'준우승'}</p></div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>경기</th><th>우리 팀</th><th>상대 팀</th><th>결과</th></tr></thead><tbody>${ser.games.map(g=>`<tr><td>${g.game}차전</td><td>${g.our}</td><td>${g.opp}</td><td>${g.win?'승':'패'}</td></tr>`).join('')}</tbody></table></div>${replayFreeThrows.attempted?`<p class="desc">관전 중 직접 자유투 ${replayFreeThrows.made} / ${replayFreeThrows.attempted} 성공</p>`:''}<div class="modal-actions"><button class="btn" onclick="continueReplay()">${replayQueue.length?'다음 결승 보기':'결과 확인'}</button></div></div></div>`;
 }
 function continueReplay(){
  if(replayQueue.length){startReplaySeries();return}
