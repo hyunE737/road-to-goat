@@ -165,6 +165,13 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .style-draw-details{margin:6px 0 10px;padding:12px;border-radius:16px;background:var(--panel2);min-height:64px}
 .style-draw-details strong{display:block;margin-bottom:4px}
 #styleDrawButton{min-height:44px}
+</style><style>
+.avatar-versions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.avatar-version{display:grid;justify-items:center;align-content:center;gap:6px;padding:8px 4px;min-width:0;border:2px solid var(--line);border-radius:18px;background:#fff;color:var(--text);cursor:pointer;font:inherit}
+.avatar-version[aria-pressed="true"]{border-color:#3975b0;background:#e9f2ff}
+.avatar-version canvas{display:block;width:82px;height:auto;max-width:100%;image-rendering:auto}
+.avatar-version strong{font-size:13px}
+@media(max-width:420px){.avatar-versions{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
@@ -475,27 +482,37 @@ function renderIntro(restoreDraft=false){const names=Object.keys(leagues).filter
 function schoolOptions(country){const list=currentSchool(country);return list.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')+`<option value="${CUSTOM_SCHOOL}">✎ 목록에 없음 — 학교 직접 입력</option>`}
 function updateSchools(){const c=document.getElementById('schoolCountry').value, list=currentSchool(c);document.getElementById('schoolSelect').innerHTML=schoolOptions(c);document.getElementById('schoolCount').textContent=list.length?`${c} 실제 농구 관련 학교 ${list.length}곳 · 직접 입력 가능`:`${c} 학교는 직접 입력해서 시작할 수 있어`;updateCustomSchool()}
 function updateCustomSchool(){const v=document.getElementById('schoolSelect').value,isCustom=v===CUSTOM_SCHOOL;const input=document.getElementById('customSchool');input.classList.toggle('hidden',!isCustom);input.required=isCustom}
+const avatarVersions=[
+ {label:'네이비',skin:0,jersey:0,hairColor:0},
+ {label:'코트 레드',skin:1,jersey:1,hairColor:1},
+ {label:'포레스트',skin:2,jersey:2,hairColor:0},
+ {label:'골드',skin:3,jersey:3,hairColor:1},
+ {label:'바이올렛',skin:4,jersey:4,hairColor:0},
+ {label:'차콜',skin:1,jersey:5,hairColor:0}
+];
+function avatarVersionConfig(version){
+ const {skin,jersey,hairColor}=avatarVersions[version];
+ return {...avatarConfig,variant:version,preset:0,skin,jersey,hairColor};
+}
+function chooseAvatarVersion(version){
+ if(!avatarVersions[version])return;
+ avatarConfig=avatarVersionConfig(version);
+ document.querySelectorAll('[data-avatar-version]').forEach(button=>{
+  const selected=Number(button.dataset.avatarVersion)===version;
+  button.setAttribute('aria-pressed',String(selected));
+ });
+ drawAllAvatars();
+ updateAvatarStatus();
+}
 function renderAvatarSelection(){
+ avatarConfig=avatarVersionConfig(avatarConfig.variant??0);
  const d=draftPlayer;if(!d)return renderIntro();
- document.getElementById('app').innerHTML=`<div class="avatar-screen"><div class="intro-header"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">/ PIXEL CHARACTER</span></div></div><div class="avatar-stage-layout"><section class="card avatar-stage-preview"><span class="pill gold">STEP 2 / 2 · 선수 외형 선택</span><h1 style="font-size:32px;letter-spacing:-1px;margin:12px 0 5px">나만의 픽셀 선수</h1><p class="desc">${esc(d.name)} · ${esc(d.school)} · ${esc(d.pos)}</p><div class="pixel-showcase"><canvas id="mainPixelAvatar" width="40" height="54" aria-label="선택한 선수의 픽셀 캐릭터"></canvas></div><div class="avatar-preview-name">${esc(d.name.toUpperCase())}</div><div class="selection-status" id="avatarStatus" role="status" aria-live="polite">선택 항목을 불러오는 중…</div><p class="smallnote" style="text-align:center">캐릭터는 게임용 독창적인 픽셀 아트야. 실제 선수 사진은 사용하지 않아.</p></section><section class="card avatar-configuration"><div class="section-top"><h2 style="margin:0">캐릭터 고르기</h2></div><div class="field"><label>피부색</label><div class="swatch-row">${SKIN_COLORS.map((c,i)=>`<button type="button" class="swatch ${avatarConfig.skin===i?'active':''}" data-avatar-key="skin" data-index="${i}" aria-pressed="${avatarConfig.skin===i}" style="--swatch:${c}" title="피부색 ${i+1}" aria-label="피부색 ${i+1}" onclick="changeAvatar('skin',${i})"></button>`).join('')}</div></div><div class="field" style="margin-top:14px"><label>유니폼</label><div class="swatch-row">${JERSEYS.map(([label,c],i)=>`<button type="button" class="swatch ${avatarConfig.jersey===i?'active':''}" data-avatar-key="jersey" data-index="${i}" aria-pressed="${avatarConfig.jersey===i}" style="--swatch:${c}" title="${label}" aria-label="${label}" onclick="changeAvatar('jersey',${i})"></button>`).join('')}</div></div><div class="field" style="margin-top:14px"><label for="avatarNumber">등번호 (0~99)</label><input id="avatarNumber" type="number" min="0" max="99" step="1" value="${avatarConfig.number}" oninput="changeAvatarNumber(this.value)"></div><div class="avatar-actions"><button type="button" class="btn secondary" onclick="renderIntro(true)">← 뒤로</button><button type="button" class="btn" onclick="finishCreatePlayer()">▶ 선택 완료 · 고1 시작</button></div><p class="smallnote" style="margin-top:12px">항목을 누르면 왼쪽 캐릭터와 선택 표시가 즉시 바뀌어. HTML 파일은 다운로드한 뒤 크롬에서 열어 줘.</p></section></div></div>`;
+ document.getElementById('app').innerHTML=`<div class="avatar-screen"><div class="intro-header"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">/ PIXEL CHARACTER</span></div></div><div class="avatar-stage-layout"><section class="card avatar-stage-preview"><span class="pill gold">STEP 2 / 2 · 선수 외형 선택</span><h1 style="font-size:32px;letter-spacing:-1px;margin:12px 0 5px">나만의 픽셀 선수</h1><p class="desc">${esc(d.name)} · ${esc(d.school)} · ${esc(d.pos)}</p><div class="pixel-showcase"><canvas id="mainPixelAvatar" width="40" height="54" aria-label="선택한 선수의 픽셀 캐릭터"></canvas></div><div class="avatar-preview-name">${esc(d.name.toUpperCase())}</div><div class="selection-status" id="avatarStatus" role="status" aria-live="polite">선택 항목을 불러오는 중…</div><p class="smallnote" style="text-align:center">캐릭터는 게임용 독창적인 픽셀 아트야. 실제 선수 사진은 사용하지 않아.</p></section><section class="card avatar-configuration"><div class="section-top"><h2 style="margin:0">캐릭터 고르기</h2></div><div class="avatar-versions">${avatarVersions.map((version,index)=>`<button type="button" class="avatar-version" data-avatar-version="${index}" aria-pressed="${avatarConfig.variant===index}" onclick="chooseAvatarVersion(${index})"><canvas width="40" height="54" data-version="${index}" aria-hidden="true"></canvas><strong>${version.label}</strong></button>`).join('')}</div><div class="field" style="margin-top:14px"><label for="avatarNumber">등번호 (0~99)</label><input id="avatarNumber" type="number" min="0" max="99" step="1" value="${avatarConfig.number}" oninput="changeAvatarNumber(this.value)"></div><div class="avatar-actions"><button type="button" class="btn secondary" onclick="renderIntro(true)">← 뒤로</button><button type="button" class="btn" onclick="finishCreatePlayer()">▶ 선택 완료 · 고1 시작</button></div><p class="smallnote" style="margin-top:12px">카드를 누르면 선택한 버전을 크게 볼 수 있어.</p></section></div></div>`;
  drawAllAvatars();updateAvatarStatus();
 }
 function updateAvatarStatus(){
  const el=document.getElementById('avatarStatus');if(!el)return;
- el.innerHTML=`<strong>선택 완료:</strong> 피부색 ${avatarConfig.skin+1}번 · ${esc(JERSEYS[avatarConfig.jersey][0])} 유니폼 · 등번호 ${avatarConfig.number}`;
-}
-function pickPixelStyle(n){
- if(!Number.isInteger(n)||n<0||n>=PIXEL_STYLES.length)return;
- avatarConfig.preset=n;
- document.querySelectorAll('.pixel-preset').forEach(el=>{const selected=Number(el.dataset.choice)===n;el.classList.toggle('active',selected);el.setAttribute('aria-pressed',String(selected))});
- drawAllAvatars();updateAvatarStatus();
-}
-function changeAvatar(key,n){
- const opts={skin:SKIN_COLORS,hairColor:HAIR_COLORS,jersey:JERSEYS};
- if(!opts[key]||!Number.isInteger(n)||n<0||n>=opts[key].length)return;
- avatarConfig[key]=n;
- document.querySelectorAll('.swatch[data-avatar-key="'+key+'"]').forEach(el=>{const selected=Number(el.dataset.index)===n;el.classList.toggle('active',selected);el.setAttribute('aria-pressed',String(selected))});
- drawAllAvatars();updateAvatarStatus();
+ el.innerHTML=`<strong>선택 완료:</strong> ${esc(avatarVersions[avatarConfig.variant].label)} 버전 · 등번호 ${avatarConfig.number}`;
 }
 function changeAvatarNumber(value){const n=Math.min(99,Math.max(0,Number(value)||0));avatarConfig.number=n;drawAllAvatars();updateAvatarStatus()}
 function shade(hex,factor){let x=hex.replace('#','');const r=clamp(Math.round(parseInt(x.slice(0,2),16)*factor),0,255),g=clamp(Math.round(parseInt(x.slice(2,4),16)*factor),0,255),b=clamp(Math.round(parseInt(x.slice(4,6),16)*factor),0,255);return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}
@@ -530,7 +547,7 @@ function pixelDraw(canvas,config){
 function drawAllAvatars(){
  const current=state?.player?.avatar||avatarConfig;
  const main=document.getElementById('mainPixelAvatar');if(main)pixelDraw(main,avatarConfig);
- document.querySelectorAll('canvas[data-preset]').forEach(el=>pixelDraw(el,{...avatarConfig,preset:Number(el.dataset.preset)}));
+ document.querySelectorAll('canvas[data-version]').forEach(el=>pixelDraw(el,avatarVersionConfig(Number(el.dataset.version))));
  document.querySelectorAll('canvas[data-profile]').forEach(el=>pixelDraw(el,current));
 }
 
@@ -1067,6 +1084,6 @@ state=load();render();initUpdater();
 </script>
 <script src="enhancements.js?rev=open-ended-career"></script>
 <script src="art-assets.js"></script>
-<script src="character.js?rev=242edd87"></script>
+<script src="character.js?rev=7e70f898"></script>
 </body>
 </html>
