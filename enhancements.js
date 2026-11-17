@@ -30,8 +30,19 @@ function rtgCareerChapter(s){
  if(s.awards.mvp>0)return 'MVP를 쌓으며 GOAT에 도전하는 시기';
  return 'NBA에서 첫 우승과 MVP를 노리는 시기';
 }
-function rtgWelcome(){document.getElementById('app').innerHTML=`<main class="rtg-welcome"><div class="rtg-welcome-shell"><div class="rtg-topline"><span class="rtg-wordmark">RTG<span class="rtg-dot">.</span> ROAD TO GOAT</span><button class="rtg-help-link" onclick="rtgGuideModal()">게임 가이드 ↗</button></div><div class="rtg-welcome-body"><div class="rtg-brief"><div class="rtg-section-label">BASKETBALL CAREER / SEASON SIMULATOR</div><h1>코트 위 첫 경기부터<br><em>역대 최고의 선수</em>까지.</h1><p>고등학교 1학년부터 시작해 한 시즌씩 성장하세요. 경기는 자동으로 진행되고, 훈련·계약·국가대표 소집은 직접 결정합니다.</p><div class="rtg-route"><span>벤치</span><b>→</b><span>첫 경기</span><b>→</b><span>첫 득점</span><b>→</b><span>첫 우승</span><b>→</b><span>GOAT</span></div><div class="rtg-start-actions"><button class="btn rtg-primary" id="rtgBegin" onclick="rtgBeginJourney()">내 커리어 시작하기 <span>↗</span></button><span class="rtg-footnote">원할 때 은퇴 가능</span></div></div>${rtgJourneyMarkup()}</div><div class="rtg-welcome-bottom"><span>MY CAREER · v${GAME_VERSION}</span><span>시즌 자동 시뮬레이션 / 픽셀 결승 관전</span></div></div></main><div id="rtgIntroLoad" class="rtg-load hidden" aria-live="polite"><div class="rtg-load-content"><span class="rtg-wordmark">ROAD TO GOAT</span><strong>선수의 첫 페이지를 여는 중</strong><p id="rtgLoadLabel">고교 리그를 준비하고 있어요</p><div class="rtg-load-track"><div></div></div><small>NEW CAREER · HIGH SCHOOL YEAR 1</small></div></div>`}
-function rtgBeginJourney(){const b=document.getElementById('rtgBegin');if(b)b.disabled=true;const o=document.getElementById('rtgIntroLoad');if(o)o.classList.remove('hidden');setTimeout(()=>{const n=document.getElementById('rtgLoadLabel');if(n)n.textContent='나만의 선수 정보를 준비하고 있어요'},430);setTimeout(()=>{rtgIntroReady=true;renderIntro()},1000)}
+function rtgWelcome(){
+ document.getElementById('app').innerHTML=`<main class="rtg-welcome welcome-simple"><section class="welcome-intro" aria-labelledby="welcomeTitle">
+  <span class="brandmark welcome-brandmark" aria-hidden="true">🏀</span>
+  <h1 id="welcomeTitle">ROAD TO GOAT</h1>
+  <p class="desc">고교 농구부터 시작하는 선수 커리어</p>
+  <button type="button" class="btn" id="rtgBegin" onclick="rtgBeginJourney()">내 커리어 시작하기</button>
+  <button type="button" class="welcome-guide" onclick="rtgGuideModal()">게임 가이드</button>
+ </section></main>`;
+}
+function rtgBeginJourney(){
+ rtgIntroReady=true;
+ renderIntro();
+}
 const rtgOriginalIntro=renderIntro;
 renderIntro=function(restoreDraft=false){if(!rtgIntroReady&&!state){rtgWelcome();return;}rtgOriginalIntro(restoreDraft)};
 function rtgGuideMarkup(){return `<div class="rtg-guide-list"><div><b>01</b><section><strong>선수 생성</strong><p>국적과 학교, 포지션을 고르고 픽셀 외형을 꾸며 고1 커리어를 시작하세요.</p></section></div><div><b>02</b><section><strong>훈련 방향 설정</strong><p>시즌을 돌리기 전에 슈팅·수비·패스 등 키울 능력치를 지정하세요.</p></section></div><div><b>03</b><section><strong>한 시즌 자동 진행</strong><p>버튼 한 번으로 정규 시즌과 플레이오프가 계산됩니다. 결승은 5대5 관전 화면에서 볼 수 있어요.</p></section></div><div><b>04</b><section><strong>중요한 제안에 답장</strong><p>국가대표 소집은 수락 또는 거절하세요. FA 계약·학교 졸업 후 진로는 직접 결정해야 합니다.</p></section></div><div><b>05</b><section><strong>MVP와 GOAT 랭킹</strong><p>시즌 누적 기록, 뉴스·팬 반응, 트로피 수를 확인하세요. 계약이 끝난 뒤 새 제안이 없으면 은퇴합니다.</p></section></div></div><p class="rtg-guide-note">저장 정보는 현재 브라우저에 보관됩니다. 중요한 커리어는 설정에서 백업 파일을 내려받아 주세요.</p>`}
