@@ -53,7 +53,58 @@ function rtgStoryLine(s){if(s.retired)return '모든 시즌이 끝났습니다. 
 function rtgContextStrip(s){const action=s.pendingIntl?'국가대표 소집에 답장하기':s.market.required?'계약과 진로 결정하기':'다음 시즌 시작하기';const where=s.pendingIntl?'messages':s.market.required?'market':'home';return '<div class="rtg-next-step"><span class="rtg-kicker">CURRENT CHAPTER / 지금의 이야기</span><div><strong>'+rtgCareerChapter(s)+'</strong><span>다음 행동: '+action+'</span></div><button class="btn secondary small" onclick="'+(s.pendingIntl?'showInternationalInvite()':"switchTab('"+where+"')")+'">'+(s.pendingIntl?'메시지 확인':s.market.required?'제안 확인':'시즌 진행')+' →</button></div>'}
 const rtgOldHome=home;
 home=function(s){let html=rtgOldHome(s);html=html.replace('<section class="hero">',rtgContextStrip(s)+'<section class="hero">');return html+`<section class="card rtg-story"><span class="rtg-kicker">COURTSIDE STORY / ${s.year}</span><h3>지금, 당신의 이야기</h3><p>${esc(rtgStoryLine(s))}</p><div class="rtg-action-bar"><button class="btn secondary small" onclick="switchTab('news')">기사와 팬 반응 보기 →</button><button class="btn ghost small" onclick="switchTab('guide')">플레이 가이드</button></div></section>`};
-function rtgCareerFinal(s){const histories=s.history||[];const totals=histories.reduce((acc,r)=>{acc.points+=(r.pts||0);acc.rebounds+=(r.reb||0);acc.assists+=(r.ast||0);acc.games+=(r.games||0);return acc},{points:0,rebounds:0,assists:0,games:0});return `${panelTitle('커리어 엔딩','<span class="pill gold">CAREER LEGACY</span>')}<div class="rtg-legacy-cover"><span class="rtg-kicker">THE LAST DANCE</span><h1>${esc(s.player.name)}</h1><p>${s.retired?`은퇴 ${s.age}세 · ${histories.length}시즌의 기록`:`현재까지의 커리어 · ${histories.length}시즌 진행`}</p><strong>ALL-TIME GOAT RANK #${goatRank(s)}</strong></div><div class="grid four rtg-legacy-stats">${[['NBA MVP',s.awards.mvp+'회'],['파이널 MVP',s.awards.fmvp+'회'],['NBA 우승',s.awards.rings+'회'],['올스타',s.awards.allstar+'회'],['전체 득점',fmt(totals.points)],['전체 리바운드',fmt(totals.rebounds)],['전체 어시스트',fmt(totals.assists)],['전체 경기',fmt(totals.games)]].map(([k,v])=>statbox(k,v)).join('')}</div><div class="card"><h3>마지막 커리어 기사</h3><p class="desc">${s.retired?`${esc(s.player.name)} 선수의 농구 인생이 마무리되었습니다. MVP와 우승, 수많은 시즌의 기록이 남았습니다.`:'은퇴 이후 이 페이지가 최종 커리어 성적표가 됩니다.'}</p><div class="rtg-action-bar"><button class="btn secondary" onclick="switchTab('history')">연도별 기록 보기</button><button class="btn secondary" onclick="switchTab('news')">마지막 기사 보기</button><button class="btn secondary" onclick="switchTab('settings')">백업 및 설정</button></div></div>`}
+const rtgPlayerComparisons={
+ scorer:['드웨인 웨이드','득점과 돌파 중심'],
+ shooter:['스테픈 커리','외곽 슈팅 중심'],
+ play:['스티브 내시','패스와 경기 조율 중심'],
+ defense:['카와이 레너드','수비 중심'],
+ all:['스코티 피펜','공수에 고르게 기여'],
+ inside:['드와이트 하워드','골밑과 리바운드 중심']
+};
+function rtgSummarizeCareer(s){
+ const seasons=s.history||[];
+ const totals={points:0,rebounds:0,assists:0,games:0};
+ const trophies=new Map(),individual=new Map();
+ const add=(map,name)=>map.set(name,(map.get(name)||0)+1);
+ let best=null;
+ for(const season of seasons){
+  totals.points+=Number(season.pts??Math.round((season.ppg||0)*(season.games||0)))||0;
+  totals.rebounds+=Number(season.reb??Math.round((season.rpg||0)*(season.games||0)))||0;
+  totals.assists+=Number(season.ast??Math.round((season.apg||0)*(season.games||0)))||0;
+  totals.games+=Number(season.games)||0;
+  const rating=season.rating??season.ovr??0;
+  const previous=best?(best.rating??best.ovr??0):-1;
+  if(rating>previous||(rating===previous&&(season.ovr||0)>(best?.ovr||0)))best=season;
+  if(season.champ)add(trophies,`${season.league} 우승`);
+  const intl=season.international||s.intlHistory?.find(event=>event.year===season.year);
+  if(intl&&['금메달','은메달','동메달'].includes(intl.medal))add(trophies,`${intl.competition.replace(/\s*\([^)]*\)\s*$/,'')} ${intl.medal}`);
+  for(const award of season.earned||[]){
+   if(/우승$|메달$/.test(award))continue;
+   const label=/^리그 /.test(award)?`${season.league} ${award.slice(3)}`:award;
+   add(individual,label);
+  }
+ }
+ return {totals,best,trophies,individual};
+}
+function rtgCareerAwards(title,awards,empty){
+ const count=[...awards.values()].reduce((sum,n)=>sum+n,0);
+ return `<section class="card career-summary-card"><div class="section-top"><h3>${title}</h3><span class="pill gold">총 ${count}회</span></div>${count?`<ul class="career-award-list">${[...awards].map(([label,n])=>`<li><span>${esc(label)}</span><strong>${n}회</strong></li>`).join('')}</ul>`:`<p class="desc">${empty}</p>`}</section>`;
+}
+function rtgCareerFinal(s){
+ const {totals,best,trophies,individual}=rtgSummarizeCareer(s);
+ const [similar,reason]=rtgPlayerComparisons[s.player.style]||rtgPlayerComparisons.all;
+ const name=esc(s.player.name);
+ return `${panelTitle('커리어 요약')}
+ <div class="rtg-legacy-cover"><h1>${name}</h1><p>${s.retired?`${s.age}세 은퇴`:'현역'} · ${s.history.length}시즌 · 역대 ${goatRank(s)}위</p></div>
+ <section class="card career-summary-card"><div class="section-top"><h3>통산 기록</h3><span class="pill">${fmt(totals.games)}경기</span></div>
+  <div class="result-stat">${[['득점',totals.points],['리바운드',totals.rebounds],['어시스트',totals.assists]].map(([label,value])=>`<div><strong>${fmt(value)}</strong><span>${label}</span></div>`).join('')}</div></section>
+ <section class="card career-summary-card"><h3>최고의 시즌</h3>${best?`<p><strong>${best.year}년 · ${teamLabel(best.team)}</strong></p><p class="desc">${esc(best.league)} · ${best.rating!=null?'시즌 평점 '+best.rating:'시즌 OVR '+best.ovr} · ${fmt(best.pts??Math.round((best.ppg||0)*(best.games||0)))}득점 · ${fmt(best.reb??Math.round((best.rpg||0)*(best.games||0)))}리바운드 · ${fmt(best.ast??Math.round((best.apg||0)*(best.games||0)))}어시스트</p>`:'<p class="desc">아직 마친 시즌이 없어.</p>'}</section>
+ ${rtgCareerAwards('팀 트로피·메달',trophies,'아직 팀 우승이나 국제대회 메달이 없어.')}
+ ${rtgCareerAwards('개인상',individual,'아직 받은 개인상이 없어.')}
+ <section class="card career-summary-card"><h3>은퇴 소식</h3>${s.retired?`<p><strong>${name}, ${s.history.length}시즌을 마치고 은퇴</strong></p><p class="desc">${teamLabel(s.team)}에서 마지막 시즌을 보냈어. ${esc(s.retireReason||'')}</p>`:'<p class="desc">현역 커리어를 이어가는 중이야.</p>'}</section>
+ <section class="card career-summary-card"><h3>닮은 선수</h3><p><strong>${similar}</strong></p><p class="desc">${reason} · 게임에서 선택한 플레이 스타일 기준</p></section>
+ <div class="rtg-action-bar"><button class="btn secondary" onclick="switchTab('history')">연도별 기록 보기</button><button class="btn secondary" onclick="switchTab('settings')">백업 및 설정</button></div>`;
+}
 const rtgOldRenderTab=renderTab;
 renderTab=function(){if(!state)return;if(tab==='news'||tab==='guide'||tab==='legacy'){document.getElementById('pageContent').innerHTML=tab==='news'?rtgNewsPage(state):tab==='guide'?rtgGuidePage():rtgCareerFinal(state);drawAllAvatars();return;}rtgOldRenderTab()};
 navItems.splice(4,0,['news','▣','기사·팬 반응']);navItems.splice(navItems.length-2,0,['guide','?','게임 가이드'],['legacy','♜','커리어 엔딩']);
@@ -68,7 +119,7 @@ seasonCalculate=function(s){rtgNewsInit(s);const from=s.team;const r=rtgOldSeaso
 const rtgOldRetire=retireNow;
 retireNow=function(reason){if(state){rtgPublish(state,'retire');save()}rtgOldRetire(reason);tab='legacy';render();toast('최종 커리어 기록을 확인해 봐.')};
 const rtgOldSeasonResult=seasonResultModal;
-seasonResultModal=function(r){if(state?.retired){tab='legacy';render();showModal('커리어 마지막 장',`<p class="desc">${esc(state.player.name)} 선수의 커리어가 끝났습니다. 최종 기록과 GOAT 순위를 확인해 보세요.</p><div class="mini-grid"><div class="mini-box"><span class="label">NBA 정규 MVP</span><strong>${state.awards.mvp}회</strong></div><div class="mini-box"><span class="label">NBA 우승</span><strong>${state.awards.rings}회</strong></div></div>`);return;}rtgOldSeasonResult(r)};
+seasonResultModal=function(r){if(state?.retired){switchTab('legacy');return;}rtgOldSeasonResult(r)};
 function rtgCourtFive(){const pos=[['PG',14,23],['SG',25,72],['SF',33,38],['PF',43,76],['C',43,24]];const make=(side,i)=>{const p=pos[i];const isHome=side==='a';const x=isHome?p[1]:100-p[1],y=isHome?p[2]:100-p[2];return `<div id="${i===0?(isHome?'simPlayerA':'simPlayerB'):`sim-${side}-${i}`}" class="rtg-athlete ${isHome?'rtg-home':'rtg-away'}" style="left:${x}%;top:${y}%;--jersey-num:${i+1}"><span class="rtg-shadow"></span><span class="rtg-legs"></span><span class="rtg-torso"><b>${i+1}</b></span><span class="rtg-arms"></span><span class="rtg-head"></span><span class="rtg-hair"></span><small>${p[0]}</small></div>`};return `<div class="rtg-court-label">HOME · 5 VS 5 · AWAY</div><span class="sim-hoop left"></span><span class="sim-hoop right"></span>${pos.map((_,i)=>make('a',i)).join('')}${pos.map((_,i)=>make('b',i)).join('')}<span id="simBall" class="sim-ball"></span>`}
 const rtgOldStartReplay=startReplaySeries;
 startReplaySeries=function(){rtgOldStartReplay();const court=document.querySelector('.sim-court');if(court){court.classList.add('rtg-full-court');court.innerHTML=rtgCourtFive()}};
