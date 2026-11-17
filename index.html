@@ -197,6 +197,19 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .ft-green{position:absolute;top:0;bottom:0;left:44%;width:16%;background:#168348}
 #ftNeedle{position:absolute;top:-3px;left:0;width:4px;height:21px;background:#13223a;border-radius:2px;transform:translateX(-50%)}
 #ftShoot{min-height:44px}
+</style><style>
+.is-free-throw .sim-court,.is-free-throw .sim-feed{display:none}
+.free-throw-panel{padding:clamp(12px,3vw,20px)}
+.ft-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.ft-heading h3{margin:0;font-size:20px}
+.ft-meter{height:22px;margin-top:14px}
+#ftNeedle{height:28px}
+.ft-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin:10px 0;font-size:13px;font-weight:700}
+.ft-legend span{display:inline-flex;gap:5px;align-items:center}
+.ft-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.ft-dot-green{background:#168348}.ft-dot-yellow{background:#efbc40}.ft-dot-gray{background:#a3b3c5}
+.ft-status{margin:12px 0 8px;text-align:center;font-weight:700;color:#263b55}
+#ftShoot{min-height:50px;font-size:16px}
 </style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
@@ -703,13 +716,15 @@ function openFreeThrows(count){
  const panel=document.getElementById('freeThrowPanel');
  const controls=document.getElementById('simSpeed');
  controls.disabled=true;
+ panel.closest('.modal').classList.add('is-free-throw');
  freeThrow={count,shot:1,position:0,shooting:false};
  panel.hidden=false;
- panel.innerHTML=`<div class="section-top"><strong>${count===1?'앤드원 · 자유투 1개':'슈팅 파울 · 자유투 2개'}</strong><span id="freeThrowCount"></span></div>
+ panel.innerHTML=`<div class="ft-heading"><h3>${count===1?'앤드원':'슈팅 파울'}</h3><strong class="pill gold" id="freeThrowCount"></strong></div>
  <div class="ft-court" aria-hidden="true"><canvas class="ft-shooter" width="40" height="54"></canvas><span class="ft-hoop"></span><span id="ftBall" class="ft-ball"></span></div>
  <div class="ft-meter" aria-hidden="true"><span class="ft-green"></span><span id="ftNeedle"></span></div>
- <p class="desc" id="ftStatus" role="status"></p>
- <button type="button" class="btn" id="ftShoot" onclick="shootReplayFreeThrow()">자유투 슛</button>`;
+ <div class="ft-legend" aria-label="타이밍에 따른 성공 확률"><span><i class="ft-dot ft-dot-green"></i>초록 100%</span><span><i class="ft-dot ft-dot-yellow"></i>노랑 50%</span><span><i class="ft-dot ft-dot-gray"></i>회색 1%</span></div>
+ <p class="ft-status" id="ftStatus" role="status"></p>
+ <button type="button" class="btn wide" id="ftShoot" onclick="shootReplayFreeThrow()">슛 던지기</button>`;
  pixelDraw(panel.querySelector('.ft-shooter'),state?.player?.avatar||avatarConfig);
  panel.scrollIntoView({block:'nearest'});
  startFreeThrowAim();
@@ -722,8 +737,8 @@ function startFreeThrowAim(){
  const ball=document.getElementById('ftBall');
  ball.className='ft-ball';
  button.disabled=false;
- document.getElementById('freeThrowCount').textContent=`${attempt.shot} / ${attempt.count}`;
- document.getElementById('ftStatus').textContent='초록 100% · 노랑 50% · 회색 1%';
+ document.getElementById('freeThrowCount').textContent=`${attempt.count}개 중 ${attempt.shot}번째`;
+ document.getElementById('ftStatus').textContent='표시가 초록 구간에 들어오면 눌러!';
  button.focus({preventScroll:true});
  const needle=document.getElementById('ftNeedle');
  function aim(now){
@@ -752,7 +767,9 @@ function shootReplayFreeThrow(){
    if(freeThrow!==attempt)return;
    if(attempt.shot<attempt.count){attempt.shot++;startFreeThrowAim();return}
    clearFreeThrows();
-   document.getElementById('freeThrowPanel').hidden=true;
+   const panel=document.getElementById('freeThrowPanel');
+   panel.hidden=true;
+   panel.closest('.modal').classList.remove('is-free-throw');
    document.getElementById('simSpeed').disabled=false;
    scheduleReplay();
   },650);
