@@ -118,6 +118,36 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 </style>
 <link rel="stylesheet" href="ui.css">
 <link rel="stylesheet" href="character.css">
+<style>
+.card,.card.flat,.create,.avatar-stage-preview,.hero,.modal,.season-progress,.pixel-showcase,.final-scoreboard{border-radius:24px}
+.mini-box,.offer,.stat,.results-banner,.notice,.menu-tile{border-radius:18px}
+.btn,.main-menu-btn,.nav,.pill{border-radius:999px}
+.field input,.field select,.field textarea{border-radius:14px}
+.swatch{min-width:44px;min-height:44px;border-radius:50%}
+.swatch-row{display:flex;flex-wrap:wrap;gap:9px}
+.content,.layout>*,.avatar-stage-layout>*{min-width:0}
+.table-wrap{max-width:100%;overflow-x:auto}
+@media(max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr);padding:12px;gap:14px}
+  .layout>.side{border-radius:20px;max-width:100%;min-width:0;gap:6px;padding:7px;scroll-padding-inline:8px}
+  .layout>.side .nav{min-height:44px;font-size:13px;padding:8px 14px}
+}
+@media(max-width:600px){
+  .top-header,.intro-header{flex-wrap:wrap;gap:8px;padding-inline:12px}
+  .top-header .main-menu-btn,.btn:not(.icon-btn),.avatar-actions button{min-height:44px}
+  .grid.two,.grid.three{grid-template-columns:minmax(0,1fr)}
+  .card,.create,.modal,.hero{padding:16px;border-radius:20px}
+  .section-top,.headline{flex-wrap:wrap;gap:10px}
+  .field input,.field select,.field textarea{font-size:16px;min-height:44px;max-width:100%}
+  .modal{max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto}
+  .avatar-stage-layout{padding-inline:12px;gap:14px}
+  .avatar-stage-layout .pixel-showcase{height:auto;min-height:152px;padding:10px}
+  .pixel-showcase #mainPixelAvatar{width:144px;height:auto;max-width:100%}
+  .avatar-actions{display:flex;flex-wrap:wrap;gap:8px}
+  .avatar-actions .btn{flex:1 1 140px}
+  .season-progress{box-sizing:border-box}
+}
+</style>
 </head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
