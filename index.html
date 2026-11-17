@@ -255,6 +255,14 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 @keyframes career-ball-bounce{35%{transform:translateY(-7px) rotate(30deg)}60%{transform:translateY(0) rotate(55deg)}80%{transform:translateY(-3px) rotate(65deg)}}
 @media(max-width:900px){.layout>.career-side .nav .career-motion-icon{display:inline-block}.career-nav-main .nav{flex-direction:column;gap:2px}.career-nav-main .career-motion-icon{font-size:15px;line-height:1}}
 @media(prefers-reduced-motion:reduce){.career-side .nav .career-motion-icon,.career-nav-dot,#simulateButton .season-ball{animation:none!important}}
+</style><style>
+@media(max-width:900px){
+ .layout>.career-side{margin-bottom:20px;position:static}
+ .layout>.career-side+.career-content{padding-top:4px}
+ .career-content>.view-title{margin:0 0 20px;row-gap:10px}
+ .career-content>.view-title h2{line-height:1.25}
+ .career-content>.card,.career-content>.notice{margin-bottom:20px!important}
+}
 </style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
