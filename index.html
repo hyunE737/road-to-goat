@@ -331,7 +331,24 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .league-logo{box-sizing:border-box;width:64px;min-width:64px;height:44px;border-radius:10px;padding:5px;font-size:10px;letter-spacing:.02em;background:var(--panel2);color:var(--text)}
 .league-logo-official img{box-sizing:border-box;padding:4px 10px;border-radius:9px}
 @media(max-width:600px){.career-header>.header-tools{grid-column:2;grid-row:1}.intro-header .header-tools{margin-left:auto}}
-</style><style>.season-item-icon{background:var(--panel);border-radius:50%}</style><style>.coach-story{margin-bottom:16px}.finals-event{margin:9px 0;padding:9px 12px;border-radius:10px;background:var(--panel2);color:var(--text);font-weight:750}.finals-event[hidden]{display:none}</style><style>.dashboard-retirement{margin-bottom:16px}.dashboard-retirement h3,.dashboard-retirement p{margin:0}.dashboard-retirement .desc{margin-top:4px}</style><style>.season-conversation{margin-top:14px}.conversation-options{display:grid;gap:8px}.conversation-options .btn{text-align:left;min-height:44px;white-space:normal}</style></head>
+</style><style>.season-item-icon{background:var(--panel);border-radius:50%}</style><style>.coach-story{margin-bottom:16px}.finals-event{margin:9px 0;padding:9px 12px;border-radius:10px;background:var(--panel2);color:var(--text);font-weight:750}.finals-event[hidden]{display:none}</style><style>.dashboard-retirement{margin-bottom:16px}.dashboard-retirement h3,.dashboard-retirement p{margin:0}.dashboard-retirement .desc{margin-top:4px}</style><style>.season-conversation{margin-top:14px}.conversation-options{display:grid;gap:8px}.conversation-options .btn{text-align:left;min-height:44px;white-space:normal}</style><style>
+.conversation-scene{height:96px;position:relative;isolation:isolate;overflow:hidden;border-radius:15px;background:var(--panel2);margin:9px 0 12px;max-width:340px}
+.scene-person{position:absolute;bottom:13px;left:24%;width:36px;height:53px;animation:scene-enter .52s ease-out both}
+.scene-person i{position:absolute;left:9px;top:0;width:18px;height:18px;border-radius:50%;background:#cc9d78}
+.scene-person b{position:absolute;bottom:0;width:100%;height:32px;border-radius:16px 16px 5px 5px;background:#3978aa}
+.scene-coach .scene-person:nth-of-type(3){left:auto;right:24%;animation-delay:.09s}
+.scene-coach .scene-person:nth-of-type(3) b{background:#687488}
+.scene-table{position:absolute;z-index:1;left:36%;right:36%;bottom:14px;height:15px;border-radius:5px;background:#846447}
+.scene-bubble{position:absolute;top:7px;right:15%;padding:0 8px 3px;border-radius:10px;background:var(--panel);color:var(--text);font-size:20px;line-height:1;animation:scene-enter .38s .34s ease-out both}
+.scene-press .scene-person{left:calc(50% - 18px)}
+.scene-podium{position:absolute;bottom:9px;left:calc(50% - 30px);width:60px;height:25px;border-radius:5px;background:#3a506a}
+.scene-podium i{position:absolute;width:3px;height:14px;background:#253242;left:30px;top:-11px;transform:rotate(-23deg)}
+.scene-camera{position:absolute;right:15%;bottom:14px;color:var(--muted)}
+.scene-flash{position:absolute;right:14%;bottom:25px;width:24px;height:24px;border-radius:50%;background:#fff3c4;opacity:0;animation:scene-flash .4s .47s ease-out 2}
+@keyframes scene-enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes scene-flash{25%{opacity:.95;transform:scale(1.25)}}
+@media(prefers-reduced-motion:reduce){.conversation-scene *{animation:none!important}}
+</style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
 <script>
@@ -1270,13 +1287,19 @@ function chooseSeasonConversation(result){
  const roll=Math.random();
  return roll<.27?'coach':roll<.48?'press':null;
 }
+function conversationAnimation(type){
+ const person='<span class="scene-person"><i></i><b></b></span>';
+ return type==='coach'
+  ?`<div class="conversation-scene scene-coach" aria-hidden="true">${person}<span class="scene-table"></span>${person}<span class="scene-bubble">···</span></div>`
+  :`<div class="conversation-scene scene-press" aria-hidden="true">${person}<span class="scene-podium"><i></i></span><span class="scene-camera">${gameIcon('film')}</span><span class="scene-flash"></span></div>`;
+}
 function seasonConversation(s,result){
  const scene=seasonConversations[result.conversation?.type];
  if(!scene)return '';
  const selection=result.conversation.selection;
  const prompt=result.conversation.type==='coach'?'감독이 다음 시즌에 어떤 역할을 맡고 싶은지 물었어.':result.champ?'기자가 우승 소감과 다음 시즌 목표를 물었어.':'기자가 이번 시즌을 어떻게 평가하는지 물었어.';
  const chosen=scene.choices[selection];
- return `<section class="card season-conversation" id="seasonConversation"><h3>${scene.title}</h3>${chosen?`<p><strong>${chosen.line}</strong></p><p class="desc" role="status">${chosen.reply} · 감독 신뢰 ${coachTrust(s)}/100 · 팬 호감 ${s.fanSupport??50}/100</p>`:`<p class="desc">${prompt}</p><div class="conversation-options">${scene.choices.map((choice,index)=>`<button class="btn secondary" onclick="answerSeasonConversation(${result.year},${index})">${choice.line}</button>`).join('')}</div>`}</section>`;
+ return `<section class="card season-conversation" id="seasonConversation"><h3>${scene.title}</h3>${chosen?'':conversationAnimation(result.conversation.type)}${chosen?`<p><strong>${chosen.line}</strong></p><p class="desc" role="status">${chosen.reply} · 감독 신뢰 ${coachTrust(s)}/100 · 팬 호감 ${s.fanSupport??50}/100</p>`:`<p class="desc">${prompt}</p><div class="conversation-options">${scene.choices.map((choice,index)=>`<button class="btn secondary" onclick="answerSeasonConversation(${result.year},${index})">${choice.line}</button>`).join('')}</div>`}</section>`;
 }
 function answerSeasonConversation(year,index){
  const s=state,result=s?.last,type=result?.conversation?.type;
