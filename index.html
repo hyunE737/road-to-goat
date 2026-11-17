@@ -421,6 +421,10 @@ function ensureV13(s){
   r.steals??=Math.round((r.sp||0)*(r.games||0));r.blocks??=Math.round((r.bp||0)*(r.games||0));
  }
  if(s.last){let r=s.history.find(x=>x.year===s.last.year);if(r)s.last=r;else {s.last.pts??=Math.round((s.last.ppg||0)*s.last.games);s.last.reb??=Math.round((s.last.rpg||0)*s.last.games);s.last.ast??=Math.round((s.last.apg||0)*s.last.games)}}
+ if(s.stage==='PRO'&&!s.retired&&s.contract<=0&&s.market?.kind==='fa'){
+  const valid=s.market.offers.filter(offer=>marketInterest(s,offer.league));
+  if(valid.length!==s.market.offers.length)applyFreeAgency(s,valid.length?valid:offersFor(s,'fa'));
+ }
  return s;
 }
 function load(){try{const s=JSON.parse(localStorage.getItem(SAVE));if(s&&s.version===1&&s.player&&s.history&&s.awards)return ensureV13(s)}catch(e){}return null}
@@ -735,10 +739,12 @@ async function weeklyRankRequest(method,payload={}){
   if(!response.ok)throw Error('Weekly ranking request failed');
   return response.json();
 }
+let weeklyRankingTimer;
+let weeklyLoadVersion=0;
 function weeklyRanking(s){
   return `${panelTitle('주간 TOP 50',`<span class="pill gold">내 GOAT ${fmt(goatScore(s))}점</span>`)}
   <div class="card" style="margin-bottom:16px"><h3>이번 주 순위에 등록</h3>
-  <p class="desc">한국 시간 매주 월요일에 새 순위가 시작돼. 이 브라우저에서 등록한 이번 주 최고 점수가 반영돼.</p>
+  <p class="desc">한국 시간 매주 월요일에 새 순위가 시작돼. 이 브라우저에서 등록한 이번 주 최고 점수가 반영돼. 등록 결과는 바로 표시되고, 목록은 8초마다 자동 갱신돼.</p>
   <form onsubmit="event.preventDefault();submitWeeklyScore(this)">
   <div class="field"><label for="rankNickname">공개 닉네임</label><input id="rankNickname" name="nickname" maxlength="24" required autocomplete="off" value="${esc(s.player.name.slice(0,24))}"></div>
   <button type="submit" class="btn" style="margin-top:12px">내 점수 등록</button>
@@ -746,15 +752,17 @@ function weeklyRanking(s){
   <div class="card"><div class="section-top"><h3>이번 주 TOP 50</h3><button class="btn secondary small" onclick="loadWeeklyRanking()">새로고침</button></div>
   <div id="weeklyLeaderboard" aria-live="polite"></div></div>`;
 }
-async function loadWeeklyRanking(){
+async function loadWeeklyRanking(quiet=false){
   const list=document.getElementById('weeklyLeaderboard');
   if(!list)return;
-  list.textContent='순위를 불러오는 중…';
+  const version=++weeklyLoadVersion;
+  if(!quiet)list.textContent='순위를 불러오는 중…';
   try{
     const rows=await weeklyRankRequest('goat_weekly_top');
+    if(version!==weeklyLoadVersion||!list.isConnected)return;
     list.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>순위</th><th>닉네임</th><th>GOAT 점수</th></tr></thead><tbody>${rows.map((row,index)=>`<tr><td>${index+1}</td><td>${esc(row.nickname)}</td><td>${fmt(row.score)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="desc">이번 주에 등록된 점수가 아직 없어.</p>';
   }catch(e){
-    list.textContent='순위를 불러오지 못했어. 새로고침을 눌러 줘.';
+    if(!quiet&&version===weeklyLoadVersion)list.textContent='순위를 불러오지 못했어. 새로고침을 눌러 줘.';
   }
 }
 async function submitWeeklyScore(form){
@@ -777,7 +785,7 @@ async function submitWeeklyScore(form){
 const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['weekly','▥','주간 TOP 50'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
 function render(){if(!state)return renderIntro();let s=state;document.getElementById('app').innerHTML=`<header class="top-header"><div class="brand"><span class="brandmark">🏀</span><div>ROAD TO GOAT <span class="sub">/ MY CAREER</span></div></div><div style="display:flex;align-items:center;gap:9px"><span class="pill gold">${s.retired?'은퇴 완료':`${s.year} 시즌`}</span><span class="stage">${esc(stageLabel(s))} · ${s.age}세</span><button class="main-menu-btn" onclick="openGameMenu()">☰ 메뉴</button></div></header><div class="layout"><aside class="side">${navItems.map(([id,icon,label])=>`<button class="nav ${tab===id?'active':''}" onclick="switchTab('${id}')"><span>${icon}</span>${label}${id==='market'&&s.market.required?' ●':''}${id==='messages'&&s.pendingIntl?' ●':''}</button>`).join('')}<div class="side-divider"></div><div class="side-footer">독립 제작 게임 데모 v${GAME_VERSION}<br>진행 상황 자동 저장</div></aside><main class="content" id="pageContent"></main></div>`;renderTab()}
 function switchTab(t){tab=t;render()}
-function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),weekly:()=>weeklyRanking(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();if(tab==='weekly')loadWeeklyRanking();}
+function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),weekly:()=>weeklyRanking(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();clearInterval(weeklyRankingTimer);if(tab==='weekly'){loadWeeklyRanking();weeklyRankingTimer=setInterval(()=>{if(!document.hidden)loadWeeklyRanking(true)},8000);}}
 function panelTitle(t,right=''){return `<div class="view-title"><div><div class="eyebrow">ROAD TO GOAT · CAREER</div><h2 style="margin-top:7px">${t}</h2></div>${right}</div>`}
 function statbox(k,v,sub=''){return `<div class="card stat"><div class="label">${k}</div><div class="value">${v}</div><div class="smallnote">${sub}</div></div>`}
 function attrsCard(s){return `<div class="card"><div class="section-top"><h3>선수 능력치</h3><span class="pill">POT ${s.potential}</span></div>${Object.entries(s.attrs).map(([k,v])=>`<div class="attr-row"><span class="muted">${attrs[k]}</span><div class="meter"><i style="width:${v}%"></i></div><b>${v}</b></div>`).join('')}</div>`}
@@ -825,6 +833,20 @@ function training(s){
 function setFocus(f){state.focus=f;save();render();toast('다음 시즌 훈련 방향이 변경됐어.')}
 function roleFromOvr(ovr,league){const offset=league==='NBA'?8:league==='NBA G League'?2:0;return ovr>=82+offset?'에이스':ovr>=69+offset?'주전':ovr>=61+offset?'로테이션':'벤치'}
 function teamPower(team){return 67+(hash(team)%22)}
+function marketInterest(s,league,ovr=getOvr(s)){
+  const peak=s.history.reduce((best,season)=>Math.max(best,Number(season.ovr)||0),ovr);
+  const decline=peak-ovr>=10?4:0;
+  const minimum=league==='NBA'?79:league==='NBA G League'?65:67;
+  return ovr>=minimum+decline;
+}
+function applyFreeAgency(s,offers){
+  s.market={offers,required:offers.length>0,kind:offers.length?'fa':null,interest:[],tradeRequested:false};
+  if(!offers.length){
+    s.retired=true;
+    s.retireReason='계약 만료 후 새 계약 제안이 없어 은퇴';
+    s.stage='RETIRED';
+  }
+}
 function offersFor(s,kind){const arr=[];const ovr=getOvr(s);let pool;
 if(kind==='graduate'||kind==='collegeEnd'){pool=ovr>=76?['NBA G League','NBA','KBL','B.LEAGUE','ACB (스페인)','NBL (호주)','BBL (독일)']:['NBA G League','KBL','B.LEAGUE','CBA','NBL (호주)','ÉLITE (프랑스)','PLK (폴란드)'];}
 else{pool=ovr>83?['NBA','NBA','NBA G League','ACB (스페인)','B.LEAGUE','KBL']:ovr>71?['NBA G League','NBA','KBL','B.LEAGUE','ACB (스페인)','BBL (독일)','NBL (호주)']:['NBA G League','KBL','B.LEAGUE','CBA','NBL (호주)','PBA (필리핀)','NBB (브라질)'];}
@@ -836,11 +858,10 @@ arr.push({id:'c1',league:'College (미국)',team:'East Coast University',years:4
 const entry=kind==='graduate'||kind==='collegeEnd';
 const powerLimit=kind==='graduate'?76:79;
 const nbaMinimum=kind==='graduate'?82:kind==='collegeEnd'?79:75;
-const minimumOvr=league=>league==='NBA'?nbaMinimum:league==='NBA G League'?60:62;
-if(kind==='fa'&&ovr<60)return arr;
+
 const teamsByLeague=new Map(pool.map(league=>[
   league,
-  (league==='NBA'||kind==='fa')&&ovr<minimumOvr(league)?[]:
+  (kind==='fa'?!marketInterest(s,league,ovr):league==='NBA'&&ovr<nbaMinimum)?[]:
     leagues[league].teams.filter(team=>!entry||teamPower(team)<=powerLimit)
 ]));
 while(arr.length<(entry?6:4)){
@@ -850,14 +871,14 @@ while(arr.length<(entry?6:4)){
   const league=pick(eligible);
   pushOffer(league,pick(available(league)));
 }
-if(kind==='fa'&&s.stage==='PRO'&&ovr>=minimumOvr(s.league))pushOffer(s.league,s.team);
+if(kind==='fa'&&s.stage==='PRO'&&marketInterest(s,s.league,ovr))pushOffer(s.league,s.team);
 return arr.sort((a,b)=>b.power-a.power)}
 function market(s){let note=s.market.kind==='graduate'?'고교 졸업! 대학 또는 프로 진출을 선택해.':s.market.kind==='collegeEnd'?'대학 커리어를 마쳤어. 프로 계약을 선택해.':s.market.required?'FA 계약이 만료됐어. 다음 팀을 선택해야 해.':'시즌이 끝나면 선수 가치에 따라 계약 제안이나 트레이드가 발생해.';
 return `${panelTitle('계약 · 이적 · 트레이드',`<span class="pill ${s.market.required?'gold':''}">${s.market.required?'결정 필요':'커리어 이동'}</span>`)}<div class="card" style="margin-bottom:16px"><div class="headline"><div><div class="label">현재 소속</div><h2 style="margin:7px 0">${esc(koTeam(s.team))}</h2><div class="desc">${esc(leagueName(s))} · ${esc(s.role)} · ${s.age}세</div></div><div style="text-align:right"><div class="label">남은 계약</div><div class="value">${s.stage==='PRO'?s.contract+'년':'–'}</div><div class="smallnote">연봉 ${s.stage==='PRO'?'$'+fmt(s.salary):'–'}</div></div></div></div><div class="notice" style="margin-bottom:16px">${note}</div><div class="card"><div class="section-top"><h3>받은 제안 ${s.market.offers.length}건</h3><span class="pill">${s.market.required?'선택 필수':'스카우트 제의'}</span></div>${s.market.offers.length?s.market.offers.map(x=>`<div class="offer"><div><strong>${esc(koTeam(x.team))}</strong><div class="desc">${esc(x.league)} · ${x.role} · ${x.years}년 계약</div><div class="desc">${x.salary?'연봉 $'+fmt(x.salary):'대학 진학'} · 구단 전력 ${x.power}/100</div></div><div class="actions"><button class="btn small" onclick="signOffer('${x.id}')">${x.league==='College (미국)'?'진학':'계약'}</button></div></div>`).join(''):`<div class="empty"><div class="big">📭</div>현재 도착한 제안이 없습니다.<br>시즌이 끝나면 계약 상황에 따라 제안이 생성됩니다.</div>`}</div>${s.stage==='PRO'&&!s.retired?`<div class="card" style="margin-top:16px"><div class="section-top"><h3>내 선수의 이적 요청</h3><span class="pill blue">${s.league==='NBA'?'NBA 트레이드':'해외 이적'}</span></div><p class="desc">트레이드 또는 이적을 요청할 수 있지만 소속 구단이 반드시 받아들이는 것은 아니야. NBA에서는 일반적으로 계약상 거부권이 없으면 구단 간 트레이드를 선수가 직접 거절할 수 없어.</p><button class="btn secondary" onclick="requestTrade()" ${s.market.required||s.market.tradeRequested?'disabled':''}>${s.market.tradeRequested?'요청 접수됨':'트레이드 / 이적 요청'}</button></div>`:''}<div class="footer-note">이 화면은 내 선수의 계약만 다룹니다. 다른 선수 영입이나 구단 운영 기능은 없습니다.</div>`}
 function signOffer(id){let s=state;if(s.retired)return;const offer=s.market.offers.find(x=>x.id===id);if(!offer)return;
 showModal(`${esc(koTeam(offer.team))} 선택`,`<p class="desc">${offer.league==='College (미국)'?'이 대학에 진학할까?':'이 구단과 계약할까?'}</p><div class="mini-grid"><div class="mini-box"><div class="label">소속</div><strong style="font-size:14px">${esc(koTeam(offer.team))}</strong></div><div class="mini-box"><div class="label">예상 역할</div><strong>${esc(offer.role)}</strong></div><div class="mini-box"><div class="label">기간</div><strong>${offer.years}년</strong></div><div class="mini-box"><div class="label">연봉</div><strong>${offer.salary?'$'+fmt(offer.salary):'장학·대학'}</strong></div></div>`,()=>{
 s.team=offer.team;s.league=offer.league;s.contract=offer.years;s.salary=offer.salary;s.role=offer.role;s.stage=offer.league==='College (미국)'?'COLLEGE':'PRO';s.collegeYears=s.stage==='COLLEGE'?0:s.collegeYears;s.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false};s.events.unshift({year:s.year,text:`${offer.team} ${offer.league==='College (미국)'?'진학':'계약'} (${offer.years}년)`});save();closeModal();tab='home';render();toast('새 소속팀이 확정됐어!')})}
-function requestTrade(){let s=state;if(s.stage!=='PRO'||s.retired)return;s.market.tradeRequested=true;let accepted=chance(.48);if(accepted){const competitors=leagues[s.league].teams.filter(t=>t!==s.team);if(competitors.length){const old=s.team;s.team=pick(competitors);s.role=roleFromOvr(getOvr(s),s.league);s.events.unshift({year:s.year,text:`${old} → ${s.team} ${s.league==='NBA'?'트레이드':'이적'} 확정`});toast(`이적 요청 승인: ${koTeam(s.team)}`)}else toast('현재 리그에 이적할 팀이 없어.')}else{s.events.unshift({year:s.year,text:'트레이드/이적 요청이 거절됨'});toast('구단이 이적 요청을 거절했어.')}save();render()}
+function requestTrade(){let s=state;if(s.stage!=='PRO'||s.retired||s.market.required||s.market.tradeRequested)return;if(!marketInterest(s,s.league)){toast('현재 기량에 관심을 보이는 팀이 없어.');return}s.market.tradeRequested=true;let accepted=chance(.48);if(accepted){const competitors=leagues[s.league].teams.filter(t=>t!==s.team);if(competitors.length){const old=s.team;s.team=pick(competitors);s.role=roleFromOvr(getOvr(s),s.league);s.events.unshift({year:s.year,text:`${old} → ${s.team} ${s.league==='NBA'?'트레이드':'이적'} 확정`});toast(`이적 요청 승인: ${koTeam(s.team)}`)}else toast('현재 리그에 이적할 팀이 없어.')}else{s.events.unshift({year:s.year,text:'트레이드/이적 요청이 거절됨'});toast('구단이 이적 요청을 거절했어.')}save();render()}
 function seasonCalculate(s){const age=s.age,year=s.year,was=s.stage,league=leagueName(s),ovrBefore=getOvr(s),playedLeague=s.league,oldTeam=s.team;const income=seasonIncome(was,s.salary);const isNba=was==='PRO'&&playedLeague==='NBA';let games=was==='HIGH'?27:was==='COLLEGE'?32:(leagues[playedLeague]?.games||32);if(was==='PRO'&&playedLeague==='NBA')games=82;
 const plan=trainingPlan(s); const growthFactor=age<=22?2.05:age<=27?1.15:age<=31?.35:age<=35?-.28:age<=39?-.85:-1.2;
 const attributeChanges={};for(const k of Object.keys(s.attrs)){let change=growthFactor*(.8+rnd(0,.55))+(plan[k]||0)*(age<=27?1:age<=34?.72:.42);if(age>33&&['drive','stamina','defense','rebound'].includes(k))change-=.35+(age-33)*.11;if(age>39&&k==='stamina')change-=.6;change+=rnd(-.55,.35);let old=s.attrs[k];const max=s.potential+(k===s.focus?2:0);s.attrs[k]=Math.round(clamp(old+change,30,max));attributeChanges[k]=s.attrs[k]-old}
@@ -889,7 +910,7 @@ s.totals.nbaPts+=Math.round(ppg*gp);s.totals.nbaAst+=Math.round(apg*gp);s.totals
 }
 world=ovr>87&&chance(clamp((perf-85)*.009,.01,.20));if(world){earned.push('세계 올해의 농구선수 (게임)');s.awards.world++}
 }
-let tradeText='';if(isNba&&s.contract>0&&(s.market.tradeRequested||chance(.10))&&leagues.NBA.teams.length>1&&chance(s.market.tradeRequested?.60:.55)){
+let tradeText='';if(isNba&&s.contract>0&&marketInterest(s,'NBA',ovr)&&(s.market.tradeRequested||chance(.10))&&leagues.NBA.teams.length>1&&chance(s.market.tradeRequested?.60:.55)){
 const old=s.team;s.team=pick(leagues.NBA.teams.filter(t=>t!==old));tradeText=`${old}에서 ${s.team}(으)로 트레이드`;s.role=roleFromOvr(ovr,'NBA');s.events.unshift({year,text:tradeText});}
 if(was==='COLLEGE')s.collegeYears++;
 if(was==='PRO')s.contract=Math.max(0,s.contract-1);
@@ -913,15 +934,7 @@ const wallet=careerWallet(s);wallet.balance+=income;wallet.lastIncome=income;res
 s.history.push(result);s.last=result;s.seasonsPlayed++;s.events.unshift({year,text:`${year} 시즌 종료 · 총 ${result.pts}득점 / ${result.reb}리바운드 / ${result.ast}어시스트${earned.length?' · '+earned.join(' · '):''}`});s.events=s.events.slice(0,50);
 if(was==='HIGH'&&age>=18){s.market={offers:offersFor(s,'graduate'),required:true,kind:'graduate',interest:[],tradeRequested:false}}
 else if(was==='COLLEGE'&&s.collegeYears>=4){s.market={offers:offersFor(s,'collegeEnd').filter(x=>x.league!=='College (미국)'),required:true,kind:'collegeEnd',interest:[],tradeRequested:false}}
-else if(was==='PRO'&&s.contract<=0){
-  const offers=offersFor(s,'fa');
-  s.market={offers,required:offers.length>0,kind:offers.length?'fa':null,interest:[],tradeRequested:false};
-  if(!offers.length){
-    s.retired=true;
-    s.retireReason='계약 만료 후 새 계약 제안이 없어 은퇴';
-    s.stage='RETIRED';
-  }
-}
+else if(was==='PRO'&&s.contract<=0){applyFreeAgency(s,offersFor(s,'fa'))}
 else if(was==='COLLEGE'&&age>=19&&chance(.35)){s.market.offers=offersFor(s,'collegeEnd').filter(x=>x.league!=='College (미국)').slice(0,3);s.market.required=false;s.market.kind='earlyPro'}
 else if(was==='PRO'){s.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false};}
 
@@ -985,7 +998,7 @@ try{
 }}
 function seasonResultModal(r){
  const goatText=`GOAT 점수 ${fmt(goatScore(state))} · 역대 ${goatRank(state)}위`;
- showModal(`${r.year} 시즌 결과`, `<div class="results-banner"><div class="eyebrow">SEASON ${r.year} COMPLETED</div><h2 style="margin:6px 0">${esc(koTeam(r.team))}</h2><div class="desc">${esc(r.league)} · ${r.wins}승 ${r.losses}패 · ${esc(r.playoff)} · ${r.games}경기 출전</div></div>${r.income==null?'':`<p class="desc">시즌 수입 +${fmt(r.income)}</p>`}<h3>한 시즌 누적 기록</h3><div class="result-stat"><div><strong>${fmt(r.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(r.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(r.ast)}</strong><span>총 어시스트</span></div><div><strong>${r.ovr}</strong><span>최종 OVR</span></div></div><p class="smallnote" style="margin-top:9px">경기당 평균: ${r.ppg}득점 · ${r.rpg}리바운드 · ${r.apg}어시스트 (참고용)</p><div class="sep"></div>${!state.retired&&state.last?.year===r.year?`<section id="seasonItems" class="season-items">${renderSeasonItems(state)}</section>`:''}${r.final?`<p class="desc">🏀 ${esc(r.final.title)} · ${r.final.champion?'우승':'준우승'} · 시리즈 ${r.final.ourWins}:${r.final.oppWins} <button class="btn secondary small" onclick="replayFinal(${r.year},'club')">결승 다시 보기</button></p>`:''}${r.international?`<div class="notice">🌐 ${esc(r.international.competition)} · ${esc(r.international.finish)} ${r.international.final?`<button class="btn secondary small" onclick="replayFinal(${r.year},'intl')">국제전 결승 다시 보기</button>`:''}</div>`:''}${r.earned.length?`<div class="section-top" style="margin-top:15px"><h3>이번 시즌 수상</h3></div><div class="result-tags">${r.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:`<p class="desc" style="margin-top:15px">이번 시즌에는 개인 수상이 없었어. 다음 시즌에 도전하자.</p>`}${r.trade?`<div class="notice" style="margin-top:15px">⇄ ${esc(koText(r.trade))}</div>`:''}<p class="desc" style="margin:15px 0 0">${goatText}</p>${state.market.required?`<div class="notice" style="margin-top:13px">다음 시즌을 진행하려면 계약/진로를 선택해야 해.</div>`:''}${state.retired?`<div class="notice" style="margin-top:13px">${esc(state.retireReason)}</div>`:''}`,null,'확인');
+ showModal(`${r.year} 시즌 결과`, `<div class="results-banner"><div class="eyebrow">SEASON ${r.year} COMPLETED</div><h2 style="margin:6px 0">${esc(koTeam(r.team))}</h2><div class="desc">${esc(r.league)} · ${r.wins}승 ${r.losses}패 · ${esc(r.playoff)} · ${r.games}경기 출전</div></div>${r.income==null?'':`<p class="desc">시즌 수입 +${fmt(r.income)}</p>`}<h3>한 시즌 누적 기록</h3><div class="result-stat"><div><strong>${fmt(r.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(r.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(r.ast)}</strong><span>총 어시스트</span></div><div><strong>${r.ovr}</strong><span>최종 OVR</span></div></div><p class="smallnote" style="margin-top:9px">경기당 평균: ${r.ppg}득점 · ${r.rpg}리바운드 · ${r.apg}어시스트 (참고용)</p><div class="sep"></div>${!state.retired&&state.last?.year===r.year?`<section id="seasonItems" class="season-items">${renderSeasonItems(state)}</section>`:''}${r.final?`<p class="desc">🏀 ${esc(r.final.title)} · ${r.final.champion?'우승':'준우승'} · 시리즈 ${r.final.ourWins}:${r.final.oppWins} <button class="btn secondary small" onclick="replayFinal(${r.year},'club')">결승 다시 보기</button></p>`:''}${r.international?`<div class="notice">🌐 ${esc(r.international.competition)} · ${esc(r.international.finish)} ${r.international.final?`<button class="btn secondary small" onclick="replayFinal(${r.year},'intl')">국제전 결승 다시 보기</button>`:''}</div>`:''}${r.earned.length?`<div class="section-top" style="margin-top:15px"><h3>이번 시즌 수상</h3></div><div class="result-tags">${r.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:`<p class="desc" style="margin-top:15px">이번 시즌에는 개인 수상이 없었어. 다음 시즌에 도전하자.</p>`}${r.trade?`<div class="notice" style="margin-top:15px">⇄ ${esc(koText(r.trade))}</div>`:''}<p class="desc" style="margin:15px 0 0">${goatText}</p><button class="btn secondary small" style="margin-top:10px" onclick="closeModal();switchTab('weekly')">주간 랭킹에 등록</button>${state.market.required?`<div class="notice" style="margin-top:13px">다음 시즌을 진행하려면 계약/진로를 선택해야 해.</div>`:''}${state.retired?`<div class="notice" style="margin-top:13px">${esc(state.retireReason)}</div>`:''}`,null,'확인');
 }
 function history(s){return `${panelTitle('시즌 기록',`<span class="pill">${s.history.length}시즌 기록</span>`)}<div class="card"><h3>시즌 누적 기록 (평균이 아닌 총합)</h3>${s.history.length?`<div class="table-wrap"><table><thead><tr><th>연도</th><th>나이</th><th>소속</th><th>리그</th><th>출전 경기</th><th>총 득점</th><th>총 리바운드</th><th>총 어시스트</th><th>OVR</th><th>결승전</th><th>수상</th></tr></thead><tbody>${[...s.history].reverse().map(x=>`<tr><td><strong>${x.year}</strong></td><td>${x.age}</td><td>${esc(koTeam(x.team))}</td><td>${esc(x.league)}</td><td>${x.games}</td><td><strong>${fmt(x.pts)}</strong></td><td><strong>${fmt(x.reb)}</strong></td><td><strong>${fmt(x.ast)}</strong></td><td>${x.ovr}</td><td>${x.final?`<button class="btn secondary small" onclick="replayFinal(${x.year},'club')">▶ 관전</button>`:'–'}</td><td>${x.earned.length?esc(x.earned.join(', ')):'–'}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">아직 시즌 기록이 없어. 첫 시즌을 자동 진행해 줘.</div>`}</div><div class="card" style="margin-top:15px"><h3>커리어 뉴스</h3>${s.events.length?s.events.slice(0,25).map(x=>`<div class="history-item"><div class="label">${x.year}년</div><p class="desc" style="margin:4px 0 0">${esc(koText(x.text))}</p></div>`).join(''):'<div class="empty">시즌을 진행하면 주요 이벤트가 쌓여.</div>'}</div>`}
 function awards(s){const values=[['🏆','NBA 정규 시즌 MVP',s.awards.mvp],['🥇','NBA 파이널 MVP',s.awards.fmvp],['💍','NBA 챔피언',s.awards.rings],['⭐','NBA 올스타',s.awards.allstar],['🎖','올NBA',s.awards.allnba],['🎯','NBA 득점왕',s.awards.scoring],['🛡','NBA 수비왕',s.awards.dpoy],['🌱','NBA 신인왕',s.awards.rookie],['🌍','세계 올해의 농구선수 (게임)',s.awards.world],['🏀','해외 리그 MVP',s.awards.othermvp],['📘','고교 MVP',s.awards.highmvp],['🎓','대학 MVP',s.awards.collegemvp]];return `${panelTitle('트로피 보관함',`<span class="pill gold">총 ${values.reduce((t,x)=>t+x[2],0)}개</span>`)}<div class="grid three">${values.map(([icon,label,n])=>`<div class="trophy"><span class="sym">${icon}</span><div><div class="label">${label}</div><div class="value" style="font-size:19px;margin-top:4px">${n}회</div></div></div>`).join('')}</div><div class="card" style="margin-top:16px"><h3>수상 연혁</h3>${s.history.filter(x=>x.earned.length).length?s.history.filter(x=>x.earned.length).reverse().map(x=>`<div class="history-item"><div style="font-weight:800;font-size:13px">${x.year} · ${esc(koTeam(x.team))}</div><div class="result-tags">${x.earned.map(a=>`<span>🏆 ${esc(a)}</span>`).join('')}</div></div>`).join(''):'<div class="empty">첫 트로피를 획득하면 여기에 기록돼.</div>'}</div>`}
