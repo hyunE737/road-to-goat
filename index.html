@@ -210,6 +210,41 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
 .ft-dot-green{background:#168348}.ft-dot-yellow{background:#efbc40}.ft-dot-gray{background:#a3b3c5}
 .ft-status{margin:12px 0 8px;text-align:center;font-weight:700;color:#263b55}
 #ftShoot{min-height:50px;font-size:16px}
+</style><style>
+.career-header{min-height:64px}
+.career-side{align-self:start}
+.career-navigation{display:grid;gap:12px;width:100%}
+.career-nav-main,.career-nav-secondary{display:grid;gap:4px}
+.career-nav-more{border-top:1px solid var(--line);padding-top:8px}
+.career-nav-more summary{cursor:pointer;font-weight:750;color:#354c62;padding:9px 10px}
+.career-nav-dot{display:inline-block;width:8px;height:8px;flex:none;margin-left:3px;border-radius:50%;background:#b94822}
+.career-side .nav{min-height:44px;border-radius:13px;justify-content:flex-start;text-align:left;white-space:normal}
+.career-side .nav.active{background:#e1eefb;color:#153f65;border-color:#a8c8e6;font-weight:850}
+.career-content .view-title{margin-bottom:16px;gap:8px}
+.career-content .view-title h2{margin:0;font-size:clamp(24px,3.1vw,32px);line-height:1.15}
+.career-content .desc,.career-content .smallnote{line-height:1.55}
+.career-content .label{color:#4c6176}
+.career-content .notice{margin:0 0 12px}
+.career-hero .hero-bottom{display:flex;flex-wrap:wrap;gap:8px}
+.career-content :where(button,summary,a,input,select):focus-visible,.career-side :where(button,summary):focus-visible{outline:3px solid #397eaa;outline-offset:2px}
+.career-metrics .stat{min-width:0}
+@media(max-width:900px){
+ .layout>.career-side{display:block;overflow:visible;padding:8px}
+ .career-nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .career-nav-secondary{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .layout>.career-side .nav{width:100%;justify-content:center;text-align:center;white-space:normal;padding:7px 4px;font-size:12px}
+ .career-navigation{gap:6px}
+ .career-nav-more{padding-top:2px}
+ .career-nav-more summary{min-height:44px;padding:10px;align-content:center}
+}
+@media(max-width:600px){
+ .career-header .stage{font-size:12px}
+ .career-hero .hero-bottom .btn:first-child{flex:1 0 100%}
+ .career-hero .hero-bottom .btn:not(:first-child){flex:1 1 110px}
+ .career-metrics{gap:8px}
+ .career-metrics .stat{padding:12px}
+ .career-content .table-wrap{border-radius:12px}
+}
 </style></head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
@@ -953,14 +988,25 @@ async function submitWeeklyScore(form){
   }finally{button.disabled=false}
 }
 const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['weekly','▥','주간 TOP 50'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
-function render(){if(!state)return renderIntro();let s=state;document.getElementById('app').innerHTML=`<header class="top-header"><div class="brand"><span class="brandmark">🏀</span><div>ROAD TO GOAT <span class="sub">/ MY CAREER</span></div></div><div style="display:flex;align-items:center;gap:9px"><span class="pill gold">${s.retired?'은퇴 완료':`${s.year} 시즌`}</span><span class="stage">${esc(stageLabel(s))} · ${s.age}세</span><button class="main-menu-btn" onclick="openGameMenu()">☰ 메뉴</button></div></header><div class="layout"><aside class="side">${navItems.map(([id,icon,label])=>`<button class="nav ${tab===id?'active':''}" onclick="switchTab('${id}')"><span>${icon}</span>${label}${id==='market'&&s.market.required?' ●':''}${id==='messages'&&s.pendingIntl?' ●':''}</button>`).join('')}<div class="side-divider"></div><div class="side-footer">독립 제작 게임 데모 v${GAME_VERSION}<br>진행 상황 자동 저장</div></aside><main class="content" id="pageContent"></main></div>`;renderTab()}
-function switchTab(t){tab=t;render()}
+const careerPrimaryTabs=['home','training','market','history'];
+function careerNavigation(s){
+ const primary=careerPrimaryTabs.map(id=>navItems.find(item=>item[0]===id));
+ const secondary=navItems.filter(item=>!careerPrimaryTabs.includes(item[0]));
+ const navButton=([id,icon,label])=>{
+  const pending=(id==='market'&&s.market.required)||(id==='messages'&&s.pendingIntl);
+  return `<button type="button" class="nav ${tab===id?'active':''}" ${tab===id?'aria-current="page"':''} onclick="switchTab('${id}')"><span aria-hidden="true">${icon}</span>${label}${pending?`<i class="career-nav-dot" aria-label="확인 필요"></i>`:''}</button>`;
+ };
+ const moreOpen=!matchMedia('(max-width:900px)').matches||secondary.some(item=>item[0]===tab)||!!s.pendingIntl;
+ return `<nav class="career-navigation" aria-label="커리어 메뉴"><div class="career-nav-main">${primary.map(navButton).join('')}</div><details class="career-nav-more" ${moreOpen?'open':''}><summary>더 보기 ${s.pendingIntl?'<i class="career-nav-dot" aria-label="확인 필요"></i>':''}</summary><div class="career-nav-secondary">${secondary.map(navButton).join('')}</div></details></nav>`;
+}
+function render(){if(!state)return renderIntro();let s=state;document.getElementById('app').innerHTML=`<header class="top-header career-header"><div class="brand"><span class="brandmark">🏀</span><div>ROAD TO GOAT <span class="sub">/ MY CAREER</span></div></div><div style="display:flex;align-items:center;gap:9px"><span class="pill gold">${s.retired?'은퇴 완료':`${s.year} 시즌`}</span><span class="stage">${esc(stageLabel(s))} · ${s.age}세</span><button class="main-menu-btn" onclick="openGameMenu()">☰ 메뉴</button></div></header><div class="layout"><aside class="side career-side">${careerNavigation(s)}</aside><main class="content career-content" id="pageContent"></main></div>`;renderTab()}
+function switchTab(t){tab=t;render();window.scrollTo(0,0)}
 function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),weekly:()=>weeklyRanking(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();clearInterval(weeklyRankingTimer);if(tab==='weekly'){loadWeeklyRanking();weeklyRankingTimer=setInterval(()=>{if(!document.hidden)loadWeeklyRanking(true)},8000);}}
-function panelTitle(t,right=''){return `<div class="view-title"><div><div class="eyebrow">ROAD TO GOAT · CAREER</div><h2 style="margin-top:7px">${t}</h2></div>${right}</div>`}
+function panelTitle(t,right=''){return `<div class="view-title"><h2>${t}</h2>${right}</div>`}
 function statbox(k,v,sub=''){return `<div class="card stat"><div class="label">${k}</div><div class="value">${v}</div><div class="smallnote">${sub}</div></div>`}
 function attrsCard(s){return `<div class="card"><div class="section-top"><h3>선수 능력치</h3><span class="pill">POT ${s.potential}</span></div>${Object.entries(s.attrs).map(([k,v])=>`<div class="attr-row"><span class="muted">${attrs[k]}</span><div class="meter"><i style="width:${v}%"></i></div><b>${v}</b></div>`).join('')}</div>`}
 function pendingBox(s){if(s.pendingIntl)return `<div class="notice">📨 ${esc(s.pendingIntl.competition)} 국가대표 소집 제안이 도착했어! <button class="btn small" onclick="showInternationalInvite()">참가 여부 선택</button></div>`;if(!s.market.required)return '';const message=s.market.kind==='graduate'?'고등학교를 졸업했어! 대학 또는 프로 진로를 선택해야 다음 시즌이 진행돼.':s.market.kind==='collegeEnd'?'대학을 마쳤어! 프로 구단을 선택해.':'계약이 만료됐어. 계약을 체결해야 다음 시즌으로 진행할 수 있어.';return `<div class="notice">⚠️ ${message} <button class="btn small" style="margin-left:10px" onclick="switchTab('market')">제안 확인 →</button></div>`}
-function home(s){const last=s.last;const ring=s.awards.rings;return `${updateBanner()}${panelTitle('커리어 대시보드',`<span class="pill">GOAT ${goatRank(s)}위</span>`)}${walletSummary(s)}<section class="hero"><div class="hero-content"><div class="eyebrow">${s.retired?'CAREER COMPLETE':s.stage==='HIGH'?'HIGH SCHOOL HOOPS':s.stage==='COLLEGE'?'COLLEGE ROAD':'PROFESSIONAL CAREER'}</div><h2>${esc(s.player.name)}</h2><div style="display:flex;align-items:center;gap:12px"><div class="avatar"><canvas width="40" height="54" data-profile="player" aria-label="내 선수 픽셀 캐릭터"></canvas></div><div><div style="font-weight:800;font-size:15px">${teamLabel(s.team)}</div><div class="desc">${esc(s.player.nationality)} · ${esc(s.player.position)} · ${s.age}세 · ${esc(stageLabel(s))}</div><span class="pill gold">${level(s)}</span></div></div><div class="hero-bottom">${s.retired?`<span class="pill gold">${esc(s.retireReason)}</span>`:`<button id="simulateButton" class="btn" onclick="nextSeason()" ${s.market.required?'disabled title="이적/진로 결정 필요"':''}>⏭ ${s.year} 시즌 자동 진행</button><button class="btn secondary" onclick="switchTab('training')">훈련 설정</button>`}${!s.retired?`<button class="btn ghost" onclick="switchTab('market')">이적·계약</button>`:''}</div></div></section>${pendingBox(s)}<div class="grid four" style="margin:16px 0">${statbox('종합 능력치',getOvr(s)+' OVR','잠재력 '+s.potential)}${statbox('NBA MVP',s.awards.mvp+'회','정규 시즌 MVP')}${statbox('파이널 MVP',s.awards.fmvp+'회','NBA 결승 MVP')}${statbox('NBA 우승',ring+'회','챔피언 반지')}</div><div class="grid two"><div>${last?`<div class="card" style="margin-bottom:15px"><div class="section-top"><h3>지난 시즌 성적 · ${last.year}</h3><span class="pill blue">${esc(last.league)}</span></div><div class="result-stat"><div><strong>${fmt(last.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(last.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(last.ast)}</strong><span>총 어시스트</span></div><div><strong>${fmt(last.steals)}</strong><span>총 스틸</span></div></div><p class="smallnote" style="margin:8px 0 0">${last.games}경기 출전 · 경기당 평균 ${last.ppg}점 / ${last.rpg}리바운드 / ${last.apg}어시스트</p><div class="sep"></div><div class="desc">${esc(last.team)} · 팀 ${last.wins}승 ${last.losses}패 · ${esc(last.playoff)}</div>${last.earned.length?`<div class="result-tags">${last.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:''}<div style="margin-top:13px"><button class="btn secondary small" onclick="switchTab('history')">전체 시즌 기록 확인 →</button></div></div>`:''}<div class="card"><div class="section-top"><h3>다음 시즌 계획</h3><span class="pill">${s.focus==='shoot'?'슈팅':attrs[s.focus]} 집중</span></div><p class="desc">훈련 방향을 선택하면 다음 시즌 동안 해당 능력치 성장이 빨라져. 다른 구단의 계약 제안 및 NBA 트레이드도 발생할 수 있어.</p><div class="mini-grid"><div class="mini-box"><span class="label">선수 역할</span><strong>${s.role}</strong></div><div class="mini-box"><span class="label">계약 잔여</span><strong>${s.stage==='PRO'?s.contract+'년':'해당 없음'}</strong></div></div></div></div><div>${attrsCard(s)}</div></div><div class="footer-note">시즌 결과와 시상은 이 게임의 자체 확률 엔진으로 생성됩니다. 실제 구단의 현재 명단·계약·리그 규정과는 차이가 있을 수 있습니다.</div>`}
+function home(s){const last=s.last;const ring=s.awards.rings;return `${updateBanner()}${panelTitle('커리어 대시보드',`<span class="pill">GOAT ${goatRank(s)}위</span>`)}${pendingBox(s)}<section class="hero career-hero"><div class="hero-content"><div class="eyebrow">${s.retired?'CAREER COMPLETE':s.stage==='HIGH'?'HIGH SCHOOL HOOPS':s.stage==='COLLEGE'?'COLLEGE ROAD':'PROFESSIONAL CAREER'}</div><h2>${esc(s.player.name)}</h2><div style="display:flex;align-items:center;gap:12px"><div class="avatar"><canvas width="40" height="54" data-profile="player" aria-label="내 선수 픽셀 캐릭터"></canvas></div><div><div style="font-weight:800;font-size:15px">${teamLabel(s.team)}</div><div class="desc">${esc(s.player.nationality)} · ${esc(s.player.position)} · ${s.age}세 · ${esc(stageLabel(s))}</div><span class="pill gold">${level(s)}</span></div></div><div class="hero-bottom">${s.retired?`<span class="pill gold">${esc(s.retireReason)}</span>`:`<button id="simulateButton" class="btn" onclick="nextSeason()" ${s.market.required?'disabled title="이적/진로 결정 필요"':''}>⏭ ${s.year} 시즌 자동 진행</button><button class="btn secondary" onclick="switchTab('training')">훈련 설정</button>`}${!s.retired?`<button class="btn ghost" onclick="switchTab('market')">이적·계약</button>`:''}</div></div></section><div class="grid four career-metrics" style="margin:16px 0">${statbox('종합 능력치',getOvr(s)+' OVR','잠재력 '+s.potential)}${statbox('NBA MVP',s.awards.mvp+'회','정규 시즌 MVP')}${statbox('파이널 MVP',s.awards.fmvp+'회','NBA 결승 MVP')}${statbox('NBA 우승',ring+'회','챔피언 반지')}</div>${walletSummary(s)}<div class="grid two career-details"><div>${last?`<div class="card" style="margin-bottom:15px"><div class="section-top"><h3>지난 시즌 성적 · ${last.year}</h3><span class="pill blue">${esc(last.league)}</span></div><div class="result-stat"><div><strong>${fmt(last.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(last.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(last.ast)}</strong><span>총 어시스트</span></div><div><strong>${fmt(last.steals)}</strong><span>총 스틸</span></div></div><p class="smallnote" style="margin:8px 0 0">${last.games}경기 출전 · 경기당 평균 ${last.ppg}점 / ${last.rpg}리바운드 / ${last.apg}어시스트</p><div class="sep"></div><div class="desc">${esc(last.team)} · 팀 ${last.wins}승 ${last.losses}패 · ${esc(last.playoff)}</div>${last.earned.length?`<div class="result-tags">${last.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:''}<div style="margin-top:13px"><button class="btn secondary small" onclick="switchTab('history')">전체 시즌 기록 확인 →</button></div></div>`:''}<div class="card"><div class="section-top"><h3>다음 시즌 계획</h3></div><p class="desc">${Object.entries(trainingPlan(s)).filter(([,points])=>points>0).map(([stat,points])=>`${attrs[stat]} ${points}점`).join(' · ')||'배분한 훈련 포인트가 없어.'}</p><div class="mini-grid"><div class="mini-box"><span class="label">선수 역할</span><strong>${s.role}</strong></div><div class="mini-box"><span class="label">계약 잔여</span><strong>${s.stage==='PRO'?s.contract+'년':'해당 없음'}</strong></div></div></div></div><div>${attrsCard(s)}</div></div><div class="footer-note">시즌 결과와 시상은 이 게임의 자체 확률 엔진으로 생성됩니다. 실제 구단의 현재 명단·계약·리그 규정과는 차이가 있을 수 있습니다.</div>`}
 const trainingBudget=4;
 const positionPriorities={
   PG:['pass','iq','shoot'],SG:['shoot','drive','clutch'],SF:['drive','shoot','defense'],
