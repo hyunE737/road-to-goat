@@ -148,6 +148,15 @@ body{background:linear-gradient(140deg,#f4f8ff 0%,#fff 58%,#fffaf3 100%);color:v
   .season-progress{box-sizing:border-box}
 }
 </style>
+<style>
+.season-items{margin:14px 0 20px}
+.season-items h3{margin:0}
+.season-item-list{display:grid;gap:8px}
+.season-item{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:9px;align-items:center;padding:8px;background:var(--panel2);border-radius:16px}
+.season-item-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#fff;font-size:24px}
+.season-item strong{overflow-wrap:anywhere}
+.season-item button{min-height:44px;padding-inline:10px}
+</style>
 </head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
@@ -620,12 +629,12 @@ function answerInternationalInvite(accept){
  else seasonResultModal(r);
 }
 const seasonItems=[
- {id:'ball',name:'슈팅 훈련공',stat:'shoot',price:350,boost:2},
- {id:'cones',name:'드리블 콘 세트',stat:'drive',price:350,boost:2},
- {id:'film',name:'패스 분석 영상',stat:'pass',price:400,boost:2},
- {id:'pads',name:'수비 훈련 패드',stat:'defense',price:400,boost:2},
- {id:'band',name:'점프 저항 밴드',stat:'rebound',price:400,boost:2},
- {id:'bike',name:'유산소 훈련 장비',stat:'stamina',price:500,boost:2}
+ {id:'ball',icon:'🏀',name:'슈팅 훈련공',stat:'shoot',price:350,boost:2},
+ {id:'cones',icon:'🔶',name:'드리블 콘 세트',stat:'drive',price:350,boost:2},
+ {id:'film',icon:'🎥',name:'패스 분석 영상',stat:'pass',price:400,boost:2},
+ {id:'pads',icon:'🛡️',name:'수비 훈련 패드',stat:'defense',price:400,boost:2},
+ {id:'band',icon:'🪢',name:'점프 저항 밴드',stat:'rebound',price:400,boost:2},
+ {id:'bike',icon:'🚲',name:'유산소 훈련 장비',stat:'stamina',price:500,boost:2}
 ];
 function careerWallet(s){
   return s.wallet??={balance:500,lastIncome:0,purchase:null};
@@ -650,33 +659,37 @@ function purchaseItem(s,id){
   wallet.purchase={year:s.year,id,gain};
   return true;
 }
+function openLatestSeasonResult(){
+  if(state?.last&&!busy)seasonResultModal(state.last);
+}
 function buySeasonItem(id){
   const s=state;
-  if(!s||busy||!purchaseItem(s,id))return;
+  const panel=document.getElementById('seasonItems');
+  if(!s?.last||!panel||busy||!purchaseItem(s,id))return;
   save();
   render();
-  toast('아이템을 구매해 능력치가 올랐어!');
+  panel.innerHTML=renderSeasonItems(s);
+  panel.querySelector('[role="status"]').focus({preventScroll:true});
 }
 function walletSummary(s){
   const wallet=careerWallet(s);
-  return `<div class="card" style="margin-bottom:16px"><div class="section-top"><div><div class="label">모은 돈</div><strong class="value">$${fmt(wallet.balance)}</strong><div class="desc">지난 시즌 수입 $${fmt(wallet.lastIncome)}</div></div><button class="btn small" onclick="switchTab('shop')">시즌 상점</button></div></div>`;
+  return `<div class="card" style="margin-bottom:16px"><div class="section-top"><div><div class="label">모은 돈</div><strong class="value">$${fmt(wallet.balance)}</strong><div class="desc">지난 시즌 수입 $${fmt(wallet.lastIncome)}</div></div>${s.last?`<button class="btn small" onclick="openLatestSeasonResult()">지난 시즌 결과</button>`:''}</div></div>`;
 }
-function renderSeasonShop(s){
+function renderSeasonItems(s){
   const wallet=careerWallet(s);
-  const bought=wallet.purchase?.year===s.year;
-  const purchased=bought?seasonItems.find(item=>item.id===wallet.purchase.id):null;
-  return `${panelTitle('시즌 상점',`<span class="pill gold">보유 $${fmt(wallet.balance)}</span>`)}
-    <div class="card" style="margin-bottom:16px"><p class="desc">${s.retired?'은퇴한 선수는 아이템을 구매할 수 없어.':purchased?`이번 시즌 구매 완료 · ${purchased.name}`:'시즌마다 훈련 아이템 하나를 살 수 있어. 효과는 구매 즉시 적용돼.'}</p><p class="desc">시즌 종료 시 고교는 $300, 대학은 $500, 프로는 계약 연봉을 받아.</p></div>
-    <div class="grid two">${seasonItems.map(item=>{
+  const purchased=wallet.purchase?.year===s.year?seasonItems.find(item=>item.id===wallet.purchase.id):null;
+  return `<div class="section-top"><h3>훈련 아이템</h3><span class="pill gold">모은 돈 $${fmt(wallet.balance)}</span></div>
+    <p class="desc" role="status" tabindex="-1">${purchased?`구매 완료 · ${purchased.name} · ${attrs[purchased.stat]} +${wallet.purchase.gain}`:'시즌 종료 후 하나를 구매할 수 있어. 효과는 즉시 적용돼.'}</p>
+    <div class="season-item-list">${seasonItems.map(item=>{
       const gain=itemGain(s,item);
-      const label=!gain?'능력치 한도':s.retired?'은퇴 완료':bought?'이번 시즌 구매 완료':wallet.balance<item.price?'잔액 부족':'구매';
-      return `<div class="card"><h3>${item.name}</h3><p class="desc">${attrs[item.stat]} +${gain} · $${fmt(item.price)}</p><button class="btn small" onclick="buySeasonItem('${item.id}')" ${label==='구매'?'':'disabled'}>${label}</button></div>`;
+      const label=purchased?'구매 완료':!gain?'능력치 한도':wallet.balance<item.price?'잔액 부족':'구매';
+      return `<div class="season-item"><span class="season-item-icon" aria-hidden="true">${item.icon}</span><div><strong>${item.name}</strong><div class="desc">${attrs[item.stat]} +${gain} · $${fmt(item.price)}</div></div><button class="btn small" aria-label="${item.name} ${label}" onclick="buySeasonItem('${item.id}')" ${label==='구매'?'':'disabled'}>${label}</button></div>`;
     }).join('')}</div>`;
 }
-const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['shop','◇','시즌 상점'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
+const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
 function render(){if(!state)return renderIntro();let s=state;document.getElementById('app').innerHTML=`<header class="top-header"><div class="brand"><span class="brandmark">🏀</span><div>ROAD TO GOAT <span class="sub">/ MY CAREER</span></div></div><div style="display:flex;align-items:center;gap:9px"><span class="pill gold">${s.retired?'은퇴 완료':`${s.year} 시즌`}</span><span class="stage">${esc(stageLabel(s))} · ${s.age}세</span><button class="main-menu-btn" onclick="openGameMenu()">☰ 메뉴</button></div></header><div class="layout"><aside class="side">${navItems.map(([id,icon,label])=>`<button class="nav ${tab===id?'active':''}" onclick="switchTab('${id}')"><span>${icon}</span>${label}${id==='market'&&s.market.required?' ●':''}${id==='messages'&&s.pendingIntl?' ●':''}</button>`).join('')}<div class="side-divider"></div><div class="side-footer">독립 제작 게임 데모 v${GAME_VERSION}<br>진행 상황 자동 저장</div></aside><main class="content" id="pageContent"></main></div>`;renderTab()}
 function switchTab(t){tab=t;render()}
-function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),shop:()=>renderSeasonShop(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();}
+function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();}
 function panelTitle(t,right=''){return `<div class="view-title"><div><div class="eyebrow">ROAD TO GOAT · CAREER</div><h2 style="margin-top:7px">${t}</h2></div>${right}</div>`}
 function statbox(k,v,sub=''){return `<div class="card stat"><div class="label">${k}</div><div class="value">${v}</div><div class="smallnote">${sub}</div></div>`}
 function attrsCard(s){return `<div class="card"><div class="section-top"><h3>선수 능력치</h3><span class="pill">POT ${s.potential}</span></div>${Object.entries(s.attrs).map(([k,v])=>`<div class="attr-row"><span class="muted">${attrs[k]}</span><div class="meter"><i style="width:${v}%"></i></div><b>${v}</b></div>`).join('')}</div>`}
@@ -845,7 +858,7 @@ try{
 }}
 function seasonResultModal(r){
  const goatText=`GOAT 점수 ${fmt(goatScore(state))} · 역대 ${goatRank(state)}위`;
- showModal(`${r.year} 시즌 결과`, `<div class="results-banner"><div class="eyebrow">SEASON ${r.year} COMPLETED</div><h2 style="margin:6px 0">${esc(koTeam(r.team))}</h2><div class="desc">${esc(r.league)} · ${r.wins}승 ${r.losses}패 · ${esc(r.playoff)} · ${r.games}경기 출전</div></div>${r.income==null?'':`<p class="desc">시즌 수입 +${fmt(r.income)} · 보유 ${fmt(careerWallet(state).balance)}</p>`}<h3>한 시즌 누적 기록</h3><div class="result-stat"><div><strong>${fmt(r.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(r.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(r.ast)}</strong><span>총 어시스트</span></div><div><strong>${r.ovr}</strong><span>최종 OVR</span></div></div><p class="smallnote" style="margin-top:9px">경기당 평균: ${r.ppg}득점 · ${r.rpg}리바운드 · ${r.apg}어시스트 (참고용)</p><div class="sep"></div>${r.final?`<p class="desc">🏀 ${esc(r.final.title)} · ${r.final.champion?'우승':'준우승'} · 시리즈 ${r.final.ourWins}:${r.final.oppWins} <button class="btn secondary small" onclick="replayFinal(${r.year},'club')">결승 다시 보기</button></p>`:''}${r.international?`<div class="notice">🌐 ${esc(r.international.competition)} · ${esc(r.international.finish)} ${r.international.final?`<button class="btn secondary small" onclick="replayFinal(${r.year},'intl')">국제전 결승 다시 보기</button>`:''}</div>`:''}${r.earned.length?`<div class="section-top" style="margin-top:15px"><h3>이번 시즌 수상</h3></div><div class="result-tags">${r.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:`<p class="desc" style="margin-top:15px">이번 시즌에는 개인 수상이 없었어. 다음 시즌에 도전하자.</p>`}${r.trade?`<div class="notice" style="margin-top:15px">⇄ ${esc(koText(r.trade))}</div>`:''}<p class="desc" style="margin:15px 0 0">${goatText}</p>${state.market.required?`<div class="notice" style="margin-top:13px">다음 시즌을 진행하려면 계약/진로를 선택해야 해.</div>`:''}${state.retired?`<div class="notice" style="margin-top:13px">${esc(state.retireReason)}</div>`:''}`,null,'확인');
+ showModal(`${r.year} 시즌 결과`, `<div class="results-banner"><div class="eyebrow">SEASON ${r.year} COMPLETED</div><h2 style="margin:6px 0">${esc(koTeam(r.team))}</h2><div class="desc">${esc(r.league)} · ${r.wins}승 ${r.losses}패 · ${esc(r.playoff)} · ${r.games}경기 출전</div></div>${r.income==null?'':`<p class="desc">시즌 수입 +${fmt(r.income)}</p>`}<h3>한 시즌 누적 기록</h3><div class="result-stat"><div><strong>${fmt(r.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(r.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(r.ast)}</strong><span>총 어시스트</span></div><div><strong>${r.ovr}</strong><span>최종 OVR</span></div></div><p class="smallnote" style="margin-top:9px">경기당 평균: ${r.ppg}득점 · ${r.rpg}리바운드 · ${r.apg}어시스트 (참고용)</p><div class="sep"></div>${!state.retired&&state.last?.year===r.year?`<section id="seasonItems" class="season-items">${renderSeasonItems(state)}</section>`:''}${r.final?`<p class="desc">🏀 ${esc(r.final.title)} · ${r.final.champion?'우승':'준우승'} · 시리즈 ${r.final.ourWins}:${r.final.oppWins} <button class="btn secondary small" onclick="replayFinal(${r.year},'club')">결승 다시 보기</button></p>`:''}${r.international?`<div class="notice">🌐 ${esc(r.international.competition)} · ${esc(r.international.finish)} ${r.international.final?`<button class="btn secondary small" onclick="replayFinal(${r.year},'intl')">국제전 결승 다시 보기</button>`:''}</div>`:''}${r.earned.length?`<div class="section-top" style="margin-top:15px"><h3>이번 시즌 수상</h3></div><div class="result-tags">${r.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:`<p class="desc" style="margin-top:15px">이번 시즌에는 개인 수상이 없었어. 다음 시즌에 도전하자.</p>`}${r.trade?`<div class="notice" style="margin-top:15px">⇄ ${esc(koText(r.trade))}</div>`:''}<p class="desc" style="margin:15px 0 0">${goatText}</p>${state.market.required?`<div class="notice" style="margin-top:13px">다음 시즌을 진행하려면 계약/진로를 선택해야 해.</div>`:''}${state.retired?`<div class="notice" style="margin-top:13px">${esc(state.retireReason)}</div>`:''}`,null,'확인');
 }
 function history(s){return `${panelTitle('시즌 기록',`<span class="pill">${s.history.length}시즌 기록</span>`)}<div class="card"><h3>시즌 누적 기록 (평균이 아닌 총합)</h3>${s.history.length?`<div class="table-wrap"><table><thead><tr><th>연도</th><th>나이</th><th>소속</th><th>리그</th><th>출전 경기</th><th>총 득점</th><th>총 리바운드</th><th>총 어시스트</th><th>OVR</th><th>결승전</th><th>수상</th></tr></thead><tbody>${[...s.history].reverse().map(x=>`<tr><td><strong>${x.year}</strong></td><td>${x.age}</td><td>${esc(koTeam(x.team))}</td><td>${esc(x.league)}</td><td>${x.games}</td><td><strong>${fmt(x.pts)}</strong></td><td><strong>${fmt(x.reb)}</strong></td><td><strong>${fmt(x.ast)}</strong></td><td>${x.ovr}</td><td>${x.final?`<button class="btn secondary small" onclick="replayFinal(${x.year},'club')">▶ 관전</button>`:'–'}</td><td>${x.earned.length?esc(x.earned.join(', ')):'–'}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">아직 시즌 기록이 없어. 첫 시즌을 자동 진행해 줘.</div>`}</div><div class="card" style="margin-top:15px"><h3>커리어 뉴스</h3>${s.events.length?s.events.slice(0,25).map(x=>`<div class="history-item"><div class="label">${x.year}년</div><p class="desc" style="margin:4px 0 0">${esc(koText(x.text))}</p></div>`).join(''):'<div class="empty">시즌을 진행하면 주요 이벤트가 쌓여.</div>'}</div>`}
 function awards(s){const values=[['🏆','NBA 정규 시즌 MVP',s.awards.mvp],['🥇','NBA 파이널 MVP',s.awards.fmvp],['💍','NBA 챔피언',s.awards.rings],['⭐','NBA 올스타',s.awards.allstar],['🎖','올NBA',s.awards.allnba],['🎯','NBA 득점왕',s.awards.scoring],['🛡','NBA 수비왕',s.awards.dpoy],['🌱','NBA 신인왕',s.awards.rookie],['🌍','세계 올해의 농구선수 (게임)',s.awards.world],['🏀','해외 리그 MVP',s.awards.othermvp],['📘','고교 MVP',s.awards.highmvp],['🎓','대학 MVP',s.awards.collegemvp]];return `${panelTitle('트로피 보관함',`<span class="pill gold">총 ${values.reduce((t,x)=>t+x[2],0)}개</span>`)}<div class="grid three">${values.map(([icon,label,n])=>`<div class="trophy"><span class="sym">${icon}</span><div><div class="label">${label}</div><div class="value" style="font-size:19px;margin-top:4px">${n}회</div></div></div>`).join('')}</div><div class="card" style="margin-top:16px"><h3>수상 연혁</h3>${s.history.filter(x=>x.earned.length).length?s.history.filter(x=>x.earned.length).reverse().map(x=>`<div class="history-item"><div style="font-weight:800;font-size:13px">${x.year} · ${esc(koTeam(x.team))}</div><div class="result-tags">${x.earned.map(a=>`<span>🏆 ${esc(a)}</span>`).join('')}</div></div>`).join(''):'<div class="empty">첫 트로피를 획득하면 여기에 기록돼.</div>'}</div>`}
