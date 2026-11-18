@@ -317,3 +317,7 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 
 #modalRoot .career-event-card .event-cost{color:var(--gold);font-size:10px;line-height:1.7}
 .event-consequence{padding:10px 12px;border-left:3px solid var(--gold);background:var(--panel2);font-size:12px;line-height:1.7}
+
+#app .welcome-intro #welcomeTitle{font-size:clamp(32px,8vw,48px);line-height:1.22;letter-spacing:-.055em;text-transform:none;word-break:keep-all}
+#app .brand{text-transform:none;letter-spacing:-.025em}
+@media(max-width:600px){#app .career-header .brand{font-size:12px;line-height:1.35;white-space:normal}#app .career-header .brand .sub{display:none}}
