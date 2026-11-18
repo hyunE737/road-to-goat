@@ -1,4 +1,4 @@
-/* ROAD TO GOAT v1.6 — player-career experience layer. Original save key unchanged. */
+/* 신인부터 농구 Goat까지 v1.6 — player-career experience layer. Original save key unchanged. */
 'use strict';
 let rtgIntroReady=false;
 // 이 화면은 업적이나 선택지가 아니라 한 선수의 커리어가 흘러가는 순서다.
@@ -33,7 +33,7 @@ function rtgCareerChapter(s){
 function rtgWelcome(){
  document.getElementById('app').innerHTML=`<main class="rtg-welcome welcome-simple"><section class="welcome-intro" aria-labelledby="welcomeTitle">
   <span class="brandmark welcome-brandmark" aria-hidden="true">🏀</span>
-  <h1 id="welcomeTitle">ROAD TO GOAT</h1>
+  <h1 id="welcomeTitle">신인부터<br>농구 Goat까지</h1>
   <ol class="welcome-career-path" aria-label="커리어 진행 흐름">${[['guide','고교'],['market','대학·프로'],['ball','NBA'],['goat','GOAT']].map(([icon,label])=>`<li>${gameIcon(icon)}<span>${label}</span></li>`).join('')}</ol>
   <button type="button" class="btn" id="rtgBegin" onclick="rtgBeginJourney()">내 커리어 시작하기</button>
   <button type="button" class="welcome-guide" onclick="rtgGuideModal()">게임 가이드</button>
