@@ -134,3 +134,45 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 #modalRoot .finals-modal:has(.finals-timeout:not([hidden])) .rtg-full-court{height:120px}
 #modalRoot .finals-modal:has(.finals-timeout:not([hidden])) :is(.sim-feed,.finals-event){display:none}
 #modalRoot .finals-timeout .smallnote{margin:8px 0 0;font-size:11px}
+
+:root{--pixel-outline:#243e34;--pixel-fill:#a9c5b0}
+[data-theme="dark"]{--pixel-outline:#c1d5bb;--pixel-fill:#456d52}
+#app .career-side{--pixel-outline:#dceacb;--pixel-fill:#52785e}
+#app .career-side .nav.active{--pixel-outline:#1b3024;--pixel-fill:#f6d49b}
+.game-icon.pixel-icon{width:24px;height:24px;image-rendering:pixelated;shape-rendering:crispEdges}
+#app .career-side .career-motion-icon{width:28px;min-width:28px}
+#app .career-side .nav,#app .header-icon-button,#modalRoot .btn,#app .btn{border-radius:4px}
+#app .career-side .nav.active{box-shadow:inset 0 -3px 0 #b54b22}
+#app .career-side .nav:hover .career-motion-icon{animation-timing-function:steps(3,end)}
+#app .career-nav-more summary::marker{color:#e6ba70}
+#modalRoot .pixel-conversation{height:174px;width:100%;max-width:none;border-radius:3px;border:2px solid var(--line);border-bottom:6px solid #657556;background:var(--panel2);isolation:isolate}
+.pixel-conversation .conversation-player{position:absolute;left:18%;bottom:8px;width:70px;height:140px;object-fit:contain;image-rendering:pixelated;animation:pixel-talk 1.2s steps(2,end) 2}
+.pixel-conversation .conversation-coach{position:absolute;right:18%;bottom:10px;width:80px;height:100px;image-rendering:pixelated;animation:pixel-talk 1.2s .35s steps(2,end) 2}
+.pixel-conversation .pixel-desk{position:absolute;left:33%;right:33%;bottom:21px;height:22px;background:#a58051;border:4px solid #4f4739;z-index:2;box-shadow:0 5px 0 #6d5335}
+.pixel-desk::before,.pixel-desk::after{content:'';position:absolute;top:18px;width:5px;height:17px;background:#4f4739}
+.pixel-desk::before{left:4px}.pixel-desk::after{right:4px}
+.pixel-speech{position:absolute;top:12px;right:19%;width:50px;height:35px;animation:pixel-bubble .7s .3s steps(2,end) both}
+.pixel-conference .conversation-player{left:calc(50% - 35px)}
+.pixel-conference .pixel-speech{right:24%;top:12px}
+.pixel-podium{position:absolute;bottom:8px;left:calc(50% - 42px);width:84px;height:36px;background:#476e56;border:4px solid #243e34;box-shadow:inset 0 -6px 0 #304f3d}
+.pixel-mic{position:absolute;bottom:44px;left:calc(50% + 10px);height:22px;width:4px;background:#243e34}
+.pixel-mic::before{content:'';position:absolute;top:0;left:-4px;width:12px;height:8px;background:#243e34;border:2px solid #82938b}
+.pixel-camera{position:absolute;right:12%;bottom:28px;color:var(--pixel-outline)}
+.pixel-camera .game-icon{width:36px;height:36px}
+.pixel-conversation .scene-flash{right:12%;bottom:50px;border-radius:0;width:16px;height:16px}
+@keyframes pixel-talk{50%{transform:translateY(-2px)}}
+@keyframes pixel-bubble{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+#app .avatar-version{border-radius:4px;border-width:2px}
+#app .avatar-version[aria-pressed="true"]{border-color:#cc612d;background:var(--panel2);box-shadow:inset 0 -4px 0 #d78b4f}
+#app .avatar-version canvas{width:82px;height:164px;max-width:100%;image-rendering:pixelated}
+#app .pixel-showcase #mainPixelAvatar{width:120px;height:240px;image-rendering:pixelated;filter:none}
+#app .pixel-showcase{height:auto;min-height:260px;padding:10px;align-items:center;justify-content:center}
+#app .avatar canvas[data-profile]{width:48px;height:auto;image-rendering:pixelated}
+@media(max-width:600px){
+ #app .career-nav-main .game-icon.pixel-icon{width:22px;height:22px}
+ #modalRoot .pixel-conversation{height:160px}
+ .pixel-conversation .conversation-player{left:13%;width:64px;height:128px}
+ .pixel-conversation .conversation-coach{right:10%;width:72px;height:90px}
+ .pixel-conference .conversation-player{left:calc(50% - 32px)}
+}
+@media(prefers-reduced-motion:reduce){.pixel-conversation *{animation:none!important}}
