@@ -6,6 +6,23 @@
   if(typeof PIXEL_STYLES !== 'undefined' && PIXEL_STYLES.splice) PIXEL_STYLES.splice(0,PIXEL_STYLES.length,...styleNames);
   const lineupArt=new Image();
   let lineupReady=false;
+  const transparentLineup=document.createElement('canvas');
+  function prepareLineup(){
+    const w=lineupArt.naturalWidth,h=lineupArt.naturalHeight;
+    transparentLineup.width=w;transparentLineup.height=h;
+    const ctx=transparentLineup.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(lineupArt,0,0);
+    const pixels=ctx.getImageData(0,0,w,h),data=pixels.data;
+    const visited=new Uint8Array(w*h),queue=new Int32Array(w*h);let head=0,tail=0;
+    // Only erase pale neutral background connected to the outside. Character RGB stays untouched.
+    const add=(n)=>{if(n<0||n>=w*h||visited[n])return;visited[n]=1;const i=n*4;
+      const lo=Math.min(data[i],data[i+1],data[i+2]),hi=Math.max(data[i],data[i+1],data[i+2]);
+      if(data[i+3]===0||(lo>=225&&hi-lo<=24)){data[i+3]=0;queue[tail++]=n;}};
+    for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}
+    for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}
+    while(head<tail){const n=queue[head++],x=n%w;if(x)add(n-1);if(x<w-1)add(n+1);if(n>=w)add(n-w);if(n<w*(h-1))add(n+w)}
+    ctx.putImageData(pixels,0,0);
+  }
   const mainArt=new Image();
   const colorMask=new Image();
   let baseReady=false,maskReady=false,maskImage=null;
@@ -19,7 +36,7 @@
       if(!context)return false;
       context.clearRect(0,0,width,height);
       context.imageSmoothingEnabled=false;
-      if(lineupReady)context.drawImage(lineupArt,config.lineupVersion*width,0,width,height,0,0,width,height);
+      if(lineupReady)context.drawImage(transparentLineup,config.lineupVersion*width,0,width,height,0,0,width,height);
       return true;
     }
     if(!baseReady||!maskReady||!maskImage)return false;
@@ -100,7 +117,7 @@
     const cx=c.getContext('2d',{willReadFrequently:true});cx.drawImage(colorMask,0,0);
     maskImage=cx.getImageData(0,0,180,200);redraw()
   };
-  lineupArt.onload=()=>{lineupReady=true;redraw();if(typeof drawConversationActors==='function')drawConversationActors()};
+  lineupArt.onload=()=>{prepareLineup();lineupReady=true;redraw();if(typeof drawConversationActors==='function')drawConversationActors()};
   lineupArt.src='player-lineup.png';
   mainArt.src=RTG_ART.player;
   colorMask.src=RTG_ART.mask;
