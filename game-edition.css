@@ -314,3 +314,6 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 #modalRoot .season-item-icon{width:40px;height:44px;min-width:40px;display:grid;place-items:center}
 #modalRoot .season-item-icon .item-pixel-icon{width:36px;height:36px;image-rendering:pixelated;shape-rendering:crispEdges}
 #app .avatar-png-export{display:block;margin:0 auto 14px}
+
+#modalRoot .career-event-card .event-cost{color:var(--gold);font-size:10px;line-height:1.7}
+.event-consequence{padding:10px 12px;border-left:3px solid var(--gold);background:var(--panel2);font-size:12px;line-height:1.7}
