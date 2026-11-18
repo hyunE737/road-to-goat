@@ -378,7 +378,7 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 }
 @media(prefers-reduced-motion:reduce){.welcome-career-path::after{animation:none;left:87.5%}}
 .welcome-career-path .game-icon{width:19px;height:19px;color:var(--blue)}
-</style><link rel="stylesheet" href="game-edition.css?v=5027d967">
+</style><link rel="stylesheet" href="game-edition.css?v=ef54917e">
 </head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
@@ -735,16 +735,11 @@ function schoolOptions(country){const list=currentSchool(country);return list.ma
 function updateSchools(){const c=document.getElementById('schoolCountry').value, list=currentSchool(c);document.getElementById('schoolSelect').innerHTML=schoolOptions(c);document.getElementById('schoolCount').textContent=list.length?`${c} 실제 농구 관련 학교 ${list.length}곳 · 직접 입력 가능`:`${c} 학교는 직접 입력해서 시작할 수 있어`;updateCustomSchool()}
 function updateCustomSchool(){const v=document.getElementById('schoolSelect').value,isCustom=v===CUSTOM_SCHOOL;const input=document.getElementById('customSchool');input.classList.toggle('hidden',!isCustom);input.required=isCustom}
 const avatarVersions=[
- {label:'네이비',skin:0,jersey:0,hairColor:0},
- {label:'코트 레드',skin:1,jersey:1,hairColor:1},
- {label:'포레스트',skin:2,jersey:2,hairColor:0},
- {label:'골드',skin:3,jersey:3,hairColor:1},
- {label:'바이올렛',skin:4,jersey:4,hairColor:0},
- {label:'차콜',skin:1,jersey:5,hairColor:0}
+ {label:'화이트 23'}, {label:'블랙 23'}, {label:'레드 23'},
+ {label:'골드 23'}, {label:'블루 23'}, {label:'퍼플 23'}
 ];
 function avatarVersionConfig(version){
- const {skin,jersey,hairColor}=avatarVersions[version];
- return {...avatarConfig,variant:version,preset:0,skin,jersey,hairColor};
+ return {...avatarConfig,variant:version,lineupVersion:version,preset:0,number:23};
 }
 function chooseAvatarVersion(version){
  if(!avatarVersions[version])return;
@@ -759,12 +754,12 @@ function chooseAvatarVersion(version){
 function renderAvatarSelection(){
  avatarConfig=avatarVersionConfig(avatarConfig.variant??0);
  const d=draftPlayer;if(!d)return renderIntro();
- document.getElementById('app').innerHTML=`<div class="avatar-screen"><div class="intro-header"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">/ PIXEL CHARACTER</span></div></div><div class="avatar-stage-layout"><section class="card avatar-stage-preview"><span class="pill gold">STEP 2 / 2 · 선수 외형 선택</span><h1 style="font-size:32px;letter-spacing:-1px;margin:12px 0 5px">나만의 픽셀 선수</h1><p class="desc">${esc(d.name)} · ${esc(d.school)} · ${esc(d.pos)}</p><div class="pixel-showcase"><canvas id="mainPixelAvatar" width="40" height="54" aria-label="선택한 선수의 픽셀 캐릭터"></canvas></div><div class="avatar-preview-name">${esc(d.name.toUpperCase())}</div><div class="selection-status" id="avatarStatus" role="status" aria-live="polite">선택 항목을 불러오는 중…</div><p class="smallnote" style="text-align:center">캐릭터는 게임용 독창적인 픽셀 아트야. 실제 선수 사진은 사용하지 않아.</p></section><section class="card avatar-configuration"><div class="section-top"><h2 style="margin:0">캐릭터 고르기</h2></div><div class="avatar-versions">${avatarVersions.map((version,index)=>`<button type="button" class="avatar-version" data-avatar-version="${index}" aria-pressed="${avatarConfig.variant===index}" onclick="chooseAvatarVersion(${index})"><canvas width="40" height="54" data-version="${index}" aria-hidden="true"></canvas><strong>${version.label}</strong></button>`).join('')}</div><div class="field" style="margin-top:14px"><label for="avatarNumber">등번호 (0~99)</label><input id="avatarNumber" type="number" min="0" max="99" step="1" value="${avatarConfig.number}" oninput="changeAvatarNumber(this.value)"></div><div class="avatar-actions"><button type="button" class="btn secondary" onclick="renderIntro(true)">← 뒤로</button><button type="button" class="btn" onclick="finishCreatePlayer()">▶ 선택 완료 · 고1 시작</button></div><p class="smallnote" style="margin-top:12px">카드를 누르면 선택한 버전을 크게 볼 수 있어.</p></section></div></div>`;
+ document.getElementById('app').innerHTML=`<div class="avatar-screen"><div class="intro-header"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">/ PIXEL CHARACTER</span></div></div><div class="avatar-stage-layout"><section class="card avatar-stage-preview"><span class="pill gold">STEP 2 / 2 · 선수 외형 선택</span><h1 style="font-size:32px;letter-spacing:-1px;margin:12px 0 5px">나만의 픽셀 선수</h1><p class="desc">${esc(d.name)} · ${esc(d.school)} · ${esc(d.pos)}</p><div class="pixel-showcase"><canvas id="mainPixelAvatar" width="40" height="54" aria-label="선택한 선수의 픽셀 캐릭터"></canvas></div><div class="avatar-preview-name">${esc(d.name.toUpperCase())}</div><div class="selection-status" id="avatarStatus" role="status" aria-live="polite">선택 항목을 불러오는 중…</div><p class="smallnote" style="text-align:center">캐릭터는 게임용 독창적인 픽셀 아트야. 실제 선수 사진은 사용하지 않아.</p></section><section class="card avatar-configuration"><div class="section-top"><h2 style="margin:0">캐릭터 고르기</h2></div><div class="avatar-versions">${avatarVersions.map((version,index)=>`<button type="button" class="avatar-version" data-avatar-version="${index}" aria-pressed="${avatarConfig.variant===index}" onclick="chooseAvatarVersion(${index})"><canvas width="40" height="54" data-version="${index}" aria-hidden="true"></canvas><strong>${version.label}</strong></button>`).join('')}</div><div class="avatar-actions"><button type="button" class="btn secondary" onclick="renderIntro(true)">← 뒤로</button><button type="button" class="btn" onclick="finishCreatePlayer()">▶ 선택 완료 · 고1 시작</button></div><p class="smallnote" style="margin-top:12px">카드를 누르면 선택한 버전을 크게 볼 수 있어.</p></section></div></div>`;
  drawAllAvatars();updateAvatarStatus();
 }
 function updateAvatarStatus(){
  const el=document.getElementById('avatarStatus');if(!el)return;
- el.innerHTML=`<strong>선택 완료:</strong> ${esc(avatarVersions[avatarConfig.variant].label)} 버전 · 등번호 ${avatarConfig.number}`;
+ el.innerHTML=`<strong>선택 완료:</strong> ${esc(avatarVersions[avatarConfig.variant].label)} 버전`;
 }
 function changeAvatarNumber(value){const n=Math.min(99,Math.max(0,Number(value)||0));avatarConfig.number=n;drawAllAvatars();updateAvatarStatus()}
 function shade(hex,factor){let x=hex.replace('#','');const r=clamp(Math.round(parseInt(x.slice(0,2),16)*factor),0,255),g=clamp(Math.round(parseInt(x.slice(2,4),16)*factor),0,255),b=clamp(Math.round(parseInt(x.slice(4,6),16)*factor),0,255);return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}
@@ -1243,12 +1238,19 @@ async function submitWeeklyScore(form){
     status.textContent='점수를 등록하지 못했어. 잠시 후 다시 시도해 줘.';
   }finally{button.disabled=false}
 }
-const gameIconPaths={"home":"<path d=\"m3 10 9-7 9 7v10H3zM9 20v-6h6v6\"/>","training":"<path d=\"m6 5 13 13m-3-15 5 5M3 16l5 5M3 7l4-4m10 18 4-4M7 13l6-6m-2 10 6-6\"/>","market":"<path d=\"M3 8h18m-4-4 4 4-4 4M21 16H3m4-4-4 4 4 4\"/>","history":"<path d=\"M4 4v16h16M8 16v-4m5 4V9m5 7V6\"/>","messages":"<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"/><path d=\"m4 7 8 6 8-6\"/>","news":"<path d=\"M5 4h13v16H5zM8 8h7m-7 4h7m-7 4h4\"/>","international":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><ellipse cx=\"12\" cy=\"12\" rx=\"4\" ry=\"9\"/><path d=\"M3 12h18\"/>","awards":"<path d=\"M8 4h8v6a4 4 0 0 1-8 0zM8 6H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 2v5m-4 1h8\"/>","goat":"<path d=\"m4 8 4 3 4-6 4 6 4-3-2 11H6z\"/>","weekly":"<path d=\"M3 20h18M4 20v-7h5v7m1 0V5h5v15m1 0v-10h4v10\"/>","guide":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9a2.5 2.5 0 1 1 3.8 2.2c-.9.6-1.3 1-1.3 2m0 3h.01\"/>","legacy":"<path d=\"M5 21V4m0 1h13l-3 4 3 4H5\"/>","updates":"<path d=\"M20 7a8 8 0 1 0 1 7M20 3v5h-5\"/>","settings":"<path d=\"M4 6h16M4 12h16M4 18h16M9 4v4m6 2v4m-6 2v4\"/>","menu":"<path d=\"M4 7h16M4 12h16M4 17h16\"/>","ball":"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3v18M6 5a10 10 0 0 1 0 14m12-14a10 10 0 0 0 0 14\"/>","cones":"<path d=\"m12 4 6 14H6zM4 20h16m-11-8h6\"/>","film":"<rect x=\"3\" y=\"6\" width=\"18\" height=\"12\" rx=\"2\"/><path d=\"m10 9 5 3-5 3z\"/>","pads":"<path d=\"M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z\"/><path d=\"m9 12 2 2 4-4\"/>","band":"<ellipse cx=\"12\" cy=\"12\" rx=\"8\" ry=\"5\" transform=\"rotate(-34 12 12)\"/><path d=\"m8 16 8-8\"/>","bike":"<circle cx=\"6\" cy=\"17\" r=\"4\"/><circle cx=\"18\" cy=\"17\" r=\"4\"/><path d=\"m6 17 5-8 4 8H6m5-8h5l2 8M9 9h4m2-4h3\"/>"};
-gameIconPaths.announcements='<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>';
-gameIconPaths.settings='<path d="m10 3-.6 2.1-1.6.9-2.1-.6-2 3.4 1.6 1.6v1.9l-1.6 1.6 2 3.4 2.1-.6 1.6.9.6 2.4h4l.6-2.4 1.6-.9 2.1.6 2-3.4-1.6-1.6v-1.9l1.6-1.6-2-3.4-2.1.6-1.6-.9L14 3z"/><circle cx="12" cy="11.5" r="3"/>';
+const pixelIconGrids={"home":[".....AA.....","....AAAA....","...AAAAAA...","..AAAAAAAA..",".AAAAAAAAAA.","AAAABBBBAAAA","..ABBBBBBA..","..ABBCCBBA..","..ABBCCBBA..","..ABBCCBBA..","..AAAAAAAA..","............"],"training":[".AA......AA.",".AAA....AAA.","..AAA..AAA..","...AAAAAA...","....AAAA....","...AAAAAA...","..AAABBAAA..",".AAA.BB.AAA.",".AA..BB..AA.",".....BB.....",".....BB.....","............"],"market":["........A...","........AA..",".AAAAAAAAAA.","........AA..","........A...","............","...A........","..AA........",".AAAAAAAAAA.","..AA........","...A........","............"],"history":[".AAAAAAAAAA.",".ABBBBBBBBA.",".ABAAAAAABA.",".ABBBBBBBBA.",".ABBAABBBBA.",".ABBBAABBBA.",".ABBAABBAAA.",".ABBAABBAAA.",".AAAAAAAAAA.","..CCCCCCCC..","............","............"],"messages":["............",".AAAAAAAAAA.","AABBBBBBBBAA","ABABBBBBBABA","ABBABBBBABBA","ABBBABBABBBA","ABBBBAABBBA.","ABBBBBBBBBBA",".AAAAAAAAAA.","............","............","............"],"news":[".AAAAAAAAA..",".ABBBBBBBA..",".ABAAABBBA..",".ABAAABBBA..",".ABBBBBBBA..",".ABAAAAABA..",".ABBBBBBBA..",".ABAAAAABA..",".ABBBBBBBA..",".AAAAAAAAA..","............","............"],"international":["....AAAA....","..AABBBBAA..",".ABBABBBBBA.",".ABBBAABBBA.","ABBBBBAAAAAB","ABBBBBBAAAAB","ABBAABBBBBBA","ABAAAABBBBBA",".ABAAABBBBA.",".ABBABBBBA..","..AABBBBAA..","....AAAA...."],"awards":["...AAAAAA...",".AAABBBBAAA.",".ABABBBBABA.",".ABABBBBABA.",".AAABBBBAAA.","...ABBBBA...","....AAAA....",".....AA.....",".....AA.....","...AAAAAA...","..AAAAAAAA..","............"],"goat":["A....AA....A","AA...AA...AA","ABA.ABBA.ABA","ABAAABBAAABA","ABBBBBBBBBBA",".ABBBBBBBBA.",".ABCCBBCCBA.",".ABBBBBBBBA.",".AAAAAAAAAA.","..CCCCCCCC..","............","............"],"weekly":[".....AA.....","....AAAA....","....AAAA....","....AAAA....","....AAAA....",".CC.AAAA....",".CC.AAAA.BB.",".CC.AAAA.BB.",".CC.AAAA.BB.",".CC.AAAA.BB.","AAAAAAAAAAAA","............"],"guide":["....AAAA....","...ABBBBA...","..ABBAABBA..","..AAA.ABBA..",".....ABBA...","....ABBA....","....AAA.....","............","....AAA.....","....AAA.....","............","............"],"legacy":["..AA........","..AAAAAAAAA.","..ABBBBBBBA.","..ABBBBBBA..","..ABBBBBA...","..ABBBBBBA..","..AAAAAAAAA.","..AA........","..AA........","..AA........",".AAAA.......","............"],"updates":["....AAAAAA..","..AABBBBBAA.",".AABB...BBA.","AABB.....BA.","AAA......AAA","............","AAA......AAA",".AB.....BBA.",".ABB...BBAA.","..AABBBBAA..","....AAAA....","............"],"settings":["....AAAA....","..AAABBAAA..",".AABBBBBBAA.",".ABBAAAABBA.","AABBA..ABBAA","ABBA....ABBA","ABBA....ABBA","AABBA..ABBAA",".ABBAAAABBA.",".AABBBBBBAA.","..AAABBAAA..","....AAAA...."],"announcements":["....AAAA....","...ABBBBA...","...ABBBBA...","..ABBBBBBA..","..ABBBBBBA..","..ABBBBBBA..",".ABBBBBBBBA.","AAAAAAAAAAAA","....CCCC....",".....CC.....","............","............"],"menu":["............",".AAAAAAAAAA.",".ABBBBBBBBA.","............",".AAAAAAAAAA.",".ABBBBBBBBA.","............",".AAAAAAAAAA.",".ABBBBBBBBA.","............","............","............"],"ball":["....AAAA....","..AABBABAA..",".ABBBABBBBA.",".ABBBABBBBA.","ABBBBABBBBBA","AAAAAAAAAAAA","ABBBBABBBBBA","ABBBBABBBBBA",".ABBBABBBBA.",".ABBBABBBBA.","..AABBABAA..","....AAAA...."]};
+pixelIconGrids.film=['.AAAAAAAAAA.','.ABBBBBBBBA.','.ABBBABBBBA.','.ABBBAABBBA.','.ABBBAAABBA.','.ABBBAABBBA.','.ABBBABBBBA.','.AAAAAAAAAA.','............','............','............','............'];
+function pixelArtSvg(rows,palette,className=''){
+ let pixels='';
+ rows.forEach((row,y)=>Array.from(row).forEach((cell,x)=>{
+  if(palette[cell])pixels+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${palette[cell]}"/>`;
+ }));
+ return `<svg class="${className}" viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" aria-hidden="true" focusable="false">${pixels}</svg>`;
+}
 function gameIcon(name){
- const path=Object.hasOwn(gameIconPaths,name)?gameIconPaths[name]:gameIconPaths.menu;
- return `<svg class="game-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${path}</svg>`;
+ const rows=Object.hasOwn(pixelIconGrids,name)?pixelIconGrids[name]:pixelIconGrids.menu;
+ const warm=['awards','goat','ball'].includes(name);
+ return pixelArtSvg(rows,{A:'var(--pixel-outline)',B:warm?'#e4ad48':'var(--pixel-fill)',C:'#d5683e'},'game-icon pixel-icon');
 }
 const navItems=[['home','◈','대시보드'],['training','✧','훈련 및 성장'],['market','⇄','계약·이적'],['messages','✉','받은 메시지'],['history','▤','시즌 기록'],['international','🌐','국제대회'],['awards','★','트로피 보관함'],['goat','♛','GOAT 랭킹'],['weekly','▥','주간 TOP 50'],['announcements','','공지사항'],['updates','↻','업데이트 내역'],['settings','⚙','설정']];
 const careerPrimaryTabs=['home','training','market','history'];
@@ -1394,11 +1396,18 @@ function chooseSeasonConversation(result){
  const roll=Math.random();
  return roll<.27?'coach':roll<.48?'press':null;
 }
+
+const coachPixelRows=[".....AAAAAA.....","....AAAAAAAA....","....ABBBBBBA....","....ABABABBA....","....ABBBBBBA....",".....ABBBBA.....","......AAAA......","....CCDDDCCC....","...CCCCDDCCCC...","...CCCCDDCCCC...","...BCCCDDCCCB...","...BCCCCCCCCB...","....CCCCCCCC....","....CCCCCCCC....",".....EEEEE......",".....EEEEE......",".....EE.EE......",".....EE.EE......","....AAA.AAA.....","................"];
 function conversationAnimation(type){
- const person='<span class="scene-person"><i></i><b></b></span>';
+ const player='<canvas class="conversation-player" data-scene-player width="362" height="724"></canvas>';
+ const coach=pixelArtSvg(coachPixelRows,{A:'#172521',B:'#d8aa82',C:'#667b76',D:'#e4ad48',E:'#223b31'},'conversation-coach');
+ const bubble=pixelArtSvg(['AAAAAAAAAA','ABBBBBBBBA','ABBBBBBBBA','ABBABABABA','ABBBBBBBBA','AAAAAABAAA','.....AA...'],{A:'var(--pixel-outline)',B:'var(--panel)'},'pixel-speech');
  return type==='coach'
-  ?`<div class="conversation-scene scene-coach" aria-hidden="true">${person}<span class="scene-table"></span>${person}<span class="scene-bubble">···</span></div>`
-  :`<div class="conversation-scene scene-press" aria-hidden="true">${person}<span class="scene-podium"><i></i></span><span class="scene-camera">${gameIcon('film')}</span><span class="scene-flash"></span></div>`;
+  ?`<div class="conversation-scene pixel-conversation pixel-meeting" aria-hidden="true">${player}${coach}<span class="pixel-desk"></span>${bubble}</div>`
+  :`<div class="conversation-scene pixel-conversation pixel-conference" aria-hidden="true">${player}<span class="pixel-podium"></span><span class="pixel-mic"></span><span class="pixel-camera">${gameIcon('film')}</span><span class="scene-flash"></span>${bubble}</div>`;
+}
+function drawConversationActors(){
+ document.querySelectorAll('canvas[data-scene-player]').forEach(canvas=>pixelDraw(canvas,state?.player?.avatar||avatarConfig));
 }
 function seasonConversation(s,result){
  const scene=seasonConversations[result.conversation?.type];
@@ -1613,6 +1622,7 @@ function showDisplaySettings(){
  showModal('설정',displaySettings());
 }
 const gameAnnouncements=[
+ {date:'2026-11-18',title:'픽셀 디자인과 원본 캐릭터',body:'선수 생성에서 제공된 원본 6인 캐릭터를 선택할 수 있어. 메뉴와 면담 장면에도 픽셀 디자인을 적용했어.'},
  {date:'2026-11-17',title:'커리어 요약과 화면 모드',body:'은퇴하면 커리어 요약을 볼 수 있어. 설정에서 라이트 또는 다크 모드를 선택할 수 있어.'},
  {date:'2026-11-17',title:'주간 TOP 50 등록 안내',body:'주간 TOP 50 메뉴에서 공개 닉네임으로 점수를 등록할 수 있어. 한국 시간 월요일에 새 주간 순위가 시작돼.'}
 ];
@@ -1624,7 +1634,7 @@ function showGameAnnouncements(){
  showModal('공지사항',announcementCards());
 }
 function settings(s){return `${panelTitle('설정')}${displaySettings()}<div class="card"><h3>게임 상태</h3><div class="grid two"><div class="mini-box"><span class="label">현재 저장</span><strong style="font-size:15px">${esc(s.player.name)} · ${s.year}</strong></div><div class="mini-box"><span class="label">커리어</span><strong style="font-size:15px">${s.retired?'은퇴':'진행 중'}</strong></div></div><div class="sep"></div><div style="display:flex;flex-wrap:wrap;gap:9px"><button class="btn secondary" onclick="exportSave()">저장 데이터 백업</button><button class="btn secondary" onclick="document.getElementById('importFile').click()">백업 불러오기</button><input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importSave(event)"><button class="btn secondary" onclick="save();toast('게임이 저장됐어.')">지금 저장</button></div></div><div class="card" style="margin-top:16px"><h3>은퇴 시스템</h3><p class="desc">시즌 종료 후 원하는 시점에 은퇴할 수 있어. 계약이 끝났을 때 새 제안이 없으면 은퇴해.</p><button class="btn danger" onclick="confirmRetirement()" ${s.retired?'disabled':''}>선수 은퇴하기</button>${s.retired?`<p class="desc">${esc(s.retireReason)}</p>`:''}</div><div class="card" style="margin-top:16px"><h3>새 커리어</h3><p class="desc">새 선수를 만들면 현재 저장된 게임 데이터가 초기화돼. 기존 데이터를 유지하려면 먼저 백업 파일을 내려받아 줘.</p><button class="btn danger" onclick="confirmNewCareer()">새 커리어 시작</button></div><div class="card" style="margin-top:16px"><h3>게임 업데이트</h3><p class="desc">현재 버전 v${GAME_VERSION} · 웹 배포 시 새 버전을 자동 확인하고 적용할 수 있어.</p><button class="btn secondary" onclick="switchTab('updates')">업데이트 내역 및 연결 설정 →</button></div><div class="footer-note">자동 저장은 이 브라우저의 localStorage를 사용합니다. 브라우저 데이터 삭제 시 저장 파일이 지워질 수 있으니 백업 기능을 이용하세요. 인터넷 연결 없이 실행 가능한 단일 HTML 게임입니다.</div>`}
-function showModal(title,body,onConfirm=null,buttonText='확인'){modalAction=onConfirm;document.getElementById('modalRoot').innerHTML=`<div class="modal-back" role="presentation" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle">${title}</h2>${body}<div class="modal-actions"><button class="btn ${onConfirm?'secondary':'wide'}" onclick="closeModal()">${onConfirm?'취소':'닫기'}</button>${onConfirm?`<button class="btn" onclick="confirmModal()">${buttonText}</button>`:''}</div></div></div>`}
+function showModal(title,body,onConfirm=null,buttonText='확인'){modalAction=onConfirm;document.getElementById('modalRoot').innerHTML=`<div class="modal-back" role="presentation" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle">${title}</h2>${body}<div class="modal-actions"><button class="btn ${onConfirm?'secondary':'wide'}" onclick="closeModal()">${onConfirm?'취소':'닫기'}</button>${onConfirm?`<button class="btn" onclick="confirmModal()">${buttonText}</button>`:''}</div></div></div>`;drawConversationActors()}
 function confirmModal(){if(modalAction){const fn=modalAction;modalAction=null;fn()}}
 function closeModal(){document.getElementById('modalRoot').innerHTML='';modalAction=null;if(updatePrefs.enabled&&updateInfo.latest&&compareVersions(updateInfo.latest,GAME_VERSION)>0)setTimeout(autoApplyUpdate,0)}
 function confirmRetirement(){if(!state||state.retired||busy)return;showModal('은퇴를 확정할까?',`<p class="desc">${esc(state.player.name)} 선수는 ${state.age}세에 은퇴하게 돼. 은퇴 후에는 같은 커리어에서 시즌을 더 진행할 수 없어.</p><div class="notice">은퇴는 되돌릴 수 없어. 필요한 경우 설정에서 저장 데이터를 백업해 줘.</div>`,()=>retireNow('선수 본인의 조기 은퇴'),'은퇴 확정')}
@@ -1669,7 +1679,7 @@ state=load();render();initUpdater();
 </script>
 <script src="enhancements.js?rev=307fa325"></script>
 <script src="art-assets.js"></script>
-<script src="character.js?rev=7e70f898"></script>
+<script src="character.js?rev=f52886ae"></script>
 <script type="module">
 let visitorStatus='접속자 연결 중';
 function renderVisitorCount(){
