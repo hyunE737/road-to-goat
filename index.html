@@ -378,16 +378,17 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 }
 @media(prefers-reduced-motion:reduce){.welcome-career-path::after{animation:none;left:87.5%}}
 .welcome-career-path .game-icon{width:19px;height:19px;color:var(--blue)}
-</style><link rel="stylesheet" href="game-edition.css?v=ef54917e">
+</style><link rel="stylesheet" href="game-edition.css?v=pixel20261118">
 </head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
 <script>
 'use strict';
 const SAVE='road_to_goat_v1_2026';
-const GAME_VERSION='2.0.1';
+const GAME_VERSION='2.0.2';
 const UPDATE_CONFIG_KEY='road_to_goat_update_prefs';
 const RELEASE_NOTES=[
+ {version:'2.0.2',date:'2026-11-18',title:'픽셀 커리어 화면 정리',items:['메뉴와 카드·훈련 화면 정렬 개선','스타일 뽑기 카드와 25개 리그 로고','원본 캐릭터 배경만 투명 처리','시즌 기록 흐름과 16종 면담·기자회견 이야기','시작 화면 커리어 경로 반복 애니메이션']},
  {version:'2.0.1',date:'2026-11-18',title:'원본 캐릭터와 픽셀 디자인',items:['제공된 6인 원본 캐릭터를 그대로 선택','캐릭터 외형·등번호 조정 제거','픽셀 메뉴 아이콘과 면담·기자회견 장면']},
  {version:'2.0.0',date:'2026-11-18',title:'매치 센터 업데이트',items:['게임 화면과 폰트 전면 개편','결승 작전타임 역할 선택과 흐름 이벤트','슈팅·클러치 능력치에 따른 자유투 난이도','실시간 접속자 표시']},
  {version:'1.6.3',date:'2026-11-17',title:'브라우저 탭 아이콘 변경',items:['새 왕관 농구 픽셀 로고를 파비콘으로 적용','기존 아이콘 스크립트 덮어쓰기 방지','브라우저 아이콘 캐시 갱신']},
@@ -598,8 +599,8 @@ function styleSummary(style){
   return Object.entries(style.mods).map(([stat,value])=>`${attrs[stat]} ${value>0?'+':''}${value}`).join(' · ');
 }
 function styleDrawDetails(){
-  const style=styleData[styleDraw.key];
-  return style?`<strong>${style.name}</strong><div class="desc">${styleSummary(style)}</div><div class="desc">고유 효과 · ${style.perk}</div>`:'<div class="desc">스타일을 뽑으면 시작 능력치와 고유 효과를 확인할 수 있어.</div>';
+ const style=styleData[styleDraw.key];
+ return `<div class="style-emblem" aria-hidden="true">${gameIcon('training')}</div>`+(style?`<strong>${style.name}</strong><div class="style-mods">${Object.entries(style.mods).map(([stat,n])=>`<span>${attrs[stat]} <b>${n>0?'+':''}${n}</b></span>`).join('')}</div><p class="style-perk">${style.perk}</p>`:'<strong>어떤 선수로 시작할까?</strong><p class="desc">시작 능력치와 나만의 고유 효과를 뽑아봐.</p>');
 }
 function rollPlayStyle(){
   styleDraw=nextStyleDraw(styleDraw);
@@ -608,6 +609,7 @@ function rollPlayStyle(){
   const remaining=styleRerollLimit-styleDraw.rerolls;
   button.textContent=remaining?`다시 뽑기 (${remaining}회 남음)`:'리롤 3회 사용 완료';
   button.disabled=!remaining;
+  const card=document.querySelector('.style-draw-card');card.classList.remove('style-reveal');void card.offsetWidth;card.classList.add('style-reveal');
 }
 const attrs={shoot:'슈팅',drive:'돌파',pass:'패스',defense:'수비',rebound:'리바운드',stamina:'체력',iq:'농구 IQ',clutch:'클러치'};
 const focuses=[['shoot','슈팅 집중','득점과 3점 성공률 성장'],['drive','돌파 집중','골밑 득점과 공격 성장'],['pass','패스·운영','어시스트와 농구 IQ 성장'],['defense','수비 집중','수비와 스틸·블록 성장'],['rebound','리바운드','리바운드 능력 성장'],['stamina','체력·컨디션','체력과 출전 시간 성장'],['iq','농구 IQ','판단력과 꾸준한 경기력 성장'],['clutch','클러치','중요한 순간의 활약 성장']];
@@ -708,10 +710,10 @@ function flagFor(country){
  const code=countryFlagCodes[country];
  return code?String.fromCodePoint(...Array.from(code,letter=>127397+letter.charCodeAt(0))):'🌐';
 }
+const leagueLogoSources={"KBL": "https://upload.wikimedia.org/wikipedia/en/8/87/Korean_Basketball_League_logo.png", "NBA G League": "https://thumb.wikimedia.org/wikipedia/en/thumb/a/a3/NBA_G_League_logo.svg/250px-NBA_G_League_logo.svg.png", "B.LEAGUE": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/B.League_logo_%282026%29.svg/500px-B.League_logo_%282026%29.svg.png", "CBA": "https://thumb.wikimedia.org/wikipedia/en/thumb/5/53/Chinese_Basketball_Association.svg/330px-Chinese_Basketball_Association.svg.png", "NBL (호주)": "https://thumb.wikimedia.org/wikipedia/en/thumb/b/b2/NBL_%28Australia%29_logo.svg/500px-NBL_%28Australia%29_logo.svg.png", "ACB (스페인)": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Liga_Endesa_2019_logo.svg/500px-Liga_Endesa_2019_logo.svg.png", "ÉLITE (프랑스)": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Logomarca_da_Liga_Betclic_%C3%89lite_para_a_temporada_2024-25.png/330px-Logomarca_da_Liga_Betclic_%C3%89lite_para_a_temporada_2024-25.png", "BBL (독일)": "https://thumb.wikimedia.org/wikipedia/en/thumb/1/17/EasyCredit_BBL_logo.png/250px-EasyCredit_BBL_logo.png", "Serie A (이탈리아)": "https://upload.wikimedia.org/wikipedia/en/9/9d/LegaBasket_Serie_A_Logo.png", "BSL (튀르키예)": "https://thumb.wikimedia.org/wikipedia/en/thumb/e/e0/Official_logo_of_the_Turkish_Basketball_Super_League.png/500px-Official_logo_of_the_Turkish_Basketball_Super_League.png", "GBL (그리스)": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/8d/Greek_Basketball_League_Logo.svg/250px-Greek_Basketball_League_Logo.svg.png", "LKL (리투아니아)": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Betsson_LKL.svg/500px-Betsson_LKL.svg.png", "KLS (세르비아)": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/2f/Basketball_League_of_Serbia_logo.svg/500px-Basketball_League_of_Serbia_logo.svg.png", "PLK (폴란드)": "https://thumb.wikimedia.org/wikipedia/en/thumb/a/a8/Orlen_Basket_Liga_logo.png/330px-Orlen_Basket_Liga_logo.png", "SLB (영국)": "https://upload.wikimedia.org/wikipedia/en/a/a8/Super_League_Basketball.png", "NBB (브라질)": "https://thumb.wikimedia.org/wikipedia/en/thumb/f/ff/Novo_Basquete_Brasil_logo_%282022%29.svg/250px-Novo_Basquete_Brasil_logo_%282022%29.svg.png", "Liga Nacional (아르헨티나)": "https://thumb.wikimedia.org/wikipedia/en/thumb/a/a0/LNB_Argentina_Logo.svg/250px-LNB_Argentina_Logo.svg.png", "PBA (필리핀)": "https://thumb.wikimedia.org/wikipedia/en/thumb/d/dd/Philippine_Basketball_Association_%28logo%29.svg/500px-Philippine_Basketball_Association_%28logo%29.svg.png", "CEBL (캐나다)": "https://upload.wikimedia.org/wikipedia/en/e/ee/Canadian_Elite_Basketball_League_logo.png", "LNBP (멕시코)": "https://upload.wikimedia.org/wikipedia/en/9/9c/LNBP_Logo_Caliente.png", "BSN (푸에르토리코)": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/BSN_Puerto_Rico_Logo.svg/500px-BSN_Puerto_Rico_Logo.svg.png", "TPBL (대만)": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Taiwan_Professional_Basketball_League_Logo.svg/250px-Taiwan_Professional_Basketball_League_Logo.svg.png", "IBL (인도네시아)": "https://upload.wikimedia.org/wikipedia/en/7/71/Indonesian_Basketball_League_Logo.png", "NZ NBL": "https://upload.wikimedia.org/wikipedia/en/6/6c/NZNBL_logo.png", "NBA": "https://cdn.nba.com/logos/leagues/logo-nba.svg"};
 function leagueLogo(league){
- const mark=league==='NBA G League'?'G LEAGUE':league==='Liga Nacional (아르헨티나)'?'LNB':league.replace(/\s*\([^)]*\)$/,'');
- const logo=league==='NBA'?'<img src="https://cdn.nba.com/logos/leagues/logo-nba.svg" alt="" onerror="this.hidden=true">':'';
- return `<span class="league-logo ${logo?'league-logo-official':''}" aria-hidden="true" style="--league-hue:${hash(league)%360}"><span>${esc(mark)}</span>${logo}</span>`;
+ const src=leagueLogoSources[league];
+ return `<span class="league-logo ${src?'league-logo-official':''}" style="--league-hue:${hash(league)%360}"><span>${esc(league)}</span>${src?`<img src="${src}" alt="${esc(league)} 로고" referrerpolicy="no-referrer" onerror="this.hidden=true;this.parentElement.classList.add('logo-unavailable')">`:''}</span>`;
 }
 function updateIntroIdentity(){
  const form=document.getElementById('newForm');
@@ -722,7 +724,7 @@ function updateIntroIdentity(){
  const league=form.elements.namedItem('target').value;
  document.getElementById('introLeagueLogo').innerHTML=leagueLogo(league);
 }
-function renderIntro(restoreDraft=false){const names=Object.keys(leagues).filter(x=>x!=='College (미국)');document.getElementById('app').innerHTML=`<div class="intro"><div class="intro-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">BASKETBALL CAREER</span></div><div class="header-tools"><button class="main-menu-btn header-icon-button" type="button" onclick="showGameAnnouncements()" aria-label="공지사항" title="공지사항">${gameIcon('announcements')}</button><button class="main-menu-btn header-icon-button" type="button" onclick="showDisplaySettings()" aria-label="설정" title="설정">${gameIcon('settings')}</button><button class="main-menu-btn header-icon-button" type="button" onclick="openGameMenu()" aria-label="메뉴" title="메뉴">${gameIcon('menu')}</button></div></div><main class="intro-layout intro-setup"><section class="create"><div class="headline"><div><h2 style="margin-top:6px">나만의 선수 만들기</h2></div><span class="pill gold">START · 고1</span></div><p class="desc" style="margin:0 0 14px">선수의 국적과 출신 학교를 고른 뒤 픽셀 캐릭터를 선택하세요.</p><form id="newForm" onsubmit="event.preventDefault();createPlayerFromForm()"><div class="field"><label for="newName">선수 이름</label><input id="newName" name="player" maxlength="26" required placeholder="예: KIM HYUN" autocomplete="off"></div><div class="grid two"><div class="field"><label>국적</label><div class="identity-select"><span class="country-flag" data-country-flag="nationality" aria-hidden="true">${flagFor('대한민국')}</span><select name="nationality" aria-label="국적" onchange="updateIntroIdentity()">${countries.map(c=>`<option value="${esc(c)}" ${c==='대한민국'?'selected':''}>${c}</option>`).join('')}</select></div></div><div class="field"><label>고교 시작 국가</label><div class="identity-select"><span class="country-flag" data-country-flag="schoolCountry" aria-hidden="true">${flagFor('대한민국')}</span><select name="schoolCountry" id="schoolCountry" aria-label="고교 시작 국가" onchange="updateSchools();updateIntroIdentity()">${countries.filter(x=>x!=='기타').map(c=>`<option value="${esc(c)}" ${c==='대한민국'?'selected':''}>${c}</option>`).join('')}</select></div></div></div><div class="grid two"><div class="field"><label>고등학교</label><select name="school" id="schoolSelect" onchange="updateCustomSchool()">${schoolOptions('대한민국')}</select><span id="schoolCount" class="smallnote">한국 고교 농구 대회 참가 학교 30곳 · 직접 입력 가능</span><input name="customSchool" id="customSchool" class="hidden" placeholder="학교 이름 직접 입력" maxlength="60"></div><div class="field"><label>포지션</label><select name="position"><option>PG</option><option>SG</option><option selected>SF</option><option>PF</option><option>C</option></select></div></div><div class="grid two"><div class="field"><label>플레이 스타일</label><div id="styleDrawDetails" class="style-draw-details" aria-live="polite">${styleDrawDetails()}</div><button type="button" class="btn secondary" id="styleDrawButton" onclick="rollPlayStyle()" ${styleDraw.rerolls>=styleRerollLimit?'disabled':''}>${!styleDraw.key?'🎲 스타일 뽑기':styleDraw.rerolls< styleRerollLimit?`다시 뽑기 (${styleRerollLimit-styleDraw.rerolls}회 남음)`:'리롤 3회 사용 완료'}</button></div><div class="field"><label>관심 프로 리그</label><div class="identity-select"><span id="introLeagueLogo">${leagueLogo('NBA')}</span><select name="target" aria-label="관심 프로 리그" onchange="updateIntroIdentity()">${names.map(k=>`<option value="${esc(k)}" ${k==='NBA'?'selected':''}>${esc(k)}</option>`).join('')}</select></div></div></div><button class="btn wide" type="submit">다음: 픽셀 캐릭터 선택 →</button><div class="intro-footer">ROAD TO GOAT v${GAME_VERSION} · <button type="button" onclick="showReleaseNotesModal()" style="color:#1764a9;background:none;border:none;text-decoration:underline;cursor:pointer">업데이트 내역</button><div style="margin-top:7px">실제 학교·구단과의 공식 제휴가 없는 독립 제작 게임입니다.</div></div></form></section></main></div>`;
+function renderIntro(restoreDraft=false){const names=Object.keys(leagues).filter(x=>x!=='College (미국)');document.getElementById('app').innerHTML=`<div class="intro"><div class="intro-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div class="brand"><span class="brandmark">🏀</span> ROAD TO GOAT <span class="sub">BASKETBALL CAREER</span></div><div class="header-tools"><button class="main-menu-btn header-icon-button" type="button" onclick="showGameAnnouncements()" aria-label="공지사항" title="공지사항">${gameIcon('announcements')}</button><button class="main-menu-btn header-icon-button" type="button" onclick="showDisplaySettings()" aria-label="설정" title="설정">${gameIcon('settings')}</button><button class="main-menu-btn header-icon-button" type="button" onclick="openGameMenu()" aria-label="메뉴" title="메뉴">${gameIcon('menu')}</button></div></div><main class="intro-layout intro-setup"><section class="create"><div class="headline"><div><h2 style="margin-top:6px">나만의 선수 만들기</h2></div><span class="pill gold">START · 고1</span></div><p class="desc" style="margin:0 0 14px">선수의 국적과 출신 학교를 고른 뒤 픽셀 캐릭터를 선택하세요.</p><form id="newForm" onsubmit="event.preventDefault();createPlayerFromForm()"><div class="field"><label for="newName">선수 이름</label><input id="newName" name="player" maxlength="26" required placeholder="예: KIM HYUN" autocomplete="off"></div><div class="grid two"><div class="field"><label>국적</label><div class="identity-select"><span class="country-flag" data-country-flag="nationality" aria-hidden="true">${flagFor('대한민국')}</span><select name="nationality" aria-label="국적" onchange="updateIntroIdentity()">${countries.map(c=>`<option value="${esc(c)}" ${c==='대한민국'?'selected':''}>${c}</option>`).join('')}</select></div></div><div class="field"><label>고교 시작 국가</label><div class="identity-select"><span class="country-flag" data-country-flag="schoolCountry" aria-hidden="true">${flagFor('대한민국')}</span><select name="schoolCountry" id="schoolCountry" aria-label="고교 시작 국가" onchange="updateSchools();updateIntroIdentity()">${countries.filter(x=>x!=='기타').map(c=>`<option value="${esc(c)}" ${c==='대한민국'?'selected':''}>${c}</option>`).join('')}</select></div></div></div><div class="grid two"><div class="field"><label>고등학교</label><select name="school" id="schoolSelect" onchange="updateCustomSchool()">${schoolOptions('대한민국')}</select><span id="schoolCount" class="smallnote">한국 고교 농구 대회 참가 학교 30곳 · 직접 입력 가능</span><input name="customSchool" id="customSchool" class="hidden" placeholder="학교 이름 직접 입력" maxlength="60"></div><div class="field"><label>포지션</label><select name="position"><option>PG</option><option>SG</option><option selected>SF</option><option>PF</option><option>C</option></select></div></div><div class="grid two"><div class="field style-draw-card"><label>플레이 스타일 <span class="smallnote">첫 뽑기 + 리롤 3회</span></label><div id="styleDrawDetails" class="style-draw-details" aria-live="polite">${styleDrawDetails()}</div><button type="button" class="btn secondary" id="styleDrawButton" onclick="rollPlayStyle()" ${styleDraw.rerolls>=styleRerollLimit?'disabled':''}>${!styleDraw.key?'스타일 뽑기':styleDraw.rerolls< styleRerollLimit?`다시 뽑기 (${styleRerollLimit-styleDraw.rerolls}회 남음)`:'리롤 3회 사용 완료'}</button></div><div class="field league-select-card"><label>관심 프로 리그</label><div id="introLeagueLogo" class="league-spotlight">${leagueLogo('NBA')}</div><div class="identity-select"><select name="target" aria-label="관심 프로 리그" onchange="updateIntroIdentity()">${names.map(k=>`<option value="${esc(k)}" ${k==='NBA'?'selected':''}>${esc(k)}</option>`).join('')}</select></div></div></div><button class="btn wide" type="submit">다음: 픽셀 캐릭터 선택 →</button><div class="intro-footer">ROAD TO GOAT v${GAME_VERSION} · <button type="button" onclick="showReleaseNotesModal()" style="color:#1764a9;background:none;border:none;text-decoration:underline;cursor:pointer">업데이트 내역</button><div style="margin-top:7px">실제 학교·구단과의 공식 제휴가 없는 독립 제작 게임입니다.</div></div></form></section></main></div>`;
  if(restoreDraft&&draftPlayer){const f=document.getElementById('newForm'),d=draftPlayer;
  f.elements.namedItem('player').value=d.name;f.elements.namedItem('nationality').value=d.nationality;
  f.elements.namedItem('schoolCountry').value=d.schoolCountry;updateSchools();
@@ -1270,9 +1272,12 @@ function switchTab(t){tab=t;render();window.scrollTo(0,0)}
 function renderTab(){if(!state)return;const s=state;document.getElementById('pageContent').innerHTML=({home:()=>home(s),training:()=>training(s),market:()=>market(s),messages:()=>messages(s),history:()=>history(s),international:()=>international(s),awards:()=>awards(s),goat:()=>goat(s),weekly:()=>weeklyRanking(s),announcements:()=>panelTitle('공지사항')+announcementCards(),updates:()=>renderUpdateCenter(),settings:()=>settings(s)}[tab]||(()=>home(s)))();drawAllAvatars();clearInterval(weeklyRankingTimer);if(tab==='weekly'){loadWeeklyRanking();weeklyRankingTimer=setInterval(()=>{if(!document.hidden)loadWeeklyRanking(true)},8000);}}
 function panelTitle(t,right=''){return `<div class="view-title"><h2>${t}</h2>${right}</div>`}
 function statbox(k,v,sub=''){return `<div class="card stat"><div class="label">${k}</div><div class="value">${v}</div><div class="smallnote">${sub}</div></div>`}
-function attrsCard(s){return `<div class="card"><div class="section-top"><h3>선수 능력치</h3><span class="pill">POT ${s.potential}</span></div>${Object.entries(s.attrs).map(([k,v])=>`<div class="attr-row"><span class="muted">${attrs[k]}</span><div class="meter"><i style="width:${v}%"></i></div><b>${v}</b></div>`).join('')}</div>`}
+function displayAttribute(value){const n=Number(value);return Number.isFinite(n)?Math.round(clamp(n,0,100)):0}
+function attrsCard(s){return `<div class="card abilities-card"><div class="section-top"><h3>선수 능력치</h3><span class="pill">POT ${displayAttribute(s.potential)}</span></div>${Object.entries(attrs).map(([k,label])=>{const n=displayAttribute(s.attrs[k]);return `<div class="attr-row"><span class="muted">${label}</span><div class="meter"><i style="width:${n}%"></i></div><output class="attr-value" aria-label="${label} ${n}">${n}</output></div>`}).join('')}</div>`}
+function seasonPlanCard(s){const plan=trainingPlan(s);return `<section class="card season-plan"><div class="section-top"><h3>${gameIcon('training')} 다음 시즌 계획</h3><button class="btn secondary small" onclick="switchTab('training')">훈련 조정</button></div><div class="plan-points">${Object.entries(plan).filter(([,n])=>n>0).map(([k,n])=>`<div><span>${attrs[k]}</span><strong>${n}<small>점</small></strong><span class="point-cells" aria-hidden="true">${[0,1].map(i=>`<i class="${i<n?'filled':''}"></i>`).join('')}</span></div>`).join('')||'<p class="desc">훈련 포인트를 배분해 줘.</p>'}</div><div class="plan-meta"><div><span class="label">선수 역할</span><strong>${esc(s.role)}</strong></div><div><span class="label">계약 잔여</span><strong>${s.stage==='PRO'?s.contract+'년':'해당 없음'}</strong></div></div></section>`}
+
 function pendingBox(s){if(s.pendingIntl)return `<div class="notice">📨 ${esc(s.pendingIntl.competition)} 국가대표 소집 제안이 도착했어! <button class="btn small" onclick="showInternationalInvite()">참가 여부 선택</button></div>`;if(!s.market.required)return '';const message=s.market.kind==='graduate'?'고등학교를 졸업했어! 대학 또는 프로 진로를 선택해야 다음 시즌이 진행돼.':s.market.kind==='collegeEnd'?'대학을 마쳤어! 프로 구단을 선택해.':'계약이 만료됐어. 계약을 체결해야 다음 시즌으로 진행할 수 있어.';return `<div class="notice">⚠️ ${message} <button class="btn small" style="margin-left:10px" onclick="switchTab('market')">제안 확인 →</button></div>`}
-function home(s){const last=s.last;const ring=s.awards.rings;return `${updateBanner()}${panelTitle('커리어 대시보드',`<span class="pill">GOAT ${goatRank(s)}위</span>`)}${pendingBox(s)}<section class="hero career-hero"><div class="hero-content"><h2>${esc(s.player.name)}</h2><div style="display:flex;align-items:center;gap:12px"><div class="avatar"><canvas width="40" height="54" data-profile="player" aria-label="내 선수 픽셀 캐릭터"></canvas></div><div><div style="font-weight:800;font-size:15px">${teamLabel(s.team)}</div><div class="desc">${esc(s.player.nationality)} · ${esc(s.player.position)} · ${s.age}세 · ${esc(stageLabel(s))}</div><span class="pill gold">${careerAgeBadge(s)}</span></div></div><div class="hero-bottom">${s.retired?`<span class="pill gold">${esc(s.retireReason)}</span>`:`<button id="simulateButton" class="btn" onclick="nextSeason()" ${s.market.required?'disabled title="이적/진로 결정 필요"':''}><span class="season-ball" aria-hidden="true">${gameIcon('ball')}</span> ${s.year} 시즌 자동 진행</button>`}</div></div></section><div class="grid four career-metrics" style="margin:16px 0">${statbox('종합 능력치',getOvr(s)+' OVR','잠재력 '+s.potential)}${statbox('NBA MVP',s.awards.mvp+'회','정규 시즌 MVP')}${statbox('파이널 MVP',s.awards.fmvp+'회','NBA 결승 MVP')}${statbox('NBA 우승',ring+'회','챔피언 반지')}</div>${walletSummary(s)}${coachCard(s)}<section class="card dashboard-retirement"><div class="section-top"><div><h3>은퇴</h3><p class="desc">${s.retired?'은퇴한 선수의 통산 기록과 수상 내역을 볼 수 있어.':'선수 생활을 마치고 최종 커리어 기록을 확인할 수 있어.'}</p></div>${s.retired?`<button class="btn secondary small" onclick="switchTab('legacy')">커리어 요약</button>`:`<button class="btn secondary small" onclick="confirmRetirement()">은퇴하기</button>`}</div></section><div class="grid two career-details"><div>${last?`<div class="card" style="margin-bottom:15px"><div class="section-top"><h3>지난 시즌 성적 · ${last.year}</h3><span class="pill blue">${esc(last.league)}</span></div><div class="result-stat"><div><strong>${fmt(last.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(last.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(last.ast)}</strong><span>총 어시스트</span></div><div><strong>${fmt(last.steals)}</strong><span>총 스틸</span></div></div><p class="smallnote" style="margin:8px 0 0">${last.games}경기 출전 · 경기당 평균 ${last.ppg}점 / ${last.rpg}리바운드 / ${last.apg}어시스트</p><div class="sep"></div><div class="desc">${esc(last.team)} · 팀 ${last.wins}승 ${last.losses}패 · ${esc(last.playoff)}</div>${last.earned.length?`<div class="result-tags">${last.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:''}</div>`:''}<div class="card"><div class="section-top"><h3>다음 시즌 계획</h3></div><p class="desc">${Object.entries(trainingPlan(s)).filter(([,points])=>points>0).map(([stat,points])=>`${attrs[stat]} ${points}점`).join(' · ')||'배분한 훈련 포인트가 없어.'}</p><div class="mini-grid"><div class="mini-box"><span class="label">선수 역할</span><strong>${s.role}</strong></div><div class="mini-box"><span class="label">계약 잔여</span><strong>${s.stage==='PRO'?s.contract+'년':'해당 없음'}</strong></div></div></div></div><div>${attrsCard(s)}</div></div>`}
+function home(s){const last=s.last;const ring=s.awards.rings;return `${updateBanner()}${panelTitle('커리어 대시보드',`<span class="pill">GOAT ${goatRank(s)}위</span>`)}${pendingBox(s)}<section class="hero career-hero"><div class="hero-content"><h2>${esc(s.player.name)}</h2><div style="display:flex;align-items:center;gap:12px"><div class="avatar"><canvas width="40" height="54" data-profile="player" aria-label="내 선수 픽셀 캐릭터"></canvas></div><div><div style="font-weight:800;font-size:15px">${teamLabel(s.team)}</div><div class="desc">${esc(s.player.nationality)} · ${esc(s.player.position)} · ${s.age}세 · ${esc(stageLabel(s))}</div><span class="pill gold">${careerAgeBadge(s)}</span></div></div><div class="hero-bottom">${s.retired?`<span class="pill gold">${esc(s.retireReason)}</span>`:`<button id="simulateButton" class="btn" onclick="nextSeason()" ${s.market.required?'disabled title="이적/진로 결정 필요"':''}><span class="season-ball" aria-hidden="true">${gameIcon('ball')}</span> ${s.year} 시즌 자동 진행</button>`}</div></div></section><div class="grid four career-metrics" style="margin:16px 0">${statbox('종합 능력치',getOvr(s)+' OVR','잠재력 '+s.potential)}${statbox('NBA MVP',s.awards.mvp+'회','정규 시즌 MVP')}${statbox('파이널 MVP',s.awards.fmvp+'회','NBA 결승 MVP')}${statbox('NBA 우승',ring+'회','챔피언 반지')}</div>${walletSummary(s)}${coachCard(s)}<section class="card dashboard-retirement"><div class="section-top"><div><h3>은퇴</h3><p class="desc">${s.retired?'은퇴한 선수의 통산 기록과 수상 내역을 볼 수 있어.':'선수 생활을 마치고 최종 커리어 기록을 확인할 수 있어.'}</p></div>${s.retired?`<button class="btn secondary small" onclick="switchTab('legacy')">커리어 요약</button>`:`<button class="btn secondary small" onclick="confirmRetirement()">은퇴하기</button>`}</div></section><div class="grid two career-details"><div>${last?`<div class="card" style="margin-bottom:15px"><div class="section-top"><h3>지난 시즌 성적 · ${last.year}</h3><span class="pill blue">${esc(last.league)}</span></div><div class="result-stat"><div><strong>${fmt(last.pts)}</strong><span>총 득점</span></div><div><strong>${fmt(last.reb)}</strong><span>총 리바운드</span></div><div><strong>${fmt(last.ast)}</strong><span>총 어시스트</span></div><div><strong>${fmt(last.steals)}</strong><span>총 스틸</span></div></div><p class="smallnote" style="margin:8px 0 0">${last.games}경기 출전 · 경기당 평균 ${last.ppg}점 / ${last.rpg}리바운드 / ${last.apg}어시스트</p><div class="sep"></div><div class="desc">${esc(last.team)} · 팀 ${last.wins}승 ${last.losses}패 · ${esc(last.playoff)}</div>${last.earned.length?`<div class="result-tags">${last.earned.map(x=>`<span>🏆 ${esc(x)}</span>`).join('')}</div>`:''}</div>`:''}${seasonPlanCard(s)}</div><div>${attrsCard(s)}</div></div>`}
 const trainingBudget=4;
 const positionPriorities={
   PG:['pass','iq','shoot'],SG:['shoot','drive','clutch'],SF:['drive','shoot','defense'],
@@ -1305,11 +1310,9 @@ function training(s){
   const plan=trainingPlan(s);
   const remaining=trainingBudget-Object.values(plan).reduce((sum,n)=>sum+n,0);
   const priorities=positionPriorities[s.player.position]||positionPriorities.SF;
-  return `${panelTitle('훈련 및 성장',`<span class="pill gold">현재 OVR ${getOvr(s)}</span>`)}<div class="grid two"><div class="card">
-  <h3>시즌 훈련 포인트</h3><p class="desc">시즌마다 4점을 분배해. 능력치 하나에 최대 2점까지 투자할 수 있어. 설정은 다음 시즌에도 유지돼.</p>
-  <p class="desc">포지션 핵심 능력치 · ${priorities.map(stat=>attrs[stat]).join(' · ')}</p>
-  <p role="status"><strong>남은 포인트 ${remaining} / ${trainingBudget}</strong></p>
-  ${focuses.map(([stat,,desc])=>{const value=plan[stat]||0;return `<div class="training-allocation"><div><strong>${attrs[stat]}</strong><div class="desc">${desc}</div></div><div class="training-stepper" tabindex="-1"><button class="btn secondary small" aria-label="${attrs[stat]} 포인트 빼기" data-training-stat="${stat}" data-training-step="-1" onclick="adjustTraining('${stat}',-1)" ${!value||s.retired?'disabled':''}>−</button><strong>${value}</strong><button class="btn secondary small" aria-label="${attrs[stat]} 포인트 추가" data-training-stat="${stat}" data-training-step="1" onclick="adjustTraining('${stat}',1)" ${!remaining||value>=2||s.retired?'disabled':''}>+</button></div></div>`}).join('')}
+  return `${panelTitle('훈련 및 성장',`<span class="pill gold">현재 OVR ${getOvr(s)}</span>`)}<div class="grid two training-grid"><div class="card training-card">
+  <div class="section-top"><h3>시즌 훈련 포인트</h3><span class="pill" role="status">남은 포인트 ${remaining} / ${trainingBudget}</span></div><p class="desc training-help">총 4점 · 능력치별 최대 2점 · 다음 시즌에도 유지</p><p class="smallnote">핵심 · ${priorities.map(stat=>attrs[stat]).join(' · ')}</p>
+  ${focuses.map(([stat,,desc])=>{const value=plan[stat]||0;return `<div class="training-allocation"><div class="training-stat" title="${desc}"><strong>${attrs[stat]}</strong><small>${priorities.includes(stat)?'핵심 능력치':''}</small></div><div class="training-stepper" tabindex="-1"><button class="btn secondary small" aria-label="${attrs[stat]} 포인트 빼기" data-training-stat="${stat}" data-training-step="-1" onclick="adjustTraining('${stat}',-1)" ${!value||s.retired?'disabled':''}>−</button><strong>${value}</strong><button class="btn secondary small" aria-label="${attrs[stat]} 포인트 추가" data-training-stat="${stat}" data-training-step="1" onclick="adjustTraining('${stat}',1)" ${!remaining||value>=2||s.retired?'disabled':''}>+</button></div></div>`}).join('')}
   </div>${attrsCard(s)}</div><p class="footer-note">포지션 핵심 능력치는 출전 시간과 팀 성적에 영향을 줘. 높은 능력치일수록 추가 성장이 느려지고, 30대부터 신체 능력이 떨어질 수 있어.</p>`;
 }
 function setFocus(f){state.focus=f;save();render();toast('다음 시즌 훈련 방향이 변경됐어.')}
@@ -1392,6 +1395,18 @@ const seasonConversations={
   {line:'제 역할을 더 크게 맡아야 한다고 생각합니다.',coach:-3,fans:2,reply:'일부 팬들은 자신감을 반겼지만, 감독은 공개 발언을 아쉬워했어.'}
  ]}
 };
+const careerStoryBank=[{"id": "role", "type": "coach", "title": "다음 시즌의 자리", "prompt": "감독이 전술판의 빈칸을 가리켰어. “네가 맡고 싶은 역할을 이야기해 보자.”", "when": "all", "choices": [{"line": "팀에 필요한 역할부터 맡겠습니다.", "coach": 4, "fans": 0, "reply": "감독은 다음 훈련에서 여러 조합을 시험해 보자고 했어."}, {"line": "경쟁해서 주전 자리를 따내겠습니다.", "coach": 1, "fans": 2, "reply": "감독은 경쟁을 피하지 않는 태도를 기억했어."}, {"line": "제가 보완할 점부터 듣고 싶습니다.", "coach": 3, "fans": 0, "reply": "감독이 다음 시즌 준비 과제를 함께 정리했어."}]}, {"id": "film", "type": "coach", "title": "불 꺼진 영상실", "prompt": "훈련이 끝난 뒤 감독이 경기 영상을 멈췄어. “이 장면에서 다른 선택은 없었을까?”", "when": "all", "choices": [{"line": "동료가 움직일 시간을 더 봤어야 했습니다.", "coach": 3, "fans": 0, "reply": "감독은 다음 장면에서도 패스 길을 함께 찾아봤어."}, {"line": "제가 마무리할 자신이 있었습니다.", "coach": -1, "fans": 1, "reply": "감독은 자신감과 무리한 판단의 차이를 설명했어."}, {"line": "비슷한 상황을 훈련에서 반복하고 싶습니다.", "coach": 4, "fans": 0, "reply": "감독이 상황 훈련을 준비하겠다고 답했어."}]}, {"id": "bench", "type": "coach", "title": "벤치에서 보이는 것", "prompt": "감독이 벤치 끝에 앉았어. “출전하지 않는 시간에도 경기는 배울 수 있다.”", "when": "bench", "choices": [{"line": "상대 수비가 바뀌는 순간을 찾아보겠습니다.", "coach": 4, "fans": 0, "reply": "감독이 다음 경기에서 관찰한 내용을 물어보겠다고 했어."}, {"line": "출전 기회가 적어 답답합니다.", "coach": -2, "fans": 1, "reply": "감독은 마음은 이해하지만 준비는 계속해야 한다고 했어."}, {"line": "제 역할을 더 구체적으로 알려주세요.", "coach": 3, "fans": 0, "reply": "감독과 짧은 출전 시간에 집중할 일을 정했어."}]}, {"id": "rookie", "type": "coach", "title": "첫 원정의 밤", "prompt": "낯선 체육관에서 마지막까지 남아 있자 감독이 다가왔어. “긴장하고 있니?”", "when": "young", "choices": [{"line": "긴장되지만 준비한 걸 해보겠습니다.", "coach": 3, "fans": 0, "reply": "감독은 평소 루틴부터 지키라고 조언했어."}, {"line": "선배들에게 먼저 조언을 구하겠습니다.", "coach": 4, "fans": 0, "reply": "감독은 라커룸을 활용하는 것도 실력이라고 했어."}, {"line": "괜찮습니다. 제 방식대로 해보겠습니다.", "coach": 0, "fans": 1, "reply": "감독은 네가 코트에서 답을 보여주길 기다리기로 했어."}]}, {"id": "load", "type": "coach", "title": "쉬는 것도 훈련", "prompt": "감독이 훈련표를 접었어. “오래 뛰려면 몸을 다루는 법도 달라져야 해.”", "when": "veteran", "choices": [{"line": "회복과 훈련의 균형을 맞추겠습니다.", "coach": 4, "fans": 0, "reply": "감독은 무리하지 않는 준비를 당부했어."}, {"line": "아직 경쟁에서 물러날 생각은 없습니다.", "coach": 0, "fans": 2, "reply": "감독은 의욕을 반기면서도 몸의 신호를 무시하지 말라고 했어."}, {"line": "후배들과 제 경험을 나누고 싶습니다.", "coach": 5, "fans": 1, "reply": "감독은 라커룸에서 맡을 수 있는 역할을 이야기했어."}]}, {"id": "trust", "type": "coach", "title": "닫힌 감독실 문", "prompt": "감독이 단둘이 이야기하자고 불렀어. “우리가 같은 방향을 보고 있는지 확인하고 싶다.”", "when": "lowtrust", "choices": [{"line": "불편했던 점을 솔직히 말씀드리겠습니다.", "coach": 2, "fans": 0, "reply": "쉽지 않은 대화였지만 서로의 생각을 확인했어."}, {"line": "다음 경기 준비로 보여드리겠습니다.", "coach": 4, "fans": 0, "reply": "감독은 말보다 꾸준한 준비를 지켜보겠다고 했어."}, {"line": "제 입장도 존중해 주셨으면 합니다.", "coach": -1, "fans": 1, "reply": "감독은 역할에 대한 이야기를 다음 면담에서도 이어가자고 했어."}]}, {"id": "defense", "type": "coach", "title": "득점표 밖의 일", "prompt": "감독이 기록지를 뒤집었어. “득점표에 남지 않는 플레이도 팀을 움직인다.”", "when": "all", "choices": [{"line": "수비와 리바운드부터 책임지겠습니다.", "coach": 4, "fans": 0, "reply": "감독은 궂은일을 맡겠다는 답을 반겼어."}, {"line": "공격에서도 제 장점을 살리고 싶습니다.", "coach": 1, "fans": 1, "reply": "감독은 공격과 수비의 균형을 함께 맞추자고 했어."}, {"line": "동료들과 호흡을 먼저 맞추겠습니다.", "coach": 3, "fans": 1, "reply": "감독은 훈련 때 서로 더 많이 이야기하라고 했어."}]}, {"id": "captain", "type": "coach", "title": "라커룸의 목소리", "prompt": "감독이 후배들이 모인 쪽을 바라봤어. “요즘 네 말을 듣는 선수가 많아졌더라.”", "when": "adult", "choices": [{"line": "어려울 때 먼저 이야기하는 선수가 되겠습니다.", "coach": 4, "fans": 2, "reply": "감독은 책임감을 갖고 동료를 챙겨 달라고 했어."}, {"line": "제 플레이부터 흔들리지 않게 하겠습니다.", "coach": 2, "fans": 0, "reply": "감독은 코트에서 보이는 태도도 리더십이라고 했어."}, {"line": "혼자 이끌기보다 동료들과 나누겠습니다.", "coach": 3, "fans": 2, "reply": "감독은 여러 목소리가 있는 라커룸을 기대했어."}]}, {"id": "champ", "type": "press", "title": "트로피 옆 마이크", "prompt": "우승의 열기가 남은 기자회견장. “이 순간 가장 먼저 떠오른 사람은 누구인가요?”", "when": "champ", "choices": [{"line": "함께 버틴 동료들과 코칭스태프입니다.", "coach": 3, "fans": 5, "reply": "동료에게 공을 돌린 답변이 기사에 실렸어."}, {"line": "멀리서 지켜봐 준 가족과 팬들입니다.", "coach": 1, "fans": 5, "reply": "팬들은 감사의 인사에 따뜻하게 반응했어."}, {"line": "이제 다음 목표를 준비하겠습니다.", "coach": 1, "fans": 3, "reply": "기자들은 다음 시즌의 도전을 주목했어."}]}, {"id": "loss", "type": "press", "title": "끝난 경기, 남은 질문", "prompt": "아쉬운 시즌이 끝났어. 기자가 물었어. “돌아보면 무엇이 가장 아쉬웠나요?”", "when": "loss", "choices": [{"line": "제가 놓친 장면부터 돌아보겠습니다.", "coach": 3, "fans": 3, "reply": "책임을 피하지 않은 답변이 전해졌어."}, {"line": "다음 준비에서는 같은 실수를 줄이겠습니다.", "coach": 2, "fans": 3, "reply": "팬들은 다음 시즌의 변화를 기다리기로 했어."}, {"line": "아직 생각을 정리할 시간이 필요합니다.", "coach": 0, "fans": 1, "reply": "기자는 짧은 답변을 그대로 기록했어."}]}, {"id": "youngpress", "type": "press", "title": "이름이 불린 날", "prompt": "처음 보는 기자가 이름을 확인했어. “앞으로 어떤 선수로 기억되고 싶나요?”", "when": "young", "choices": [{"line": "매 시즌 조금씩 나아지는 선수요.", "coach": 2, "fans": 4, "reply": "차분한 목표에 팬들의 응원이 붙었어."}, {"line": "중요한 순간에 믿을 수 있는 선수요.", "coach": 1, "fans": 4, "reply": "기대가 생겼어. 이제 코트에서 보여줄 차례야."}, {"line": "아직은 제 자리를 찾는 중입니다.", "coach": 2, "fans": 2, "reply": "솔직한 답변이 짧은 인터뷰로 소개됐어."}]}, {"id": "rumor", "type": "press", "title": "이적설에 쏠린 시선", "prompt": "기자가 다음 행선지 이야기를 꺼냈어. “다른 팀의 관심을 어떻게 보고 있나요?”", "when": "adult", "choices": [{"line": "지금은 소속팀에서 맡은 일에 집중하겠습니다.", "coach": 3, "fans": 2, "reply": "감독은 팀에 집중하겠다는 답을 반겼어."}, {"line": "제 커리어에 맞는 선택을 고민하겠습니다.", "coach": 0, "fans": 3, "reply": "기사는 신중하게 미래를 고민 중이라고 전했어."}, {"line": "결정할 때가 오면 직접 말씀드리겠습니다.", "coach": 1, "fans": 2, "reply": "추측은 남았지만 불필요한 말은 줄였어."}]}, {"id": "veteranpress", "type": "press", "title": "달라진 준비", "prompt": "기자가 물었어. “예전과 비교해서 경기를 준비하는 방식이 달라졌나요?”", "when": "veteran", "choices": [{"line": "몸의 상태를 더 세심하게 살핍니다.", "coach": 2, "fans": 3, "reply": "경험에서 나온 답변에 팬들이 공감했어."}, {"line": "읽는 속도와 판단으로 경쟁하려 합니다.", "coach": 3, "fans": 3, "reply": "기자는 노련함에 관한 이야기를 기사로 썼어."}, {"line": "배울 것이 남아 있다는 건 똑같습니다.", "coach": 3, "fans": 4, "reply": "꾸준히 배우겠다는 태도가 좋은 반응을 얻었어."}]}, {"id": "fans", "type": "press", "title": "관중석의 응원", "prompt": "기자가 응원 영상을 보여줬어. “이 목소리가 선수에게 어떤 의미인가요?”", "when": "all", "choices": [{"line": "힘든 날에도 코트로 돌아오게 해줍니다.", "coach": 1, "fans": 5, "reply": "팬들이 인터뷰 영상을 서로 나눴어."}, {"line": "더 좋은 경기로 보답하고 싶습니다.", "coach": 2, "fans": 4, "reply": "다음 시즌을 기대한다는 반응이 이어졌어."}, {"line": "동료들과 함께 들을 수 있어 좋습니다.", "coach": 3, "fans": 3, "reply": "팀을 함께 언급한 말이 라커룸에도 전해졌어."}]}, {"id": "pressure", "type": "press", "title": "기대와 부담 사이", "prompt": "기자가 한층 높아진 기대를 언급했어. “부담스럽지는 않나요?”", "when": "all", "choices": [{"line": "기대에 맞게 준비하는 데 집중하겠습니다.", "coach": 2, "fans": 4, "reply": "팬들은 차분한 답변을 반겼어."}, {"line": "부담도 있지만 피하지 않겠습니다.", "coach": 1, "fans": 4, "reply": "솔직한 답변이 인터뷰 제목이 됐어."}, {"line": "저 혼자 짊어질 필요는 없다고 생각합니다.", "coach": 3, "fans": 2, "reply": "동료들과 함께하겠다는 뜻이 전해졌어."}]}, {"id": "routine", "type": "coach", "title": "아무도 없는 체육관", "prompt": "감독이 바닥에 굴러온 공을 주워 건넸어. “꾸준히 남는 이유가 있니?”", "when": "all", "choices": [{"line": "잘 안되는 동작을 그냥 넘기고 싶지 않습니다.", "coach": 4, "fans": 0, "reply": "감독은 서두르지 말고 자세부터 확인하자고 했어."}, {"line": "경쟁에서 뒤처지는 게 걱정됩니다.", "coach": 2, "fans": 0, "reply": "감독은 남과 비교하기 전에 지난 자신의 영상을 보라고 했어."}, {"line": "여기 있을 때 농구가 가장 재미있습니다.", "coach": 3, "fans": 1, "reply": "감독은 그 마음을 오래 지키면 좋겠다고 했어."}]}];
+
+function storyEligible(scene,s,r){return ({all:true,bench:['벤치','로테이션'].includes(s.role),young:r.age<23,veteran:r.age>=32,adult:r.age>=23,lowtrust:coachTrust(s)<50,champ:r.champ,loss:!r.champ})[scene.when]}
+function createSeasonConversation(s,r){
+ const recent=s.history.slice(-4).map(x=>x.conversation?.storyId);
+ let pool=careerStoryBank.filter(x=>storyEligible(x,s,r)&&!recent.includes(x.id));
+ if(r.champ)pool=pool.filter(x=>x.type==='press');
+ if(!pool.length)pool=careerStoryBank.filter(x=>x.when==='all'&&!recent.includes(x.id));
+ const story=pick(pool);
+ return {type:story.type,storyId:story.id,selection:null};
+}
+function conversationScene(result){return careerStoryBank.find(x=>x.id===result.conversation?.storyId)||seasonConversations[result.conversation?.type]}
 function chooseSeasonConversation(result){
  if(result.champ)return 'press';
  const roll=Math.random();
@@ -1411,22 +1426,23 @@ function drawConversationActors(){
  document.querySelectorAll('canvas[data-scene-player]').forEach(canvas=>pixelDraw(canvas,state?.player?.avatar||avatarConfig));
 }
 function seasonConversation(s,result){
- const scene=seasonConversations[result.conversation?.type];
+ const scene=conversationScene(result);
  if(!scene)return '';
  const selection=result.conversation.selection;
- const prompt=result.conversation.type==='coach'?'감독이 다음 시즌에 어떤 역할을 맡고 싶은지 물었어.':result.champ?'기자가 우승 소감과 다음 시즌 목표를 물었어.':'기자가 이번 시즌을 어떻게 평가하는지 물었어.';
+ const prompt=scene.prompt||(result.conversation.type==='coach'?'감독이 다음 시즌에 어떤 역할을 맡고 싶은지 물었어.':result.champ?'기자가 우승 소감과 다음 시즌 목표를 물었어.':'기자가 이번 시즌을 어떻게 평가하는지 물었어.');
  const chosen=scene.choices[selection];
  return `<section class="card season-conversation" id="seasonConversation"><h3>${scene.title}</h3>${chosen?'':conversationAnimation(result.conversation.type)}${chosen?`<p><strong>${chosen.line}</strong></p><p class="desc" role="status">${chosen.reply} · 감독 신뢰 ${coachTrust(s)}/100 · 팬 호감 ${s.fanSupport??50}/100</p>`:`<p class="desc">${prompt}</p><div class="conversation-options">${scene.choices.map((choice,index)=>`<button class="btn secondary" onclick="answerSeasonConversation(${result.year},${index})">${choice.line}</button>`).join('')}</div>`}</section>`;
 }
 function answerSeasonConversation(year,index){
  const s=state,result=s?.last,type=result?.conversation?.type;
- const choice=seasonConversations[type]?.choices[index];
+ const scene=result?conversationScene(result):null;
+ const choice=scene?.choices[index];
  const panel=document.getElementById('seasonConversation');
  if(busy||!panel||!choice||result.year!==year||result.conversation.selection!=null)return;
  result.conversation.selection=index;
  s.coach=clamp(coachTrust(s)+choice.coach,0,100);
  s.fanSupport=clamp((s.fanSupport??50)+choice.fans,0,100);
- s.events.unshift({year,text:`${seasonConversations[type].title} · ${choice.line} ${choice.reply}`});
+ s.events.unshift({year,text:`${scene.title} · ${choice.line} ${choice.reply}`});
  save();
  render();
  panel.outerHTML=seasonConversation(s,result);
@@ -1505,8 +1521,7 @@ if(was==='COLLEGE')s.collegeYears++;
 if(was==='PRO')s.contract=Math.max(0,s.contract-1);
 let result={year,age,league,stage:was,team:oldTeam,games:gp,ppg,rpg,apg,sp,bp,fg,tp,ft,mins:one(mins),wins,losses,playoff,champ:champs,final,ovrBefore,ovr,earned,trade:tradeText,goat:goatScore(s),rating:one(clamp(5.4+(ppg-10)*.08+(apg-3)*.07+(winRate-.5)*1+rnd(-.35,.35),5.0,10))};
 result.coachStory=coachSeasonStory(s,result);
-const conversation=chooseSeasonConversation(result);
-if(conversation)result.conversation={type:conversation,selection:null};
+result.conversation=createSeasonConversation(s,result);
 result.pts=Math.round(ppg*gp);result.reb=Math.round(rpg*gp);result.ast=Math.round(apg*gp);result.steals=Math.round(sp*gp);result.blocks=Math.round(bp*gp);
 // Create national-team invitation; never simulate participation before the user's answer.
 const comp=intlCompetitionFor(result.year,result.age);
@@ -1542,51 +1557,44 @@ else if(was==='PRO'){s.market={offers:[],required:false,kind:null,interest:[],tr
 
 if(!s.retired)s.age++;s.year++;
 return result}
-function showSeasonProgress(s){
-  const phases=['시즌 개막','시즌 초반','시즌 중반','시즌 후반','시즌 마무리'];
-  const dialog=document.createElement('dialog');
-  dialog.className='season-progress';
-  dialog.setAttribute('aria-labelledby','season-progress-title');
-  dialog.innerHTML=`<h2 id="season-progress-title">${s.year} 시즌 자동 진행</h2>
-    <p class="desc">${teamLabel(s.team)} · ${esc(leagueName(s))}</p>
-    <p role="status" class="season-phase"></p>
-    <progress max="100" value="0" aria-label="시즌 진행률"></progress>
-    <div class="season-progress-actions"><button type="button" class="btn small">바로 결과 보기</button></div>`;
-  document.body.append(dialog);
-  dialog.showModal();
-  return new Promise(resolve=>{
-    const duration=2800;
-    const start=performance.now();
-    const meter=dialog.querySelector('progress');
-    const status=dialog.querySelector('.season-phase');
-    let frame;
-    const finish=()=>{
-      cancelAnimationFrame(frame);
-      dialog.close();
-      dialog.remove();
-      resolve();
-    };
-    function update(now){
-      const fraction=Math.min(1,(now-start)/duration);
-      meter.value=Math.round(fraction*100);
-      const phase=phases[Math.min(phases.length-1,Math.floor(fraction*phases.length))];
-      if(status.textContent!==phase)status.textContent=phase;
-      if(fraction<1)frame=requestAnimationFrame(update);
-      else finish();
-    }
-    dialog.addEventListener('cancel',event=>{event.preventDefault();finish()});
-    dialog.querySelector('button').addEventListener('click',finish);
-    update(start);
-  });
+
+function seasonProgressSnapshot(result,fraction){
+ const f=clamp(fraction,0,1);
+ return Object.fromEntries(['wins','losses','games','pts','reb','ast'].map(k=>[k,Math.round((Number(result[k])||0)*f)]));
 }
+function showSeasonProgress(s,result){
+ const phases=['시즌 개막','시즌 초반','시즌 중반','시즌 후반','정규 시즌 마감','포스트시즌'];
+ const dialog=document.createElement('dialog');dialog.className='season-progress';
+ dialog.setAttribute('aria-labelledby','season-progress-title');
+ dialog.innerHTML=`<div class="progress-heading"><span class="eyebrow">SEASON REPLAY</span><h2 id="season-progress-title">${result.year} 시즌 자동 진행</h2><p class="desc">${teamLabel(result.team)} · ${esc(result.league)}</p></div><div class="progress-journey" aria-hidden="true">${phases.map((x,i)=>`<span data-progress-stage="${i}">${i+1}</span>`).join('')}</div><p role="status" class="season-phase"></p><progress max="100" value="0" aria-label="시즌 진행률"></progress><div class="progress-records"><div><span>팀 성적</span><strong data-progress="record">0승 0패</strong></div><div><span>출전</span><strong data-progress="games">0경기</strong></div><div><span>득점</span><strong data-progress="pts">0</strong></div><div><span>리바운드</span><strong data-progress="reb">0</strong></div><div><span>어시스트</span><strong data-progress="ast">0</strong></div></div><p class="progress-news" role="status"></p><p class="smallnote">구간별 누적 기록은 시즌 합계를 기준으로 나눠 보여줘.</p><div class="season-progress-actions"><button type="button" class="btn secondary small">바로 결과 보기</button></div>`;
+ document.body.append(dialog);dialog.showModal();
+ return new Promise(resolve=>{
+  const duration=8500,start=performance.now();let frame,finished=false,lastStage=-1;
+  const finish=()=>{if(finished)return;finished=true;cancelAnimationFrame(frame);dialog.close();dialog.remove();resolve()};
+  function update(now){
+   const f=Math.min(1,(now-start)/duration),stage=Math.min(5,Math.floor(f*6));
+   const snap=seasonProgressSnapshot(result,Math.min(1,f/.82));
+   dialog.querySelector('progress').value=Math.round(f*100);
+   dialog.querySelector('[data-progress="record"]').textContent=`${snap.wins}승 ${snap.losses}패`;
+   ['games','pts','reb','ast'].forEach(k=>dialog.querySelector(`[data-progress="${k}"]`).textContent=fmt(snap[k])+(k==='games'?'경기':''));
+   if(lastStage!==stage){lastStage=stage;dialog.querySelector('.season-phase').textContent=phases[stage];dialog.querySelectorAll('[data-progress-stage]').forEach((el,i)=>el.classList.toggle('reached',i<=stage));
+    const news=[`${koTeam(result.team)}에서 시즌을 시작했어.`,`${result.games}경기 출전을 향해 역할을 쌓아가고 있어.`,`시즌 중간 점검 · 경기당 평균 ${result.ppg}득점 페이스`, `시즌 후반 · ${result.mins}분의 평균 출전 시간`, `정규 시즌 ${result.wins}승 ${result.losses}패`,result.playoff];
+    dialog.querySelector('.progress-news').textContent=news[stage]||'시즌 결과를 정리하고 있어.';
+   }
+   if(f<1)frame=requestAnimationFrame(update);else finish();
+  }
+  dialog.addEventListener('cancel',e=>{e.preventDefault();finish()});dialog.querySelector('button').addEventListener('click',finish);update(start);
+ });
+}
+
 async function nextSeason(){let s=state;if(!s||s.retired||busy)return;if(s.pendingIntl){tab='messages';render();showInternationalInvite();return}if(s.market.required){tab='market';render();toast('먼저 진로 또는 계약 제안을 결정해 줘.');return}
 busy=true;
 const button=document.getElementById('simulateButton');
 if(button)button.disabled=true;
 try{
-  await showSeasonProgress(s);
   const result=seasonCalculate(s);
   save();
+  await showSeasonProgress(s,result);
   tab='home';
   render();
   startReplayQueue([result.final],()=>{if(s.pendingIntl)showInternationalInvite();else seasonResultModal(result)});
@@ -1680,7 +1688,7 @@ state=load();render();initUpdater();
 </script>
 <script src="enhancements.js?rev=307fa325"></script>
 <script src="art-assets.js"></script>
-<script src="character.js?rev=f52886ae"></script>
+<script src="character.js?rev=pixel20261118"></script>
 <script type="module">
 let visitorStatus='접속자 연결 중';
 function renderVisitorCount(){
@@ -1729,3 +1737,4 @@ try{
 </script>
 </body>
 </html>
+
