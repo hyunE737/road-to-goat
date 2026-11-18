@@ -305,3 +305,7 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 .arriving{animation:farewell-arrive .5s ease-out}@keyframes farewell-arrive{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 @media(max-width:600px){.retirement-journey{padding:24px 18px}.retirement-stage{min-height:260px}}
 @media(prefers-reduced-motion:reduce){.farewell-track canvas{transition:none}.arriving{animation:none}}
+
+#app .career-hero .avatar{width:88px;height:128px;min-width:88px;padding:8px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:none;overflow:visible}
+#app .career-hero .avatar canvas[data-profile]{display:block;width:auto;height:auto;max-width:100%;max-height:112px;object-fit:contain;margin:auto;image-rendering:pixelated;align-self:center;flex:none}
+#app .career-hero .avatar canvas[data-profile][width="362"]{height:112px;width:56px}
