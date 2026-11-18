@@ -4,11 +4,24 @@
   if(typeof RTG_ART === 'undefined') return;
   const styleNames=['내추럴','시스루','가르마','스포츠컷','스파이크','장발'];
   if(typeof PIXEL_STYLES !== 'undefined' && PIXEL_STYLES.splice) PIXEL_STYLES.splice(0,PIXEL_STYLES.length,...styleNames);
+  const lineupArt=new Image();
+  let lineupReady=false;
   const mainArt=new Image();
   const colorMask=new Image();
   let baseReady=false,maskReady=false,maskImage=null;
   const HEX=(hex)=>{const n=parseInt(hex.replace('#',''),16);return [(n>>16)&255,(n>>8)&255,n&255]};
   function renderFromReference(canvas, config){
+    if(Number.isInteger(config.lineupVersion)&&config.lineupVersion>=0&&config.lineupVersion<6){
+      const width=362,height=724;
+      if(canvas.width!==width)canvas.width=width;
+      if(canvas.height!==height)canvas.height=height;
+      const context=canvas.getContext('2d');
+      if(!context)return false;
+      context.clearRect(0,0,width,height);
+      context.imageSmoothingEnabled=false;
+      if(lineupReady)context.drawImage(lineupArt,config.lineupVersion*width,0,width,height,0,0,width,height);
+      return true;
+    }
     if(!baseReady||!maskReady||!maskImage)return false;
     const w=180,h=200;
     if(canvas.width!==w) canvas.width=w;
@@ -87,6 +100,8 @@
     const cx=c.getContext('2d',{willReadFrequently:true});cx.drawImage(colorMask,0,0);
     maskImage=cx.getImageData(0,0,180,200);redraw()
   };
+  lineupArt.onload=()=>{lineupReady=true;redraw();if(typeof drawConversationActors==='function')drawConversationActors()};
+  lineupArt.src='player-lineup.png';
   mainArt.src=RTG_ART.player;
   colorMask.src=RTG_ART.mask;
   function decorate(){
@@ -103,7 +118,7 @@
     if(screen){
       const h=screen.querySelector('.avatar-configuration .section-top h2');if(h)h.textContent='선수 외형 설정';
       const explanation=screen.querySelector('.avatar-stage-preview p.smallnote');
-      if(explanation)explanation.textContent='미리 만들어 둔 캐릭터 버전을 고르고 등번호를 정할 수 있어.';
+      if(explanation)explanation.textContent='보내준 원본 캐릭터 6명 중 한 명을 선택해.';
       const hint=screen.querySelector('.avatar-configuration >p.smallnote');
       if(hint)hint.textContent='선택한 외형은 시즌이 바뀌어도 저장되며, 선수 카드에도 그대로 표시돼.';
     }
