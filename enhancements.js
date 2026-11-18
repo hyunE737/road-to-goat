@@ -113,6 +113,7 @@ function rtgCareerFinal(s){
  ${rtgCareerAwards('팀 트로피·메달',trophies,'아직 팀 우승이나 국제대회 메달이 없어.')}
  ${rtgCareerAwards('개인상',individual,'아직 받은 개인상이 없어.')}
  <section class="card career-summary-card"><h3>은퇴 소식</h3>${s.retired?`<p><strong>${name}, ${s.history.length}시즌을 마치고 은퇴</strong></p><p class="desc">${teamLabel(s.team)}에서 마지막 시즌을 보냈어. ${esc(s.retireReason||'')}</p>`:'<p class="desc">현역 커리어를 이어가는 중이야.</p>'}</section>
+ ${retirementPotentialCard(s)}
  <section class="card career-summary-card"><h3>닮은 선수</h3><p><strong>${similar}</strong></p><p class="desc">${reason} · 게임에서 선택한 플레이 스타일 기준</p></section>
  <div class="rtg-action-bar"><button class="btn secondary" onclick="switchTab('history')">연도별 기록 보기</button><button class="btn secondary" onclick="switchTab('settings')">백업 및 설정</button></div>`;
 }
@@ -128,9 +129,9 @@ requestTrade=function(){const from=state?.team;rtgOldRequestTrade();if(state&&fr
 const rtgOldSeasonCalculate=seasonCalculate;
 seasonCalculate=function(s){rtgNewsInit(s);const from=s.team;const r=rtgOldSeasonCalculate(s);if(r.trade&&from!==s.team)rtgPublish(s,'trade',from,s.team);if(s.market?.offers?.length&&s.market.kind!=='graduate'&&s.market.kind!=='collegeEnd'){const offer=s.market.offers[0];if(offer?.team)rtgPublish(s,'interest',s.team,offer.team)}if(s.retired&&!s.news.some(n=>n.type==='retire'))rtgPublish(s,'retire');s.story.unshift({year:r.year,text:rtgStoryLine(s)});s.story=s.story.slice(0,45);return r};
 const rtgOldRetire=retireNow;
-retireNow=function(reason){if(state){rtgPublish(state,'retire');save()}rtgOldRetire(reason);tab='legacy';render();toast('최종 커리어 기록을 확인해 봐.')};
+retireNow=function(reason){if(state){rtgPublish(state,'retire');save()}rtgOldRetire(reason);startRetirementJourney(state)};
 const rtgOldSeasonResult=seasonResultModal;
-seasonResultModal=function(r){if(state?.retired){switchTab('legacy');return;}rtgOldSeasonResult(r)};
+seasonResultModal=function(r){if(state?.retired){startRetirementJourney(state);return;}rtgOldSeasonResult(r)};
 function rtgCourtFive(){const pos=[['PG',14,23],['SG',25,72],['SF',33,38],['PF',43,76],['C',43,24]];const make=(side,i)=>{const p=pos[i];const isHome=side==='a';const x=isHome?p[1]:100-p[1],y=isHome?p[2]:100-p[2];return `<div id="${i===0?(isHome?'simPlayerA':'simPlayerB'):`sim-${side}-${i}`}" class="rtg-athlete ${isHome?'rtg-home':'rtg-away'}" style="left:${x}%;top:${y}%;--jersey-num:${i+1}"><span class="rtg-shadow"></span><span class="rtg-legs"></span><span class="rtg-torso"><b>${i+1}</b></span><span class="rtg-arms"></span><span class="rtg-head"></span><span class="rtg-hair"></span><small>${p[0]}</small></div>`};return `<div class="rtg-court-label">HOME · 5 VS 5 · AWAY</div><span class="sim-hoop left"></span><span class="sim-hoop right"></span>${pos.map((_,i)=>make('a',i)).join('')}${pos.map((_,i)=>make('b',i)).join('')}<span id="simBall" class="sim-ball"></span>`}
 const rtgOldStartReplay=startReplaySeries;
 startReplaySeries=function(){rtgOldStartReplay();const court=document.querySelector('.sim-court');if(court){court.classList.add('rtg-full-court');court.innerHTML=rtgCourtFive()}};
@@ -141,3 +142,37 @@ pixelDraw=function(canvas,config){rtgOldPixelDraw(canvas,config);if(!canvas||!ca
 const rtgOldRender=render;
 render=function(){rtgOldRender();document.body.classList.toggle('rtg-retired',!!state?.retired)};
 render();
+
+
+let retirementJourney=null;
+function retirementMilestones(s){
+ const {totals,best,trophies,individual}=rtgSummarizeCareer(s),first=s.history[0],last=s.history[s.history.length-1];
+ const teamAwards=[...trophies.entries()],personal=[...individual.entries()];
+ return [
+ {label:'은퇴 소식',title:`${s.player.name}, 코트를 떠나다`,text:`${s.age}세 · ${s.retireReason||'선수 생활을 마무리했어.'}`,icon:'legacy'},
+ {label:'첫걸음',title:first?`${first.year}년, 첫 시즌`:'도전의 시작',text:first?`${koTeam(first.team)} · ${first.games}경기에서 시작된 커리어`:`${s.player.schoolCountry||s.player.nationality}에서 품었던 농구의 꿈`,icon:'home'},
+ {label:'가장 빛난 시즌',title:best?`${best.year}년 · ${koTeam(best.team)}`:'자신의 자리를 찾는 시간',text:best?`${fmt(best.pts||0)}득점 · ${fmt(best.reb||0)}리바운드 · ${fmt(best.ast||0)}어시스트`:'기록으로 남지 않은 준비의 시간도 커리어의 일부야.',icon:'training'},
+ {label:'함께 들어 올린 것',title:`팀 트로피·메달 ${teamAwards.reduce((n,[,v])=>n+v,0)}회`,text:teamAwards.length?teamAwards.slice(0,3).map(([name,n])=>`${name} ${n}회`).join(' · '):'우승은 없었지만 동료들과 함께 코트를 지켰어.',icon:'awards'},
+ {label:'남긴 이름',title:`개인상 ${personal.reduce((n,[,v])=>n+v,0)}회`,text:personal.length?personal.slice(0,3).map(([name,n])=>`${name} ${n}회`).join(' · '):`통산 ${fmt(totals.points)}득점 · ${fmt(totals.rebounds)}리바운드 · ${fmt(totals.assists)}어시스트`,icon:'goat'},
+ {label:'마지막 인사',title:last?`${last.year}년 · ${koTeam(last.team)}`:'마지막 인사',text:`${s.history.length}시즌의 여정 · 최고 OVR ${retirementPotentialReport(s).peak} · 이제 커리어 전체를 돌아볼 시간이야.`,icon:'legacy'}
+ ];
+}
+function startRetirementJourney(s){
+ if(!s?.retired||retirementJourney)return;
+ closeModal();const scenes=retirementMilestones(s),dialog=document.createElement('dialog');
+ dialog.className='retirement-journey';dialog.setAttribute('aria-labelledby','retirement-title');
+ dialog.innerHTML=`<div class="eyebrow">CAREER FAREWELL</div><div class="retirement-stage" role="status" aria-live="polite"><div class="retirement-mark"></div><span class="retirement-chapter"></span><h2 id="retirement-title"></h2><p class="retirement-caption"></p></div><div class="farewell-track" aria-hidden="true">${scenes.map(()=>'<i></i>').join('')}<canvas data-scene-player width="362" height="724"></canvas></div><progress value="0" max="${scenes.length}" aria-label="커리어 회고 진행률"></progress><div class="retirement-actions"><button class="btn secondary" type="button">커리어 요약 바로 보기</button></div>`;
+ document.body.append(dialog);dialog.showModal();drawConversationActors();
+ let stage=0,timer;retirementJourney=dialog;
+ const finish=()=>{clearTimeout(timer);dialog.close();dialog.remove();retirementJourney=null;tab='legacy';render()};
+ const show=()=>{const scene=scenes[stage];if(!scene)return finish();
+  dialog.querySelector('.retirement-mark').innerHTML=gameIcon(scene.icon);
+  dialog.querySelector('.retirement-chapter').textContent=`${stage+1} / ${scenes.length} · ${scene.label}`;
+  dialog.querySelector('h2').textContent=scene.title;dialog.querySelector('.retirement-caption').textContent=scene.text;
+  dialog.querySelector('progress').value=stage+1;dialog.querySelectorAll('.farewell-track i').forEach((el,i)=>el.classList.toggle('reached',i<=stage));
+  dialog.querySelector('.farewell-track canvas').style.left=`${stage/(scenes.length-1)*100}%`;
+  dialog.querySelector('.retirement-stage').classList.remove('arriving');void dialog.offsetWidth;dialog.querySelector('.retirement-stage').classList.add('arriving');
+  stage++;timer=setTimeout(show,stage===1?2600:2400);
+ };
+ dialog.addEventListener('cancel',e=>{e.preventDefault();finish()});dialog.querySelector('button').addEventListener('click',finish);show();
+}
