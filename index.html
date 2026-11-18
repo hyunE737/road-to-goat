@@ -385,9 +385,10 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 <script>
 'use strict';
 const SAVE='road_to_goat_v1_2026';
-const GAME_VERSION='2.1.4';
+const GAME_VERSION='2.1.5';
 const UPDATE_CONFIG_KEY='road_to_goat_update_prefs';
 const RELEASE_NOTES=[
+ {version:'2.1.5',date:'2026-11-18',title:'메시지 후 시즌으로 복귀',items:['국가대표 소집에 답한 뒤 대시보드로 복귀','결과 창을 닫으면 더 보기를 접고 시즌 자동 진행 버튼으로 이동']},
  {version:'2.1.4',date:'2026-11-18',title:'훈련의 선택과 대가',items:['커리어 이벤트의 노력·피로·비용·부상 위험 표시','누적 피로는 다음 시즌 성장을 낮추고 훈련 부상은 출전 경기 감소','회복 선택은 직접 능력치 보상 대신 피로 감소','기본 장비 가격이 프로 장비보다 비싸지지 않도록 조정']},
  {version:'2.1.3',date:'2026-11-18',title:'픽셀 훈련 장비',items:['25종 아이템에 맞는 픽셀 아이콘','리그 로고를 읽기 좋은 원본으로 교체','원본 색을 유지하는 캐릭터 투명 PNG 저장']},
  {version:'2.1.2',date:'2026-11-18',title:'캐릭터 전신 정렬',items:['대시보드 캐릭터를 중앙 정렬','캐릭터 칸 높이와 전신 비율을 맞춰 발 잘림 수정']},
@@ -1150,6 +1151,11 @@ function messages(s){
  const count=s.inbox.filter(m=>m.status==='pending').length;
  return `${panelTitle('받은 메시지',`<span class="pill ${count?'gold':''}">${count}건 답변 대기</span>`)}<div class="card"><h3>📨 국가대표 소집 및 선수 알림</h3><p class="desc">국가대표에서 참가 제안을 보내면 이곳에 메시지가 도착해. 직접 수락하거나 거절할 수 있어.</p>${s.inbox.length?s.inbox.map(m=>`<div class="inbox-item ${m.status==='pending'?'inbox-unread':''}"><div class="headline"><strong>🌐 ${esc(m.title)}</strong><span class="pill ${m.status==='pending'?'gold':''}">${m.status==='pending'?'답변 필요':m.status==='accepted'?'참가 수락':'참가 거절'}</span></div><div class="label" style="margin:8px 0">${m.year}년 · ${esc(m.competition)}</div><p class="desc">${esc(m.text)}</p>${m.status==='pending'?`<button class="btn small" onclick="showInternationalInvite()">메시지 열기 · 참가 여부 결정</button>`:''}</div>`).join(''):'<div class="empty">현재 도착한 메시지가 없어. 시즌을 진행하면 국가대표 소집 제안이 도착할 수 있어.</div>'}</div>`;
 }
+let returnToSeasonAfterMessage=false;
+function focusSeasonDashboard(){
+ tab='home';render();const more=document.querySelector('.career-nav-more');if(more)more.open=false;
+ requestAnimationFrame(()=>{const button=document.getElementById('simulateButton'),target=button||document.querySelector('.career-hero');target?.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});if(button&&!button.disabled)button.focus({preventScroll:true})});
+}
 function showInternationalInvite(){
  const inv=state?.pendingIntl;if(!inv)return;
  document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="nationalTitle"><span class="pill blue">📨 새 메시지 · 국가대표팀</span><h2 id="nationalTitle" style="margin-top:13px">국가대표 소집 제안이 도착했어!</h2><div class="inbox-invite"><div class="eyebrow">NATIONAL TEAM INVITATION</div><h3 style="margin:10px 0 5px">${esc(inv.country)} 국가대표팀</h3><p class="desc">${esc(inv.competition)}</p><p>대표팀 감독이 이번 대회에 출전해 달라고 요청했어.<br>국제대회에 <strong>참가할지 직접 선택</strong>해 줘.</p></div><div class="modal-actions"><button class="btn ghost" onclick="answerInternationalInvite(false)">이번 대회 거절</button><button class="btn" onclick="answerInternationalInvite(true)">✓ 국가대표 참가 수락</button></div><p class="smallnote" style="margin-top:10px">거절하면 해당 대회는 출전하지 않으며, 다음 소집 기회에는 다시 선택할 수 있어.</p></div></div>`;
@@ -1165,7 +1171,7 @@ function answerInternationalInvite(accept){
  const msg=s.inbox.find(m=>m.id==='national-'+inv.year);
  if(msg)msg.status=accept?'accepted':'declined';
  s.events.unshift({year:inv.year,text:accept?`${inv.competition} 국가대표 참가 수락`:`${inv.competition} 국가대표 참가 거절`});
- s.pendingIntl=null;save();tab='messages';render();document.getElementById('modalRoot').innerHTML='';
+ s.pendingIntl=null;save();returnToSeasonAfterMessage=true;tab='home';render();const more=document.querySelector('.career-nav-more');if(more)more.open=false;document.getElementById('modalRoot').innerHTML='';
  if(accept&&response.final)startReplayQueue([response.final],()=>seasonResultModal(r));
  else seasonResultModal(r);
 }
@@ -1681,7 +1687,7 @@ function showSeasonProgress(s,result){
  });
 }
 
-async function nextSeason(){let s=state;if(!s||s.retired||busy)return;if(s.pendingIntl){tab='messages';render();showInternationalInvite();return}if(s.market.required){tab='market';render();toast('먼저 진로 또는 계약 제안을 결정해 줘.');return}
+async function nextSeason(){let s=state;if(!s||s.retired||busy)return;if(s.pendingIntl){tab='home';render();showInternationalInvite();return}if(s.market.required){tab='market';render();toast('먼저 진로 또는 계약 제안을 결정해 줘.');return}
 busy=true;
 const button=document.getElementById('simulateButton');
 if(button)button.disabled=true;
@@ -1740,7 +1746,7 @@ function showGameAnnouncements(){
 function settings(s){return `${panelTitle('설정')}${displaySettings()}<div class="card"><h3>게임 상태</h3><div class="grid two"><div class="mini-box"><span class="label">현재 저장</span><strong style="font-size:15px">${esc(s.player.name)} · ${s.year}</strong></div><div class="mini-box"><span class="label">커리어</span><strong style="font-size:15px">${s.retired?'은퇴':'진행 중'}</strong></div></div><div class="sep"></div><div style="display:flex;flex-wrap:wrap;gap:9px"><button class="btn secondary" onclick="exportSave()">저장 데이터 백업</button><button class="btn secondary" onclick="document.getElementById('importFile').click()">백업 불러오기</button><input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importSave(event)"><button class="btn secondary" onclick="save();toast('게임이 저장됐어.')">지금 저장</button></div></div><div class="card" style="margin-top:16px"><h3>은퇴 시스템</h3><p class="desc">시즌 종료 후 원하는 시점에 은퇴할 수 있어. 계약이 끝났을 때 새 제안이 없으면 은퇴해.</p><button class="btn danger" onclick="confirmRetirement()" ${s.retired?'disabled':''}>선수 은퇴하기</button>${s.retired?`<p class="desc">${esc(s.retireReason)}</p>`:''}</div><div class="card" style="margin-top:16px"><h3>새 커리어</h3><p class="desc">새 선수를 만들면 현재 저장된 게임 데이터가 초기화돼. 기존 데이터를 유지하려면 먼저 백업 파일을 내려받아 줘.</p><button class="btn danger" onclick="confirmNewCareer()">새 커리어 시작</button></div><div class="card" style="margin-top:16px"><h3>게임 업데이트</h3><p class="desc">현재 버전 v${GAME_VERSION} · 웹 배포 시 새 버전을 자동 확인하고 적용할 수 있어.</p><button class="btn secondary" onclick="switchTab('updates')">업데이트 내역 및 연결 설정 →</button></div><div class="footer-note">자동 저장은 이 브라우저의 localStorage를 사용합니다. 브라우저 데이터 삭제 시 저장 파일이 지워질 수 있으니 백업 기능을 이용하세요. 인터넷 연결 없이 실행 가능한 단일 HTML 게임입니다.</div>`}
 function showModal(title,body,onConfirm=null,buttonText='확인'){modalAction=onConfirm;document.getElementById('modalRoot').innerHTML=`<div class="modal-back" role="presentation" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><h2 id="modalTitle">${title}</h2>${body}<div class="modal-actions"><button class="btn ${onConfirm?'secondary':'wide'}" onclick="closeModal()">${onConfirm?'취소':'닫기'}</button>${onConfirm?`<button class="btn" onclick="confirmModal()">${buttonText}</button>`:''}</div></div></div>`;drawConversationActors()}
 function confirmModal(){if(modalAction){const fn=modalAction;modalAction=null;fn()}}
-function closeModal(){document.getElementById('modalRoot').innerHTML='';modalAction=null;if(updatePrefs.enabled&&updateInfo.latest&&compareVersions(updateInfo.latest,GAME_VERSION)>0)setTimeout(autoApplyUpdate,0)}
+function closeModal(){document.getElementById('modalRoot').innerHTML='';modalAction=null;if(returnToSeasonAfterMessage){returnToSeasonAfterMessage=false;focusSeasonDashboard()}if(updatePrefs.enabled&&updateInfo.latest&&compareVersions(updateInfo.latest,GAME_VERSION)>0)setTimeout(autoApplyUpdate,0)}
 function confirmRetirement(){if(!state||state.retired||busy)return;showModal('은퇴를 확정할까?',`<p class="desc">${esc(state.player.name)} 선수는 ${state.age}세에 은퇴하게 돼. 은퇴 후에는 같은 커리어에서 시즌을 더 진행할 수 없어.</p><div class="notice">은퇴는 되돌릴 수 없어. 필요한 경우 설정에서 저장 데이터를 백업해 줘.</div>`,()=>retireNow('선수 본인의 조기 은퇴'),'은퇴 확정')}
 function retireNow(reason){state.retired=true;state.stage='RETIRED';state.retireReason=reason;state.market={offers:[],required:false,kind:null,interest:[],tradeRequested:false};state.events.unshift({year:state.year,text:`${state.age}세 은퇴 · 역대 ${goatRank(state)}위`});save();closeModal();tab='goat';render();toast('커리어가 종료됐어. 최종 GOAT 기록을 확인해 줘.')}
 function confirmNewCareer(){showModal('새 커리어 시작',`<p class="desc">현재 ${esc(state.player.name)} 선수의 모든 기록이 삭제되고 새 선수 생성 화면으로 돌아가. 기존 기록이 필요하면 먼저 백업해 줘.</p>`,()=>{localStorage.removeItem(SAVE);state=null;closeModal();render()},'새로 시작')}
