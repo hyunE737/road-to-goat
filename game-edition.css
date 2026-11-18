@@ -255,3 +255,53 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 @media(max-width:900px){#app .career-nav-main{gap:6px}#app .career-nav-main .nav{min-height:76px;padding:10px 4px;gap:6px;text-align:center}#app .career-side .career-nav-main .nav.active{box-shadow:inset 0 -3px 0 var(--blue)}#app .career-nav-secondary{gap:6px}#app .career-side .career-nav-secondary .nav{font-size:12px;padding:10px;gap:8px}}
 @media(max-width:600px){#app .career-nav-main .nav{font-size:10px;min-height:72px}#app .grid.two{gap:16px}#app .career-content>.view-title{margin-bottom:20px;padding-bottom:12px}#app .style-draw-card,#app .league-select-card{padding:14px}#app .training-allocation,#app .abilities-card .attr-row{min-height:58px}#app .offer{flex-wrap:wrap}#app .offer>.btn{margin-left:auto;min-width:80px}.season-progress{padding:18px}.season-progress h2{font-size:20px}}
 @media(prefers-reduced-motion:reduce){.pixel-conversation *,.style-reveal .style-draw-details{animation:none!important}#app .btn,#modalRoot .btn{transition:none!important}}
+
+#modalRoot .finals-timeout .pixel-conversation{height:116px;margin:12px 0}
+#modalRoot .finals-timeout .conversation-player{width:48px;height:96px}
+#modalRoot .finals-timeout .conversation-coach{width:64px;height:80px}
+#modalRoot .finals-timeout .pixel-desk{height:16px;bottom:16px}
+#modalRoot .season-item{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:16px;border:1px solid var(--line);border-radius:5px;background:var(--panel)}
+#modalRoot .season-item>div>strong{display:block;margin:5px 0;font-size:14px}
+#modalRoot .season-item-icon{font-size:27px;background:transparent;border:0;display:grid;place-items:center}
+#modalRoot .season-item .desc{font-size:11px;line-height:1.6}
+#modalRoot .item-price{font-size:12px;margin-top:6px;font-variant-numeric:tabular-nums}
+#modalRoot .item-tier-legend{border:2px solid var(--gold);box-shadow:inset 0 3px 0 var(--gold)}
+#app .training-panel-head{min-height:102px;box-sizing:border-box;margin-bottom:12px}
+#app .training-panel-head p{font-size:12px;margin:8px 0}
+@media(max-width:600px){#modalRoot .season-item{grid-template-columns:32px minmax(0,1fr);padding:12px;gap:8px}#modalRoot .season-item>.btn{grid-column:2;justify-self:end;min-width:90px}#app .training-panel-head{min-height:0;margin-bottom:16px}}
+
+#app .league-spotlight{width:100%;min-height:132px;padding:8px 0;box-sizing:border-box}
+#app .league-spotlight .league-logo{width:100%;min-width:0;max-width:180px;height:112px;padding:0;margin:0;border:0;background:transparent;box-sizing:border-box;display:flex;justify-content:center;align-items:center;overflow:visible}
+#app .league-spotlight .league-logo img{position:static;inset:auto;display:block;width:auto;height:104px;min-width:0;max-width:100%;max-height:104px;padding:0;margin:0;background:transparent;object-fit:contain;border-radius:0;box-sizing:content-box}
+#app .league-spotlight .league-logo-official:not(.logo-unavailable)>span{display:none}
+#app .league-spotlight .logo-unavailable>span{display:block;visibility:visible;font-size:18px;color:var(--text)}
+.effort-progress{border-top:1px solid var(--line);padding:12px 0;display:grid;grid-template-columns:1fr auto;gap:8px;font-size:12px}
+.effort-progress>span{display:flex;gap:6px;align-items:center}.effort-progress .game-icon{width:18px;height:18px}.effort-progress .meter,.effort-progress small{grid-column:1/-1}.effort-progress small{font-size:10px;color:var(--muted)}
+.career-event-scene{height:136px;position:relative;overflow:hidden;background:var(--panel2);border:1px solid var(--line);border-bottom:4px solid var(--line);margin:14px 0;isolation:isolate}
+.event-player{position:absolute;left:20%;bottom:4px;width:60px;height:120px;image-rendering:pixelated;animation:event-player 2s steps(3,end) infinite}
+.event-ball{position:absolute;left:50%;bottom:20px;animation:event-ball 1s steps(5,end) infinite}.event-ball .game-icon{width:26px;height:26px}
+.event-hoop{position:absolute;right:18%;top:22px;width:30px;height:36px;border:4px solid var(--muted);background:var(--panel)}.event-hoop:after{content:'';position:absolute;bottom:-6px;left:4px;width:26px;height:4px;background:var(--blue)}
+.event-spark{position:absolute;left:15%;top:18px;animation:pixel-dialogue 2.4s steps(2,end) infinite}.event-spark .game-icon{width:18px;height:18px}
+.career-event-card .conversation-options small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+@keyframes event-player{50%{transform:translateY(-3px)}}@keyframes event-ball{50%{transform:translateY(-35px)}}
+@media(prefers-reduced-motion:reduce){.career-event-scene *{animation:none!important}}
+
+#app .pixel-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:30px 20px;border:1px solid var(--line);border-radius:4px;background:var(--panel2);min-height:150px;color:var(--text)}
+#app .pixel-empty p{margin:0;color:var(--muted);font-size:12px}
+.pixel-mailbox{display:grid;place-items:center;width:64px;height:64px;background:var(--panel);border:2px solid var(--line);box-shadow:4px 4px 0 var(--line);margin-bottom:8px}
+.pixel-mailbox .game-icon{width:40px;height:40px}
+.retirement-journey{box-sizing:border-box;width:min(620px,calc(100vw - 24px));padding:32px;background:var(--panel);color:var(--text);border:2px solid var(--line);border-radius:8px;text-align:center;font-family:Pretendard,sans-serif;box-shadow:0 20px 80px #0005}
+.retirement-journey::backdrop{background:#0c1722c9;backdrop-filter:blur(4px)}
+.retirement-journey .eyebrow{font-size:10px;letter-spacing:.18em;color:var(--muted)}
+.retirement-stage{min-height:232px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.retirement-stage h2{font-size:clamp(22px,4.5vw,30px);line-height:1.35;margin:0;font-weight:700;word-break:keep-all}
+.retirement-mark .game-icon{width:46px;height:46px}
+.retirement-chapter{font-size:11px;color:var(--muted)}.retirement-caption{font-size:13px;color:var(--muted);line-height:1.8;margin:0;max-width:460px;word-break:keep-all}
+.farewell-track{position:relative;display:flex;justify-content:space-between;align-items:center;height:78px;margin:4px 25px 0}
+.farewell-track:before{content:'';position:absolute;left:0;right:0;height:2px;background:var(--line);bottom:12px}
+.farewell-track i{position:relative;width:8px;height:8px;background:var(--line);margin-top:50px}.farewell-track i.reached{background:var(--blue)}
+.farewell-track canvas{position:absolute;width:28px;height:56px;bottom:18px;transform:translateX(-50%);image-rendering:pixelated;transition:left 1.2s steps(16,end)}
+.retirement-journey progress{display:block;width:100%;height:5px;accent-color:var(--blue);margin:16px 0 24px}.retirement-actions .btn{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:12px 20px;border-radius:4px;min-height:44px;font:600 12px Pretendard,sans-serif;cursor:pointer}
+.arriving{animation:farewell-arrive .5s ease-out}@keyframes farewell-arrive{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.retirement-journey{padding:24px 18px}.retirement-stage{min-height:260px}}
+@media(prefers-reduced-motion:reduce){.farewell-track canvas{transition:none}.arriving{animation:none}}
