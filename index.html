@@ -378,16 +378,17 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 }
 @media(prefers-reduced-motion:reduce){.welcome-career-path::after{animation:none;left:87.5%}}
 .welcome-career-path .game-icon{width:19px;height:19px;color:var(--blue)}
-</style><link rel="stylesheet" href="game-edition.css?v=pixel213">
+</style><link rel="stylesheet" href="game-edition.css?v=pixel214">
 </head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
 <script>
 'use strict';
 const SAVE='road_to_goat_v1_2026';
-const GAME_VERSION='2.1.3';
+const GAME_VERSION='2.1.4';
 const UPDATE_CONFIG_KEY='road_to_goat_update_prefs';
 const RELEASE_NOTES=[
+ {version:'2.1.4',date:'2026-11-18',title:'훈련의 선택과 대가',items:['커리어 이벤트의 노력·피로·비용·부상 위험 표시','누적 피로는 다음 시즌 성장을 낮추고 훈련 부상은 출전 경기 감소','회복 선택은 직접 능력치 보상 대신 피로 감소','기본 장비 가격이 프로 장비보다 비싸지지 않도록 조정']},
  {version:'2.1.3',date:'2026-11-18',title:'픽셀 훈련 장비',items:['25종 아이템에 맞는 픽셀 아이콘','리그 로고를 읽기 좋은 원본으로 교체','원본 색을 유지하는 캐릭터 투명 PNG 저장']},
  {version:'2.1.2',date:'2026-11-18',title:'캐릭터 전신 정렬',items:['대시보드 캐릭터를 중앙 정렬','캐릭터 칸 높이와 전신 비율을 맞춰 발 잘림 수정']},
  {version:'2.1.1',date:'2026-11-18',title:'은퇴의 순간과 커리어 여정',items:['은퇴 즉시 소식 안내','실제 커리어 기록으로 천천히 돌아보는 픽셀 연출','픽셀 우편함과 리그 로고 크기·정렬 수정']},
@@ -700,7 +701,7 @@ function createPlayerFromForm(){
 function effortProfile(s){const xp=Math.max(0,Number(s.effort?.xp)||0),levels=Math.min(12,Math.floor(xp/6));return {xp,levels,bonus:levels*2,next:6-xp%6}}
 function effectivePotential(s){return Math.min(100,(Number(s.potential)||78)+effortProfile(s).bonus)}
 function gainCareerEffort(s,points){const before=effortProfile(s);s.effort={xp:before.xp+Math.max(0,points)};const after=effortProfile(s);return after.bonus-before.bonus}
-function effortCard(s){const p=effortProfile(s);return `<div class="effort-progress"><span>${gameIcon('training')} 꾸준한 노력</span><strong>성장 한계 +${p.bonus}</strong><div class="meter"><i style="width:${p.levels>=12?100:(p.xp%6)/6*100}%"></i></div><small>${p.levels>=12?'노력 성장 한계에 도달했어.':`다음 성장 한계 돌파까지 노력 ${p.next}점`} · 훈련 4점 배분과 면담·이벤트로 쌓여.</small></div>`}
+function effortCard(s){const p=effortProfile(s);return `<div class="effort-progress"><span>${gameIcon('training')} 꾸준한 노력</span><strong>성장 한계 +${p.bonus}</strong><div class="meter"><i style="width:${p.levels>=12?100:(p.xp%6)/6*100}%"></i></div><small>${p.levels>=12?'노력 성장 한계에 도달했어.':`다음 성장 한계 돌파까지 노력 ${p.next}점`} · 훈련 4점 배분과 면담·이벤트로 쌓여. 피로 ${Math.round(s.fatigue||0)}/100${s.trainingInjuryGames?` · 다음 시즌 ${s.trainingInjuryGames}경기 결장 예정`:""}</small></div>`}
 function rollCareerPotential(){
  const roll=Math.random();
  return roll<.20?irnd(64,72):roll<.70?irnd(73,83):roll<.95?irnd(84,94):irnd(95,99);
@@ -1171,7 +1172,7 @@ function answerInternationalInvite(accept){
 const seasonItems=[{"id": "ball", "icon": "🏀", "name": "슈팅 훈련공", "stat": "shoot", "price": 500, "boost": 1, "tier": "기본"}, {"id": "cones", "icon": "🔶", "name": "드리블 콘 세트", "stat": "drive", "price": 500, "boost": 1, "tier": "기본"}, {"id": "film", "icon": "🎥", "name": "패스 분석 영상", "stat": "pass", "price": 600, "boost": 1, "tier": "기본"}, {"id": "pads", "icon": "🛡️", "name": "수비 훈련 패드", "stat": "defense", "price": 600, "boost": 1, "tier": "기본"}, {"id": "band", "icon": "🪢", "name": "점프 저항 밴드", "stat": "rebound", "price": 650, "boost": 1, "tier": "기본"}, {"id": "bike", "icon": "🚲", "name": "유산소 훈련 장비", "stat": "stamina", "price": 700, "boost": 1, "tier": "기본"}, {"id": "board", "icon": "📋", "name": "전술 분석 노트", "stat": "iq", "price": 700, "boost": 1, "tier": "기본"}, {"id": "mental", "icon": "🎯", "name": "루틴 훈련 키트", "stat": "clutch", "price": 700, "boost": 1, "tier": "기본"}, {"id": "pro-0", "icon": "🏀", "name": "슈팅 분석 센서", "stat": "shoot", "priceWon": 100000000, "boost": 3, "mods": {"shoot": 3, "iq": 1}, "tier": "프로"}, {"id": "pro-1", "icon": "⚡", "name": "드리블 반응 코트", "stat": "drive", "priceWon": 100000000, "boost": 3, "mods": {"drive": 3, "stamina": 1}, "tier": "프로"}, {"id": "pro-2", "icon": "🎥", "name": "패스 추적 시스템", "stat": "pass", "priceWon": 100000000, "boost": 3, "mods": {"pass": 3, "iq": 1}, "tier": "프로"}, {"id": "pro-3", "icon": "🛡️", "name": "수비 반응 장비", "stat": "defense", "priceWon": 100000000, "boost": 3, "mods": {"defense": 3, "stamina": 1}, "tier": "프로"}, {"id": "pro-4", "icon": "👟", "name": "점프 측정 플랫폼", "stat": "rebound", "priceWon": 100000000, "boost": 3, "mods": {"rebound": 3, "stamina": 1}, "tier": "프로"}, {"id": "pro-5", "icon": "🚲", "name": "회복 트레이닝실", "stat": "stamina", "priceWon": 100000000, "boost": 3, "mods": {"stamina": 3, "clutch": 1}, "tier": "프로"}, {"id": "pro-6", "icon": "📋", "name": "전술 시뮬레이션룸", "stat": "iq", "priceWon": 100000000, "boost": 3, "mods": {"iq": 3, "pass": 1}, "tier": "프로"}, {"id": "pro-7", "icon": "🎯", "name": "압박 상황 훈련실", "stat": "clutch", "priceWon": 100000000, "boost": 3, "mods": {"clutch": 3, "shoot": 1}, "tier": "프로"}, {"id": "elite-0", "icon": "🏀", "name": "전용 슈팅 센터", "stat": "shoot", "priceWon": 1000000000, "boost": 5, "mods": {"shoot": 5, "clutch": 2}, "tier": "엘리트"}, {"id": "elite-1", "icon": "⚡", "name": "스피드 퍼포먼스 랩", "stat": "drive", "priceWon": 1000000000, "boost": 5, "mods": {"drive": 5, "stamina": 2}, "tier": "엘리트"}, {"id": "elite-2", "icon": "🎥", "name": "플레이메이킹 연구소", "stat": "pass", "priceWon": 1000000000, "boost": 5, "mods": {"pass": 5, "iq": 2}, "tier": "엘리트"}, {"id": "elite-3", "icon": "🛡️", "name": "디펜스 퍼포먼스 랩", "stat": "defense", "priceWon": 2000000000, "boost": 5, "mods": {"defense": 5, "rebound": 2}, "tier": "엘리트"}, {"id": "elite-4", "icon": "👟", "name": "리바운드 훈련 센터", "stat": "rebound", "priceWon": 2000000000, "boost": 5, "mods": {"rebound": 5, "stamina": 2}, "tier": "엘리트"}, {"id": "elite-5", "icon": "🏥", "name": "회복·컨디션 센터", "stat": "stamina", "priceWon": 2000000000, "boost": 5, "mods": {"stamina": 5, "iq": 2}, "tier": "엘리트"}, {"id": "legacy-0", "icon": "🏟️", "name": "개인 퍼포먼스 캠퍼스", "stat": "stamina", "priceWon": 10000000000, "boost": 7, "mods": {"stamina": 7, "drive": 4, "defense": 3}, "tier": "레전드"}, {"id": "legacy-1", "icon": "🏆", "name": "챔피언 전용 트레이닝 센터", "stat": "shoot", "priceWon": 30000000000, "boost": 9, "mods": {"shoot": 9, "clutch": 6, "iq": 4, "pass": 3}, "tier": "레전드"}, {"id": "legacy-2", "icon": "👑", "name": "GOAT 종합 트레이닝 캠퍼스", "stat": "shoot", "priceWon": 100000000000, "boost": 12, "mods": {"shoot": 12, "drive": 12, "pass": 12, "defense": 12, "rebound": 12, "stamina": 12, "iq": 12, "clutch": 12}, "tier": "레전드"}];
 
 const itemWonPerDollar=1350;
-function itemPrice(s,item){return item.priceWon?Math.ceil(item.priceWon/itemWonPerDollar):Math.max(item.price,Math.round((careerWallet(s).lastIncome||0)*.18))}
+function itemPrice(s,item){return item.priceWon?Math.ceil(item.priceWon/itemWonPerDollar):Math.max(item.price,Math.min(50000,Math.round((careerWallet(s).lastIncome||0)*.18)))}
 function itemPriceLabel(s,item){return (item.priceWon?fmt(item.priceWon/100000000)+'억 원 · ':'')+'$'+fmt(itemPrice(s,item))}
 function seasonItemRotation(s){
  const year=Math.floor(Number(s.last?.year??s.year)||0);
@@ -1481,20 +1482,36 @@ const careerEvents=[{"id": "dawn", "title": "새벽 체육관", "prompt": "체�
 
 function createCareerEvent(s){const recent=s.history.slice(-4).map(x=>x.careerEvent?.id),pool=careerEvents.filter(x=>!recent.includes(x.id));return {id:pick(pool).id,selection:null}}
 function careerEventAnimation(){return `<div class="career-event-scene" aria-hidden="true"><canvas data-scene-player class="event-player" width="362" height="724"></canvas><span class="event-ball">${gameIcon('ball')}</span><span class="event-hoop"></span><span class="event-spark">${gameIcon('training')}</span></div>`}
+
+function careerEventTradeoff(s,index){
+ if(index===0)return {effort:3,boost:2,fatigue:14,cost:0,risk:Math.min(.30,.08+((Number(s.fatigue)||0)+14)/300),label:'추가 훈련'};
+ if(index===1)return {effort:2,boost:1,fatigue:6,cost:Math.max(150,Math.min(150000,Math.round((careerWallet(s).lastIncome||0)*.04))),risk:0,label:'전문 코칭'};
+ return {effort:1,boost:0,fatigue:-14,cost:0,risk:0,label:'회복·복기'};
+}
 function careerEventCard(s,r){
  const event=r.careerEvent,scene=careerEvents.find(x=>x.id===event?.id);if(!scene)return '';
  const chosen=scene.choices[event.selection];
- return `<section class="card career-event-card" id="careerEvent"><div class="section-top"><h3>${scene.title}</h3><span class="pill">커리어 이벤트</span></div>${careerEventAnimation()}${chosen?`<p><strong>${chosen.line}</strong></p><p class="desc" role="status">노력 +${chosen.effort} · ${attrs[chosen.stat]} +${event.gain||0}${event.breakthrough?` · 성장 한계 +${event.breakthrough}`:''}</p>`:`<p class="desc">${scene.prompt}</p><div class="conversation-options">${scene.choices.map((x,i)=>`<button class="btn secondary" onclick="answerCareerEvent(${r.year},${i})">${x.line}<small>노력 +${x.effort} · ${attrs[x.stat]} 훈련</small></button>`).join('')}</div>`}</section>`;
+ return `<section class="card career-event-card" id="careerEvent"><div class="section-top"><h3>${scene.title}</h3><span class="pill">커리어 이벤트</span></div>${careerEventAnimation()}${chosen?`<p><strong>${event.choiceLine||chosen.line}</strong></p><p class="desc" role="status">노력 +${event.effortGranted??chosen.effort} · ${attrs[chosen.stat]} +${event.gain||0}${event.breakthrough?` · 성장 한계 +${event.breakthrough}`:''}</p>${event.resultText?`<p class="event-consequence">${esc(event.resultText)}</p>`:''}`:`<p class="desc">${scene.prompt}</p><p class="smallnote">현재 피로 ${Math.round(s.fatigue||0)}/100 · 무리한 훈련은 다음 시즌 성장과 출전에 영향을 줘.</p><div class="conversation-options">${scene.choices.map((x,i)=>{const effect=careerEventTradeoff(s,i),line=i===2?'휴식과 가벼운 복기로 마무리한다.':x.line,affordable=careerWallet(s).balance>=effect.cost;return `<button class="btn secondary" onclick="answerCareerEvent(${r.year},${i})" ${affordable?'':'disabled'}>${line}<small>${effect.label} · 노력 +${effect.effort}${effect.boost?` · ${attrs[x.stat]} 최대 +${effect.boost}`:' · 직접 능력치 보상 없음'}</small><small class="event-cost">피로 ${effect.fatigue>0?'+':''}${effect.fatigue}${effect.cost?` · 비용 $${fmt(effect.cost)}`:''}${effect.risk?` · 부상 위험 ${Math.round(effect.risk*100)}% (다음 시즌 2~5경기 결장)`:''}${affordable?'':' · 잔액 부족'}</small></button>`}).join('')}</div>`}</section>`;
+}
+function applyCareerEventChoice(s,r,index){
+ const event=r?.careerEvent,scene=careerEvents.find(x=>x.id===event?.id),choice=scene?.choices[index];
+ if(!choice||s.retired||event.selection!=null)return false;
+ const effect=careerEventTradeoff(s,index),wallet=careerWallet(s);if(wallet.balance<effect.cost)return false;
+ event.selection=index;event.effortGranted=effect.effort;event.choiceLine=index===2?'휴식과 가벼운 복기로 마무리한다.':choice.line;
+ event.breakthrough=gainCareerEffort(s,effect.effort);wallet.balance-=effect.cost;
+ s.fatigue=clamp((Number(s.fatigue)||0)+effect.fatigue,0,100);
+ const ceiling=Math.min(100,effectivePotential(s)+(s.focus===choice.stat?2:0));
+ event.gain=Math.max(0,Math.min(effect.boost,ceiling-s.attrs[choice.stat]));s.attrs[choice.stat]+=event.gain;
+ event.injuryGames=effect.risk&&chance(effect.risk)?irnd(2,5):0;
+ if(event.injuryGames)s.trainingInjuryGames=(s.trainingInjuryGames||0)+event.injuryGames;
+ event.resultText=`피로 ${effect.fatigue>0?'+':''}${effect.fatigue} → ${s.fatigue}/100${effect.cost?` · 비용 -$${fmt(effect.cost)}`:''}${event.injuryGames?` · 훈련 중 부상: 다음 시즌 ${event.injuryGames}경기 결장`:effect.risk?' · 부상 없이 훈련을 마쳤어.':''}`;
+ s.events.unshift({year:r.year,text:`${scene.title} · ${event.choiceLine} 노력 +${effect.effort} · ${event.resultText}`});return true;
 }
 function answerCareerEvent(year,index){
- const s=state,r=s?.last,event=r?.careerEvent,scene=careerEvents.find(x=>x.id===event?.id),choice=scene?.choices[index];
- if(busy||s?.retired||!choice||r.year!==year||event.selection!=null)return;
- event.selection=index;event.breakthrough=gainCareerEffort(s,choice.effort);
- const ceiling=Math.min(100,effectivePotential(s)+(s.focus===choice.stat?2:0));
- event.gain=Math.max(0,Math.min(1,ceiling-s.attrs[choice.stat]));s.attrs[choice.stat]+=event.gain;
- s.events.unshift({year,text:`${scene.title} · ${choice.line} 노력 +${choice.effort}`});save();render();
- const panel=document.getElementById('careerEvent');if(panel)panel.outerHTML=careerEventCard(s,r);drawConversationActors();
+ const s=state,r=s?.last;if(busy||!r||r.year!==year||!applyCareerEventChoice(s,r,index))return;
+ save();render();const panel=document.getElementById('careerEvent');if(panel)panel.outerHTML=careerEventCard(s,r);drawConversationActors();
 }
+
 function seasonConversation(s,result){
  const scene=conversationScene(result);
  if(!scene)return '';
@@ -1552,16 +1569,17 @@ function advanceAttribute(value,stat,age,points,ceiling,growth=1){
 }
 function seasonCalculate(s){const age=s.age,year=s.year,was=s.stage,league=leagueName(s),ovrBefore=getOvr(s),playedLeague=s.league,oldTeam=s.team;const income=seasonIncome(was,s.salary);const isNba=was==='PRO'&&playedLeague==='NBA';let games=was==='HIGH'?27:was==='COLLEGE'?32:(leagues[playedLeague]?.games||32);if(was==='PRO'&&playedLeague==='NBA')games=82;
 const plan=trainingPlan(s);
+const fatigueBefore=clamp(Number(s.fatigue)||0,0,100),injuryAbsences=Math.max(0,Number(s.trainingInjuryGames)||0);
 const attributeChanges={};
 for(const stat of Object.keys(s.attrs)){
   const previous=s.attrs[stat];
-  s.attrs[stat]=advanceAttribute(previous,stat,age,plan[stat]||0,Math.min(100,effectivePotential(s)+(stat===s.focus?2:0)),potentialDevelopment(s).growth);
+  s.attrs[stat]=advanceAttribute(previous,stat,age,plan[stat]||0,Math.min(100,effectivePotential(s)+(stat===s.focus?2:0)),potentialDevelopment(s).growth*(1-fatigueBefore/200));
   attributeChanges[stat]=s.attrs[stat]-previous;
 }
 let ovr=getOvr(s);const roleRating=positionRating(s);s.role=was==='HIGH'?ovr>=74?'에이스':ovr>=65?'주전':ovr>=57?'로테이션':'벤치':roleFromOvr(ovr,playedLeague);
 const style=styleData[s.player.style]||{};
 const mins=clamp((was==='HIGH'?20:was==='COLLEGE'?18:15)+((ovr+roleRating)/2-(isNba?76:69))*.66+(s.attrs.stamina-70)*.09+(style.minutes||0)+(coachTrust(s)-50)*.045+rnd(-2,3),8,isNba?38:35);
-const gp=Math.round(games*clamp(rnd(.84,1.01),.65,1));const scale=was==='HIGH'?.85:was==='COLLEGE'?.78:isNba?1:playedLeague==='NBA G League'?.88:.81;
+const gp=Math.max(1,Math.round(games*clamp(rnd(.84,1.01),.65,1))-injuryAbsences);const scale=was==='HIGH'?.85:was==='COLLEGE'?.78:isNba?1:playedLeague==='NBA G League'?.88:.81;
 const usagerate=clamp(.72+(ovr-67)*.018,.55,1.35);const normMinutes=mins/32;
 const ppg=one(clamp((3.7+s.attrs.shoot*.16+s.attrs.drive*.095+s.attrs.clutch*.02)*scale*normMinutes*usagerate*(style.points||1)+rnd(-3.2,2.8),2,41));
 const rpg=one(clamp((1+s.attrs.rebound*.09)*(style.boards||1)*(s.player.position==='C'?1.36:s.player.position==='PF'?1.25:s.player.position==='PG'?.72:1)*normMinutes+rnd(-.9,.8),.5,17));
@@ -1591,6 +1609,7 @@ const old=s.team;s.team=pick(leagues.NBA.teams.filter(t=>t!==old));tradeText=`${
 if(was==='COLLEGE')s.collegeYears++;
 if(was==='PRO')s.contract=Math.max(0,s.contract-1);
 let result={year,age,league,stage:was,team:oldTeam,games:gp,ppg,rpg,apg,sp,bp,fg,tp,ft,mins:one(mins),wins,losses,playoff,champ:champs,final,ovrBefore,ovr,earned,trade:tradeText,goat:goatScore(s),rating:one(clamp(5.4+(ppg-10)*.08+(apg-3)*.07+(winRate-.5)*1+rnd(-.35,.35),5.0,10))};
+result.fatigueBefore=fatigueBefore;result.injuryAbsences=injuryAbsences;s.trainingInjuryGames=0;s.fatigue=Math.max(0,fatigueBefore-10);
 result.coachStory=coachSeasonStory(s,result);
 result.conversation=createSeasonConversation(s,result);
 const prepared=Object.values(plan).reduce((sum,n)=>sum+n,0)>=trainingBudget;
