@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
 /* Match-center interface, shared by desktop and mobile. */
 :root{--bg:#eff0ed;--panel:#fff;--panel2:#f3f4f0;--panel3:#e5e8e2;--text:#17231f;--muted:#607067;--line:#d7ddd5;--blue:#ba4b1a;--gold:#a64c1f;--teal:#24745b}
 html,body,button,input,select,textarea{font-family:"Noto Sans KR",sans-serif!important;font-weight:400}
@@ -122,3 +121,10 @@ body{background:var(--bg);color:var(--text);line-height:1.65}
 .visitor-indicator{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 .visitor-indicator::before{content:'';width:5px;height:5px;border-radius:50%;background:#489d6a}
 .welcome-intro .visitor-indicator{order:9}
+
+/* Typography requested for the game edition. */
+html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR",sans-serif!important;font-weight:600}
+#app :is(h1,h2,h3,h4,strong,b,.value),#modalRoot :is(h1,h2,h3,h4,strong,b,.value){font-family:Pretendard,"Apple SD Gothic Neo",sans-serif!important;font-weight:700!important}
+#app :is(button,summary,.label,.pill,.desc,.smallnote),#modalRoot :is(button,summary,.label,.pill,.desc,.smallnote){font-family:Pretendard,"Apple SD Gothic Neo",sans-serif!important;font-weight:600!important}
+#app .welcome-intro h1,#app .value,#app .result-stat strong,#modalRoot .final-score-line strong,#app .intl-big{font-family:Pretendard,"Apple SD Gothic Neo",sans-serif!important;font-weight:700!important}
+.timeout-heading>span{font-family:Pretendard,sans-serif;font-weight:700}
