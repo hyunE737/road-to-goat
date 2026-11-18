@@ -128,3 +128,9 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 #app :is(button,summary,.label,.pill,.desc,.smallnote),#modalRoot :is(button,summary,.label,.pill,.desc,.smallnote){font-family:Pretendard,"Apple SD Gothic Neo",sans-serif!important;font-weight:600!important}
 #app .welcome-intro h1,#app .value,#app .result-stat strong,#modalRoot .final-score-line strong,#app .intl-big{font-family:Pretendard,"Apple SD Gothic Neo",sans-serif!important;font-weight:700!important}
 .timeout-heading>span{font-family:Pretendard,sans-serif;font-weight:700}
+
+#modalRoot .final-scoreboard .final-score-line strong{color:#f4f7ed}
+#modalRoot .final-scoreboard .final-score-line .dash{color:#e8793c}
+#modalRoot .finals-modal:has(.finals-timeout:not([hidden])) .rtg-full-court{height:120px}
+#modalRoot .finals-modal:has(.finals-timeout:not([hidden])) :is(.sim-feed,.finals-event){display:none}
+#modalRoot .finals-timeout .smallnote{margin:8px 0 0;font-size:11px}
