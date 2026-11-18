@@ -176,3 +176,82 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
  .pixel-conference .conversation-player{left:calc(50% - 32px)}
 }
 @media(prefers-reduced-motion:reduce){.pixel-conversation *{animation:none!important}}
+
+
+/* Consistent game controls; theme colors stay independent of the menu reference. */
+#app .card,#app .create,#modalRoot .card{border-radius:8px;border-width:1px;box-shadow:0 3px 0 var(--line)}
+#app .card h3,#modalRoot .card h3{display:flex;align-items:center;gap:8px}
+#app .card h3 .game-icon{width:20px;height:20px;flex:none}
+#app .btn,#modalRoot .btn,.season-progress .btn{border-radius:4px;box-shadow:0 3px 0 color-mix(in srgb,var(--text) 22%,transparent);transition:transform .12s,box-shadow .12s;letter-spacing:-.02em}
+#app .btn:active:not(:disabled),#modalRoot .btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+#app .btn:focus-visible,#modalRoot .btn:focus-visible,#app .nav:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+#app .career-side{border-radius:8px;background:var(--panel);border:1px solid var(--line);box-shadow:0 3px 0 var(--line);color:var(--text);--pixel-outline:var(--text);--pixel-fill:var(--muted);padding:10px}
+#app .career-side .nav{color:var(--muted);min-height:52px;text-align:left;border-radius:4px;position:relative}
+#app .career-side .nav:hover{background:var(--panel2)}
+#app .career-side .nav.active{background:var(--panel3);color:var(--text);border-color:var(--line);box-shadow:inset 3px 0 0 var(--blue);--pixel-outline:var(--text);--pixel-fill:var(--muted)}
+#app .career-side .nav.active .career-nav-dot{display:none}
+#app .career-nav-more{border-color:var(--line);margin-top:8px;padding-top:8px}
+#app .career-nav-more summary{color:var(--muted);padding:10px 8px}
+#app .career-side .career-nav-secondary .nav{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;justify-content:start;gap:12px;padding:12px;text-align:left;min-height:54px}
+#app .career-nav-secondary .career-motion-icon{justify-self:center;margin:0}
+#app .career-nav-secondary .nav>span:last-child{justify-self:start}
+#app .career-content>.view-title{margin:0 0 24px;padding:4px 0 16px;border-bottom:1px solid var(--line);gap:12px}
+#app .career-content{display:flow-root}
+#app .grid.two{gap:20px;align-items:start}
+#app .offer{padding:18px;border-radius:6px;border-left:3px solid var(--line);gap:16px;align-items:center}
+#app .offer+.offer{margin-top:12px}
+#app .section-top{gap:12px;align-items:center;flex-wrap:wrap}
+#app .style-draw-card,#app .league-select-card{padding:16px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);display:flex;flex-direction:column;align-self:stretch;gap:12px}
+#app .style-draw-card>label{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin:0}
+#app .style-draw-card .style-draw-details{margin:0;padding:0;border:0;background:transparent;min-height:160px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;flex:1}
+#app .style-draw-details strong{margin:0;font-size:19px}
+#app .style-draw-details p{margin:0}
+.style-emblem{display:grid;place-items:center;width:46px;height:46px;background:var(--panel);border:2px solid var(--line);box-shadow:3px 3px 0 var(--line);margin-bottom:6px}
+.style-emblem .game-icon{width:30px;height:30px}
+.style-mods{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
+.style-mods span{padding:3px 7px;background:var(--panel);border:1px solid var(--line);font-size:11px;border-radius:3px;white-space:nowrap}
+.style-mods b{color:var(--blue)}
+.style-perk{font-size:12px;color:var(--muted)}
+.style-reveal .style-draw-details{animation:style-reveal .3s steps(3,end)}
+@keyframes style-reveal{from{opacity:.2;transform:translateY(5px)}to{opacity:1;transform:none}}
+#app #styleDrawButton{width:100%;margin:0;min-height:46px;flex:none}
+#app .league-spotlight{display:grid;place-items:center;flex:1;min-height:160px}
+#app .league-spotlight .league-logo{width:130px;height:112px;padding:12px;border:0;border-radius:4px;background:#fff;position:relative;display:grid;place-items:center;overflow:hidden;color:#17231f}
+#app .league-spotlight .league-logo img{position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 24px);object-fit:contain;background:#fff}
+#app .league-logo-official:not(.logo-unavailable)>span{visibility:hidden}
+#app .league-select-card .identity-select{width:100%;display:block}
+#app .league-select-card select{width:100%}
+#app .pixel-showcase{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0}
+#app .pixel-showcase::before,#app .pixel-showcase::after{display:none!important}
+#app .training-grid{align-items:start}
+#app .training-help{font-size:12px;margin:8px 0}
+#app .training-card>.smallnote{margin:0 0 12px}
+#app .training-allocation{display:grid;grid-template-columns:minmax(0,1fr) 124px;gap:12px;align-items:center;min-height:58px;padding:8px 0;box-sizing:border-box;border-bottom:1px solid var(--line)}
+#app .training-allocation:last-child{border-bottom:0}
+#app .training-stat{display:flex;flex-direction:column;line-height:1.4;min-width:0}
+#app .training-stat strong{font-size:13px}
+#app .training-stat small{font-size:10px;color:var(--muted)}
+#app .training-stepper{display:grid;grid-template-columns:40px 28px 40px;gap:8px;align-items:center}
+#app .training-stepper .btn{width:40px;min-width:40px;min-height:40px;height:40px;padding:0;font-size:18px}
+#app .training-stepper strong{text-align:center;font-size:16px;font-variant-numeric:tabular-nums}
+#app .abilities-card .attr-row{display:grid;grid-template-columns:72px minmax(30px,1fr) 36px;gap:12px;min-height:58px;margin:0;padding:8px 0;box-sizing:border-box;border-bottom:1px solid var(--line)}
+#app .abilities-card .attr-row:last-child{border-bottom:0}
+#app .attr-value{position:static;display:block;min-width:3ch;line-height:1;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:0;text-shadow:none;transform:none}
+#app .season-plan .plan-points{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.plan-points>div{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:4px;font-size:12px}
+.plan-points strong{font-size:22px;line-height:1}.plan-points small{font-size:11px;margin-left:3px;color:var(--muted)}
+.point-cells{grid-column:1/-1;display:flex;gap:4px}.point-cells i{height:6px;flex:1;background:var(--panel3)}.point-cells i.filled{background:var(--blue)}
+.plan-meta{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);padding-top:14px;gap:14px}.plan-meta>div{display:flex;flex-direction:column;gap:4px}.plan-meta strong{font-size:15px}
+.season-progress{width:min(560px,calc(100vw - 24px));box-sizing:border-box;background:var(--panel);color:var(--text);border:2px solid var(--line);border-radius:8px;padding:24px;font-family:Pretendard,sans-serif}
+.season-progress h2{font-size:22px}.progress-heading .eyebrow{font-size:10px;letter-spacing:.14em;color:var(--muted)}
+.progress-journey{display:flex;align-items:center;justify-content:space-between;margin-top:24px;position:relative}.progress-journey:before{content:'';position:absolute;left:0;right:0;height:2px;background:var(--line)}
+.progress-journey span{position:relative;width:26px;height:26px;display:grid;place-items:center;background:var(--panel);border:2px solid var(--line);font-size:11px}.progress-journey span.reached{background:var(--blue);color:var(--panel);border-color:var(--blue)}
+.season-progress progress{height:10px;accent-color:var(--blue)}
+.progress-records{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:20px 0}.progress-records>div{grid-column:span 2;padding:10px;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;gap:5px;text-align:center}.progress-records>div:nth-child(-n+2){grid-column:span 3}.progress-records span{font-size:11px;color:var(--muted)}.progress-records strong{font-size:19px;font-variant-numeric:tabular-nums}
+.progress-news{padding:12px;border-left:3px solid var(--blue);background:var(--panel2);font-size:12px;min-height:24px}.season-progress>.smallnote{font-size:10px;color:var(--muted)}
+.pixel-conversation .conversation-player{animation:pixel-talk 2.4s steps(2,end) infinite}.pixel-conversation .conversation-coach{animation:pixel-talk 2.4s .6s steps(2,end) infinite}.pixel-speech{animation:pixel-dialogue 3s steps(2,end) infinite}
+@keyframes pixel-dialogue{0%,15%{opacity:0;transform:translateY(3px)}25%,85%{opacity:1;transform:none}100%{opacity:0}}
+#modalRoot .conversation-options{display:grid;gap:10px}#modalRoot .conversation-options .btn{text-align:left;padding:14px 16px;line-height:1.6;white-space:normal;border-left:3px solid var(--line)}
+@media(max-width:900px){#app .career-nav-main{gap:6px}#app .career-nav-main .nav{min-height:76px;padding:10px 4px;gap:6px;text-align:center}#app .career-side .career-nav-main .nav.active{box-shadow:inset 0 -3px 0 var(--blue)}#app .career-nav-secondary{gap:6px}#app .career-side .career-nav-secondary .nav{font-size:12px;padding:10px;gap:8px}}
+@media(max-width:600px){#app .career-nav-main .nav{font-size:10px;min-height:72px}#app .grid.two{gap:16px}#app .career-content>.view-title{margin-bottom:20px;padding-bottom:12px}#app .style-draw-card,#app .league-select-card{padding:14px}#app .training-allocation,#app .abilities-card .attr-row{min-height:58px}#app .offer{flex-wrap:wrap}#app .offer>.btn{margin-left:auto;min-width:80px}.season-progress{padding:18px}.season-progress h2{font-size:20px}}
+@media(prefers-reduced-motion:reduce){.pixel-conversation *,.style-reveal .style-draw-details{animation:none!important}#app .btn,#modalRoot .btn{transition:none!important}}
