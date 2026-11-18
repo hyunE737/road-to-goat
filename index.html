@@ -5,7 +5,7 @@
 <link rel="shortcut icon" href="/favicon.svg?v=163">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ROAD TO GOAT v1.6.3 — Basketball Career Simulator</title>
+<title>ROAD TO GOAT — Basketball Career</title>
 <style>
 :root{--bg:#090e18;--panel:#121c2b;--panel2:#182439;--panel3:#1e2d43;--line:#2b3d53;--muted:#8d9daf;--text:#f0f5fb;--gold:#f7bb67;--teal:#4ce0ca;--blue:#65a6ff;--danger:#ff7a7a;--green:#7edbb0}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 77% -20%,#1a2c42 0,transparent 44%),var(--bg);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Noto Sans KR","Malgun Gothic",sans-serif;color:var(--text);min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5} .hidden{display:none!important} .container{max-width:1360px;margin:auto;padding:24px} .muted{color:var(--muted)}.eyebrow{text-transform:uppercase;letter-spacing:2.5px;font-size:11px;color:var(--teal);font-weight:850}.brand{display:flex;align-items:center;gap:13px;font-weight:950;letter-spacing:1.6px;font-size:17px}.brandmark{background:linear-gradient(135deg,#e8b264,#a66b30);color:#101721;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:24px;box-shadow:0 7px 22px #d78d3633}.sub{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:0}.card{background:linear-gradient(145deg,#172337,#111b29);border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 9px 25px #03060c24}.card.flat{background:#121c2b}.pill{font-size:11px;font-weight:800;letter-spacing:.3px;border-radius:8px;padding:6px 9px;background:#213447;color:var(--teal);white-space:nowrap;display:inline-flex;gap:5px;align-items:center}.pill.gold{background:#402c19;color:var(--gold)}.pill.blue{background:#1a3352;color:#9fcaff}.pill.red{background:#44262d;color:#ff9b9b}.btn{background:linear-gradient(135deg,#f0be77,#d89643);border:0;border-radius:11px;padding:12px 17px;font-size:13px;color:#1b1b1c;font-weight:900;box-shadow:0 4px 14px #a77a343b;transition:transform .15s,filter .15s}.btn:hover:not(:disabled){filter:brightness(1.09);transform:translateY(-1px)}.btn.secondary{background:#26354a;color:#e0e9f3;box-shadow:none;border:1px solid #3a4d64}.btn.ghost{background:transparent;border:1px solid #40516a;box-shadow:none;color:#e0e9f3}.btn.danger{background:#512b35;color:#ffadad;box-shadow:none;border:1px solid #743d48}.btn.small{padding:8px 11px;font-size:12px}.btn.wide{width:100%} .grid{display:grid;gap:15px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.four{grid-template-columns:repeat(4,minmax(0,1fr))}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:12px;color:#b8c7d7;font-weight:700}.field input,.field select{background:#0d1725;border:1px solid #33455b;color:white;border-radius:10px;padding:12px;width:100%;outline:none}.field input:focus,.field select:focus{border-color:#e1b277;box-shadow:0 0 0 3px #edaf5e1a}h1,h2,h3,h4,p{margin-top:0}h1{font-size:clamp(34px,5vw,65px);letter-spacing:-2.6px;line-height:1.08;margin-bottom:15px}h2{font-size:23px;letter-spacing:-.6px;margin-bottom:15px}h3{font-size:15px;margin-bottom:12px}.desc{font-size:13px;color:var(--muted);line-height:1.8}.sep{height:1px;background:var(--line);margin:16px 0}.top-header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2c3c50;max-width:1420px;margin:auto;padding:0 27px}.label{font-size:11px;color:var(--muted);font-weight:700}.value{font-size:24px;font-weight:900;letter-spacing:-.7px}.smallnote{font-size:11px;color:var(--muted);line-height:1.7} .stage{padding:8px 12px;background:#263246;border-radius:8px;font-size:12px;color:#c8d4e5}
@@ -378,15 +378,17 @@ html,body,button,input,select,textarea{font-family:Pretendard,"Apple SD Gothic N
 }
 @media(prefers-reduced-motion:reduce){.welcome-career-path::after{animation:none;left:87.5%}}
 .welcome-career-path .game-icon{width:19px;height:19px;color:var(--blue)}
-</style></head>
+</style><link rel="stylesheet" href="game-edition.css?v=20261118">
+</head>
 <body>
 <div id="app"></div><div id="toast" class="toast" role="status"></div><div id="modalRoot"></div>
 <script>
 'use strict';
 const SAVE='road_to_goat_v1_2026';
-const GAME_VERSION='1.6.3';
+const GAME_VERSION='2.0.0';
 const UPDATE_CONFIG_KEY='road_to_goat_update_prefs';
 const RELEASE_NOTES=[
+ {version:'2.0.0',date:'2026-11-18',title:'매치 센터 업데이트',items:['게임 화면과 폰트 전면 개편','결승 작전타임 역할 선택과 흐름 이벤트','슈팅·클러치 능력치에 따른 자유투 난이도','실시간 접속자 표시']},
  {version:'1.6.3',date:'2026-11-17',title:'브라우저 탭 아이콘 변경',items:['새 왕관 농구 픽셀 로고를 파비콘으로 적용','기존 아이콘 스크립트 덮어쓰기 방지','브라우저 아이콘 캐시 갱신']},
  {version:'1.6.2',date:'2026-11-17',title:'픽셀 캐릭터와 사이트 로고 교체',items:['제공한 농구 캐릭터 이미지 적용','헤어스타일 6종·피부색 5종·머리색 6종 변경','선수 유니폼 색상과 등번호 설정','사이트 상단 로고와 브라우저 탭 아이콘 적용']},
  {version:'1.6.1',date:'2026-11-17',title:'시작 화면 커리어 진행 흐름 개선',items:['목표 선택 버튼 제거','벤치부터 첫 경기·첫 득점·첫 우승·GOAT까지 스토리로 표현','현재 커리어 단계 안내 표시']},
@@ -887,15 +889,24 @@ function startReplayQueue(list,callback){
  if(!replayQueue.length){if(callback)callback();return}
  startReplaySeries();
 }
-function startReplaySeries(){replaySeries=replayQueue.shift();replayGame=0;replayStep=0;
- document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal" role="dialog" aria-modal="true" style="max-width:700px"><div class="eyebrow">LIVE FINALS SIMULATION</div><h2>${esc(replaySeries.title)}</h2><div class="final-scoreboard"><span class="pill gold" id="replayPhase">결승전 시작</span><div class="final-score-line"><div><span class="score-name">${teamLabel(replaySeries.ourTeam)}</span><strong id="simOur">0</strong></div><div class="dash">:</div><div><span class="score-name">${teamLabel(replaySeries.opponent)}</span><strong id="simOpp">0</strong></div></div><div class="smallnote" id="simSeries">시리즈 0 : 0</div></div><div class="sim-court"><span class="sim-hoop left"></span><span class="sim-hoop right"></span><span id="simPlayerA" class="sim-pixel"></span><span id="simPlayerB" class="sim-pixel red"></span><span id="simBall" class="sim-ball"></span></div><p class="finals-event" id="finalsEvent" role="status" hidden></p><div class="sim-feed" id="simFeed" aria-live="polite">경기가 시작됩니다. 공수 전환을 관전하세요!</div><section class="free-throw-panel" id="freeThrowPanel" hidden aria-label="직접 자유투"></section><div class="sim-controls"><button class="btn secondary small" id="simSpeed" onclick="changeReplaySpeed()">속도: 1배</button><button class="btn small" onclick="skipReplaySeries()">⏩ 결승 결과 바로 보기</button></div></div></div>`;
+function startReplaySeries(){finalsTimeout=null;replaySeries=replayQueue.shift();replayGame=0;replayStep=0;
+ document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal finals-modal" role="dialog" aria-modal="true" aria-label="결승전 관전" style="max-width:700px"><div class="eyebrow">FINALS · MATCH CENTER</div><h2>${esc(replaySeries.title)}</h2><div class="final-scoreboard"><span class="pill gold" id="replayPhase">결승전 시작</span><div class="final-score-line"><div><span class="score-name">${teamLabel(replaySeries.ourTeam)}</span><strong id="simOur">0</strong></div><div class="dash">:</div><div><span class="score-name">${teamLabel(replaySeries.opponent)}</span><strong id="simOpp">0</strong></div></div><div class="smallnote" id="simSeries">시리즈 0 : 0</div></div><div class="sim-court"><span class="sim-hoop left"></span><span class="sim-hoop right"></span><span id="simPlayerA" class="sim-pixel"></span><span id="simPlayerB" class="sim-pixel red"></span><span id="simBall" class="sim-ball"></span></div><section id="finalsTimeout" class="finals-timeout" hidden></section><p class="finals-event" id="finalsEvent" role="status" hidden></p><div class="sim-feed" id="simFeed" aria-live="polite">경기가 시작됩니다. 공수 전환을 관전하세요!</div><section class="free-throw-panel" id="freeThrowPanel" hidden aria-label="직접 자유투"></section><div class="sim-controls"><button class="btn secondary small" id="simSpeed" onclick="changeReplaySpeed()">속도: 1배</button><button class="btn small" onclick="skipReplaySeries()">⏩ 결승 결과 바로 보기</button></div></div></div>`;
  scheduleReplay();
 }
 let freeThrow=null, freeThrowAnimation=0, freeThrowTimeout=0;
 let replayFreeThrows={made:0,attempted:0};
+function freeThrowDifficulty(player,pressure=false){
+ const shoot=clamp(Number(player?.shoot)||50,30,99);
+ const mental=clamp(Number(player?.clutch)||50,30,99);
+ const quality=(shoot-60)*.0012+(mental-60)*.0008;
+ const half=clamp(.035+quality-(pressure?.008:0),.025,.105);
+ return {start:.5-half,end:.5+half,yellow:half+.11,
+  duration:clamp(1540+(mental-60)*9+(shoot-60)*3-(pressure?150:0),1050,2050)};
+}
 function freeThrowChance(value){
- if(value>=.465&&value<=.55)return 1;
- if(value>=.35&&value<=.67)return .5;
+ const timing=freeThrow?.difficulty||freeThrowDifficulty(state?.attrs);
+ if(value>=timing.start&&value<=timing.end)return 1;
+ if(value>=.5-timing.yellow&&value<=.5+timing.yellow)return .5;
  return .01;
 }
 function replayFoul(game,index){
@@ -917,7 +928,10 @@ function openFreeThrows(count){
  const controls=document.getElementById('simSpeed');
  controls.disabled=true;
  panel.closest('.modal').classList.add('is-free-throw');
- freeThrow={count,shot:1,position:0,shooting:false};
+ const currentGame=replaySeries.games[replayGame];
+ const currentFrame=currentGame.steps[Math.max(0,replayStep-1)];
+ const pressure=currentFrame.q===4&&Math.abs(currentFrame.a-currentFrame.b)<=5;
+ freeThrow={count,shot:1,position:0,shooting:false,difficulty:freeThrowDifficulty(state?.attrs,pressure)};
  panel.hidden=false;
  panel.innerHTML=`<div class="ft-heading"><h3>${count===1?'앤드원':'슈팅 파울'}</h3><strong class="pill gold" id="freeThrowCount"></strong></div>
  <div class="ft-court" aria-hidden="true"><canvas class="ft-shooter" width="40" height="54"></canvas><span class="ft-hoop"></span><span id="ftBall" class="ft-ball"></span></div>
@@ -925,6 +939,12 @@ function openFreeThrows(count){
  <div class="ft-legend" aria-label="타이밍에 따른 성공 확률"><span><i class="ft-dot ft-dot-green"></i>초록 100%</span><span><i class="ft-dot ft-dot-yellow"></i>노랑 50%</span><span><i class="ft-dot ft-dot-gray"></i>회색 1%</span></div>
  <p class="ft-status" id="ftStatus" role="status"></p>
  <button type="button" class="btn wide" id="ftShoot" onclick="shootReplayFreeThrow()">슛 던지기</button>`;
+ const difficulty=freeThrow.difficulty;
+ panel.querySelector('.ft-green').style.left=(difficulty.start*100)+'%';
+ panel.querySelector('.ft-green').style.width=((difficulty.end-difficulty.start)*100)+'%';
+ const yellowStart=(.5-difficulty.yellow)*100,yellowEnd=(.5+difficulty.yellow)*100;
+ panel.querySelector('.ft-meter').style.background=`linear-gradient(to right,#74808c ${yellowStart}%,#e3b54e ${yellowStart}% ${yellowEnd}%,#74808c ${yellowEnd}%)`;
+ panel.querySelector('.ft-legend').insertAdjacentHTML('afterend',`<p class="ft-difficulty">슈팅 ${Math.round(state?.attrs?.shoot||50)} · 멘탈 ${Math.round(state?.attrs?.clutch||50)}${pressure?' · 클러치 상황':''}</p>`);
  pixelDraw(panel.querySelector('.ft-shooter'),state?.player?.avatar||avatarConfig);
  panel.scrollIntoView({block:'nearest'});
  startFreeThrowAim();
@@ -943,7 +963,7 @@ function startFreeThrowAim(){
  const needle=document.getElementById('ftNeedle');
  function aim(now){
   if(freeThrow!==attempt||attempt.shooting)return;
-  const cycle=((now-start)%1640)/820;
+  const cycle=((now-start)%attempt.difficulty.duration)/(attempt.difficulty.duration/2);
   attempt.position=cycle<=1?cycle:2-cycle;
   needle.style.left=`${attempt.position*100}%`;
   freeThrowAnimation=requestAnimationFrame(aim);
@@ -975,17 +995,73 @@ function shootReplayFreeThrow(){
   },650);
  },560);
 }
-function scheduleReplay(){stopReplay();if(freeThrow)return;replayTimer=setInterval(replayTick,Math.max(40,310/replaySpeed))}
+function scheduleReplay(){stopReplay();if(freeThrow||finalsTimeout)return;replayTimer=setInterval(replayTick,Math.max(40,310/replaySpeed))}
 function changeReplaySpeed(){replaySpeed=replaySpeed===1?3:replaySpeed===3?8:1;const b=document.getElementById('simSpeed');if(b)b.textContent=`속도: ${replaySpeed}배`;scheduleReplay()}
+let finalsTimeout=null;
 function finalsEvent(game,index){
- const frame=game.steps[index], previous=game.steps[index-1];
- if(!frame||!previous)return '';
- const gap=frame.a-frame.b, prior=previous.a-previous.b;
- if(index===17)return '하프타임 · 양 팀 감독이 후반 전술을 정리합니다.';
- if(index===27)return '4쿼터 시작 · 마지막 승부가 시작됩니다.';
- if(index>=29&&index<=35&&prior*gap<0)return gap>0?'역전 · 우리 팀이 리드를 되찾았습니다!':'역전 위기 · 상대 팀이 앞서 나갑니다.';
- if(index>=30&&index<=35&&Math.abs(gap)<=4&&Math.abs(prior)>4)return '접전 · 한두 번의 공격으로 뒤집힐 수 있습니다.';
+ const frame=game.steps[index],prior=game.steps[index-1];
+ if(!frame||!prior)return '';
+ const gap=frame.a-frame.b,oldGap=prior.a-prior.b;
+ if(typeof frame.q==='string')return index===36?'연장전 · 한 번의 공격이 승부를 가릅니다.':'';
+ if(index===17)return '하프타임 · 라커룸에서 후반 수비를 점검합니다.';
+ if(index===27)return '4쿼터 · 마지막 10분, 벤치가 선수들을 독려합니다.';
+ if(index>=30&&Math.abs(gap)<=5)return '클러치 타임 · 한 번의 실수도 허용할 수 없습니다.';
+ if(oldGap<0&&gap>0)return '역전! · 우리 팀이 리드를 가져옵니다.';
+ if(oldGap>0&&gap<0)return '리드 허용 · 상대 팀이 흐름을 가져갑니다.';
+ const recent=game.steps[Math.max(0,index-3)];
+ const run=(frame.a-recent.a)-(frame.b-recent.b);
+ if(index>2&&run>=6)return '득점 러시 · 관중석이 뜨겁게 달아오릅니다.';
+ if(index>2&&run<=-6)return '상대의 추격 · 감독이 벤치에서 수비를 지시합니다.';
+ if(frame.a-prior.a>=4)return '속공 전개 · 수비를 따돌리고 연속 득점!';
+ if(index===5)return '강한 압박 수비 · 공을 안전하게 지켜야 합니다.';
+ if(index===22)return '교체 투입 · 벤치 선수들이 코트에 활기를 더합니다.';
  return '';
+}
+function timeoutKey(){
+ return 'final-'+hash(JSON.stringify([replaySeries.title,replaySeries.ourTeam,replaySeries.opponent,replaySeries.games]))+'-'+replayGame;
+}
+function openFinalsTimeout(index){
+ if(index!==8&&index!==26)return;
+ const key=timeoutKey()+'-'+index;
+ if(state?.finalsDecisions?.[key])return;
+ stopReplay();
+ const frame=replaySeries.games[replayGame].steps[index];
+ const chasing=frame.a<frame.b;
+ finalsTimeout={key};
+ const panel=document.getElementById('finalsTimeout');
+ panel.hidden=false;
+ panel.innerHTML=`<div class="timeout-heading"><span>TIMEOUT</span><strong>${index===8?'1쿼터 종료':'마지막 쿼터 준비'}</strong></div>
+ <h3>${chasing?'감독이 추격 방법을 묻습니다.':'감독이 리드를 지킬 역할을 묻습니다.'}</h3>
+ <p class="desc">내 강점에 맞는 답변을 골라 감독에게 보여줘.</p>
+ <div class="timeout-options">
+ <button class="btn secondary" onclick="chooseFinalsPlan('attack')">직접 공격하겠습니다.<small>슈팅 · 돌파</small></button>
+ <button class="btn secondary" onclick="chooseFinalsPlan('organize')">동료에게 기회를 만들겠습니다.<small>패스 · 농구 IQ</small></button>
+ <button class="btn secondary" onclick="chooseFinalsPlan('defend')">수비부터 책임지겠습니다.<small>수비 · 체력</small></button></div>
+ <p class="smallnote">관전 선택은 감독 신뢰에 반영돼. 시즌 결과는 확정된 기록을 따라가.</p>`;
+ document.getElementById('simSpeed').disabled=true;
+ panel.scrollIntoView({block:'nearest'});
+ panel.querySelector('button').focus({preventScroll:true});
+}
+function chooseFinalsPlan(choice){
+ if(!finalsTimeout||!state)return;
+ if(state.finalsDecisions?.[finalsTimeout.key])return;
+ const stats={attack:['shoot','drive'],organize:['pass','iq'],defend:['defense','stamina']}[choice];
+ if(!stats)return;
+ const strength=stats.reduce((total,key)=>total+(Number(state.attrs[key])||50),0)/2;
+ const gain=strength>=75?2:strength>=60?1:0;
+ state.finalsDecisions??={};
+ state.finalsDecisions[finalsTimeout.key]=choice;
+ state.coach=clamp(coachTrust(state)+gain,0,100);
+ save();
+ document.getElementById('finalsTimeout').innerHTML=`<div class="timeout-heading"><span>작전 전달 완료</span><strong>감독 신뢰 +${gain}</strong></div><p>${gain?'감독이 고개를 끄덕입니다. “좋아. 네 강점을 보여줘.”':'“의욕은 좋다. 무리하지 말고 동료와 맞춰봐.”'}</p><button class="btn" onclick="resumeFinalsTimeout()">코트로 돌아가기</button>`;
+}
+function resumeFinalsTimeout(){
+ finalsTimeout=null;
+ const panel=document.getElementById('finalsTimeout');
+ if(panel)panel.hidden=true;
+ const speed=document.getElementById('simSpeed');
+ if(speed)speed.disabled=false;
+ scheduleReplay();
 }
 function replayTick(){
  const game=replaySeries?.games?.[replayGame];if(!game)return finishReplaySeries();
@@ -1006,6 +1082,7 @@ function replayTick(){
   document.getElementById('simBall').style.top=`${38+(n%5)*6}%`;
   const foul=replayFoul(game,n-1);
   if(foul)openFreeThrows(foul);
+  else openFinalsTimeout(n-1);
  }else{
   document.getElementById('simFeed').textContent=`${game.game}차전 종료! ${game.our} : ${game.opp} · ${koTeam(game.win?replaySeries.ourTeam:replaySeries.opponent)} 승리`;
   document.getElementById('simSeries').textContent=`시리즈 ${game.seriesA} : ${game.seriesB}`;
@@ -1015,7 +1092,7 @@ function replayTick(){
 }
 function skipReplaySeries(){stopReplay();finishReplaySeries()}
 function finishReplaySeries(){
- stopReplay();clearFreeThrows();const ser=replaySeries;
+ stopReplay();clearFreeThrows();finalsTimeout=null;const ser=replaySeries;
  if(!ser)return;
  const last=ser.games[ser.games.length-1];
  document.getElementById('modalRoot').innerHTML=`<div class="modal-back"><div class="modal"><span class="pill gold">🏆 결승 종료</span><h2 style="margin-top:12px">${esc(ser.title)}</h2><div class="results-banner"><div class="headline"><strong>${teamLabel(ser.ourTeam)}</strong><strong>${teamLabel(ser.opponent)}</strong></div><div class="final-score-line"><div><strong>${last.our}</strong></div><span class="dash">:</span><div><strong>${last.opp}</strong></div></div><p class="desc" style="text-align:center;margin-bottom:0">시리즈 ${ser.ourWins} : ${ser.oppWins} · ${ser.champion?'🏆 우승!':'준우승'}</p></div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>경기</th><th>우리 팀</th><th>상대 팀</th><th>결과</th></tr></thead><tbody>${ser.games.map(g=>`<tr><td>${g.game}차전</td><td>${g.our}</td><td>${g.opp}</td><td>${g.win?'승':'패'}</td></tr>`).join('')}</tbody></table></div>${replayFreeThrows.attempted?`<p class="desc">관전 중 직접 자유투 ${replayFreeThrows.made} / ${replayFreeThrows.attempted} 성공</p>`:''}<div class="modal-actions"><button class="btn" onclick="continueReplay()">${replayQueue.length?'다음 결승 보기':'결과 확인'}</button></div></div></div>`;
@@ -1593,5 +1670,51 @@ state=load();render();initUpdater();
 <script src="enhancements.js?rev=307fa325"></script>
 <script src="art-assets.js"></script>
 <script src="character.js?rev=7e70f898"></script>
+<script type="module">
+let visitorStatus='접속자 연결 중';
+function renderVisitorCount(){
+ const target=document.querySelector('.career-header-meta')||document.querySelector('.welcome-intro')||document.querySelector('.intro-header');
+ if(!target)return;
+ let label=target.querySelector('.visitor-indicator');
+ if(!label){label=document.createElement('span');label.className='visitor-indicator';target.append(label)}
+ if(label.textContent!==visitorStatus)label.textContent=visitorStatus;
+}
+const visitorObserver=new MutationObserver(renderVisitorCount);
+visitorObserver.observe(document.getElementById('app'),{childList:true,subtree:true});
+renderVisitorCount();
+try{
+ const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/+esm');
+ let browserId;
+ try{
+  browserId=localStorage.getItem('rtg-presence-id')||crypto.randomUUID();
+  localStorage.setItem('rtg-presence-id',browserId);
+ }catch{browserId=crypto.randomUUID()}
+ const client=createClient(weeklyRankUrl.replace('/rest/v1/rpc/',''),weeklyRankKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+ const room=client.channel('road-to-goat-visitors',{config:{presence:{key:browserId}}});
+ let tracking=false;
+ room.on('presence',{event:'sync'},()=>{
+  if(!tracking)return;
+  visitorStatus='접속 중 '+Object.keys(room.presenceState()).length+'명';
+  renderVisitorCount();
+ });
+ room.subscribe(async status=>{
+  if(status==='SUBSCRIBED'){
+   const result=await room.track({online:true});
+   tracking=result==='ok';
+   visitorStatus=tracking?'접속 중 '+Object.keys(room.presenceState()).length+'명':'접속자 연결 대기';
+  }else if(['CLOSED','CHANNEL_ERROR','TIMED_OUT'].includes(status)){
+   tracking=false;
+   visitorStatus='접속자 연결 대기';
+  }
+  renderVisitorCount();
+ });
+ window.addEventListener('pagehide',()=>{client.removeChannel(room)});
+ window.addEventListener('pageshow',event=>{if(event.persisted)location.reload()});
+}catch{
+ visitorStatus='접속자 연결 대기';
+ renderVisitorCount();
+}
+
+</script>
 </body>
 </html>
